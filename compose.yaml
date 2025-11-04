@@ -9,9 +9,9 @@ services:
     command: npm run start-watch
     env_file: ./.env
     environment:
-      - DB_NAME=$DB_NAME
-      - DB_HOST=$DB_HOST
-      - DB_USER=$DB_USER
+      - DB_NAME=marketplace
+      - DB_HOST=db
+      - DB_USER=root
       - DB_PASSWORD=$DB_PASSWORD
       - NODE_ENV=development
     ports:
@@ -19,7 +19,7 @@ services:
       - 9229:9229
       - 9230:9230
     volumes:
-      - ./backend/src:/code/backend/src:ro
+      - ./backend/src:/code/src:ro
       - ./backend/package.json:/code/package.json
       - ./backend/package-lock.json:/code/package-lock.json
       - back-notused:/opt/app/node_modules
@@ -34,12 +34,13 @@ services:
     restart: always
     volumes:
       - db-data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - private
     env_file: ./.env
     environment:
-      - MYSQL_DATABASE=$DB_NAME
-      - MYSQL_ROOT_PASSWORD_FILE=$DB_PASSWORD
+      - MYSQL_DATABASE=marketplace
+      - MYSQL_ROOT_PASSWORD=$DB_PASSWORD
   frontend:
     build:
       args:
@@ -49,9 +50,9 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./frontend/node_modules:/usr/frontend/node_modules
-      - ./frontend/vite.config.js:/usr/frontend/vite.config.js
-      - ./frontend/src:/code/frontend/src
+      - ./frontend/node_modules:/code/node_modules
+      - ./frontend/vite.config.js:/code/vite.config.js
+      - ./frontend/src:/code/src
     networks:
       - public
     depends_on:

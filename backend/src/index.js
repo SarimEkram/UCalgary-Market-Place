@@ -18,18 +18,17 @@ const db = mysql.createConnection({
 
 
 
-
-
 app.get("/", function(req, res, next) {
-  // Random table to make sure that db connection is working 
+  //Random table to make sure that db connection is working 
   db.query('SELECT * FROM cats;', function (err, results) {
     if (err) {
       console.error("Error executing query:", err);
-      return res.status(500).json({ error: "Error fetching data from database" });
+      return res.status(500).json({ error: "Error feing data from database",   msg: err});
     }
     // Return the results as JSON in the response
     res.json({ message: `Hello from MyWORLD`, cats: results });
   });
+  // res.json({message: "hello world"})
    
 });
 
