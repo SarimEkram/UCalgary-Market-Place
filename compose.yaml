@@ -3,6 +3,7 @@ services:
     build:
       args:
       - NODE_ENV=development
+      - PORT=8080
       context: backend
       target: development
     command: npm run start-watch
@@ -14,11 +15,11 @@ services:
       - DB_PASSWORD=$DB_PASSWORD
       - NODE_ENV=development
     ports:
-      - 80:80
+      - 8080:8080
       - 9229:9229
       - 9230:9230
     volumes:
-      - ./backend/src:/code/src:ro
+      - ./backend/src:/code/backend/src:ro
       - ./backend/package.json:/code/package.json
       - ./backend/package-lock.json:/code/package-lock.json
       - back-notused:/opt/app/node_modules
@@ -41,13 +42,16 @@ services:
       - MYSQL_ROOT_PASSWORD_FILE=$DB_PASSWORD
   frontend:
     build:
+      args:
+      - PORT=3000
       context: frontend
       target: development
     ports:
       - 3000:3000
     volumes:
-      - ./frontend/src:/code/src
-      - /code/node_modules
+      - ./frontend/node_modules:/usr/frontend/node_modules
+      - ./frontend/vite.config.js:/usr/frontend/vite.config.js
+      - ./frontend/src:/code/frontend/src
     networks:
       - public
     depends_on:
