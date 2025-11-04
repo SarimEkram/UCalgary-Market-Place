@@ -22,7 +22,7 @@ services:
       - ./backend/src:/code/src:ro
       - ./backend/package.json:/code/package.json
       - ./backend/package-lock.json:/code/package-lock.json
-      - back-notused:/opt/app/node_modules
+      - ./backend/node_modules:/code/node_modules
     networks:
       - public
       - private
@@ -30,16 +30,16 @@ services:
       - db
   db:
     image: mysql:8.0.27
+    container_name: db 
     command: '--default-authentication-plugin=mysql_native_password'
     restart: always
     volumes:
       - db-data:/var/lib/mysql
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/one.sql
     networks:
       - private
     env_file: ./.env
     environment:
-      - MYSQL_DATABASE=marketplace
       - MYSQL_ROOT_PASSWORD=$DB_PASSWORD
   frontend:
     build:
@@ -61,5 +61,4 @@ networks:
   public:
   private:
 volumes:
-  back-notused:
-  db-data:
+   db-data:
