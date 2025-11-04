@@ -4,15 +4,16 @@
 FROM node:24 AS development
 
 ENV CI=true
-ENV PORT=3000
+ARG PORT=3000
+ENV PORT=$PORT
 
 WORKDIR /code
 COPY package.json /code/package.json
 COPY package-lock.json /code/package-lock.json
 RUN npm ci
 COPY . /code
-
-CMD [ "npm", "start" ]
+EXPOSE $PORT
+CMD [ "npm", "run", "start" ]
 
 
 # stage : build the app for production  
@@ -34,7 +35,7 @@ usermod -aG docker vscode
 EOF
 # install Docker tools (cli, buildx, compose)
 COPY --from=gloursdocker/docker / /
-CMD [ "npm", "start" ]
+CMD [ "npm", "run", "start" ]
 
 
 # stage : reverse proxy, to route requests access to the publib (aka non-local host access)
