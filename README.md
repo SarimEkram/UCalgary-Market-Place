@@ -5,8 +5,8 @@
 - Docker 
 
 ## Instructions 
-1. Frome the command line, move into the folder you would like the git repository to reside in
-2. Clone the git respositiory.
+1. From the command line, move into the folder you would like the git repository to reside in.
+2. Clone the git repository.
 ```bash
 git clone git@csgit.ucalgary.ca:enioluwafe.balogun/seng513-202401-group-15.git
 ```
@@ -22,7 +22,7 @@ npm install
 npm install
 ```
 8. Move back into the root folder (seng513-202401-group-15)
-9. Run the following command. The -d option prevents you from being bombarded with logs: 
+9. Run the following command. Note that the -d option prevents you from being bombarded with logs when creating the containers:
 ```bash
 sudo docker compose up -d
 ```
@@ -40,8 +40,6 @@ curl localhost:8080
 sudo docker exec -it db mysql -u root -p
 ```
 
-## Password Strategy 
-We only have one password we need to worry about: the mysql root password. We place our msql password in a .env file, and use the docker compose env_file, and environment keys to share that password with the mysql container. This allows all team members to create their own custom password by editing the file. Finally, to prevent leaked passwords .env is included in the ".gitignore" file. 
 
 
 
