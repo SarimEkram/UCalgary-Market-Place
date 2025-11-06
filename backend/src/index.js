@@ -23,7 +23,7 @@ app.get("/", function(req, res, next) {
       return res.status(500).json({ error: "Error feing data from database",   msg: err});
     }
     // Return the results as JSON in the response
-    res.json({ message: `Hello from MyWORLD`, cats: results });
+    res.json({ message: `Hello from the backend and the database!`, cats: results });
   });
   // res.json({message: "hello world"})
    
