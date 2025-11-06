@@ -5,7 +5,7 @@ import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
-  const [content, setContent] = useState("message")
+  const [content, setContent] = useState({message: ""})
 
   const handleClick = async () => {
    
@@ -43,7 +43,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
        <p>
-        {content.cat}
+        {content.message}
       </p>
     </>
   )
