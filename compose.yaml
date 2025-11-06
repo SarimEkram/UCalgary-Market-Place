@@ -13,7 +13,7 @@ services:
       - DB_HOST=db
       - DB_USER=root
       - DB_PASSWORD=$DB_PASSWORD
-      - NODE_ENV=development
+      - NODE_ENV=development 
     ports:
       - 8080:8080
       - 9229:9229
@@ -23,24 +23,29 @@ services:
       - ./backend/package.json:/code/package.json
       - ./backend/package-lock.json:/code/package-lock.json
       - ./backend/node_modules:/code/node_modules
-    networks:
-      - public
-      - private
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+       
   db:
     image: mysql:8.0.27
     container_name: db 
     command: '--default-authentication-plugin=mysql_native_password'
-    restart: always
     volumes:
       - db-data:/var/lib/mysql
-      - ./db/init.sql:/docker-entrypoint-initdb.d/one.sql
-    networks:
-      - private
+      - ./db:/docker-entrypoint-initdb.d
     env_file: ./.env
     environment:
       - MYSQL_ROOT_PASSWORD=$DB_PASSWORD
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", -p$$MYSQL_ROOT_PASSWORD, "--silent" ]
+      interval: 5s
+      timeout: 3s
+      retries: 2
+      start_period: 0s
+    
   frontend:
     build:
       args:
@@ -53,12 +58,7 @@ services:
       - ./frontend/node_modules:/code/node_modules
       - ./frontend/vite.config.js:/code/vite.config.js
       - ./frontend/src:/code/src
-    networks:
-      - public
     depends_on:
       - backend
-networks:
-  public:
-  private:
 volumes:
    db-data:

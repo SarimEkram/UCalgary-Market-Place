@@ -15,9 +15,6 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
-
-
-
 app.get("/", function(req, res, next) {
   //Random table to make sure that db connection is working 
   db.query('SELECT * FROM cats;', function (err, results) {
