@@ -24,9 +24,20 @@ npm install
 8. Move back into the root folder (seng513-202401-group-15)
 9. Run the following command. Note that the -d option prevents you from being bombarded with logs when creating the containers:
 ```bash
-sudo docker compose up -d
+docker compose up -d
 ```
-10. Navigate to the following link in your browser to access the frontend: 
+
+10.  Once the containers are set up you should see something like this in the terminal. It will take around 30s for the Database to set up so please wait until you see this screen. 
+```bash
+$ docker compose up -d
+[+] Running 4/4
+ ✔ Network seng513-202401-group-15_default       Created                   0.2s 
+ ✔ Container db                                  Healthy                  12.5s 
+ ✔ Container seng513-202401-group-15-backend-1   Started                  13.0s 
+ ✔ Container seng513-202401-group-15-frontend-1  Started                  13.8s
+```
+
+11. Navigate to the following link in your browser to access the frontend: 
 ```bash
 http://localhost:3000/
 ```
@@ -37,7 +48,7 @@ curl localhost:8080
      
    To access the database (mysql) from the command line you can run this command, it will prompt you to enter the password from your .env file: 
 ```bash
-sudo docker exec -it db mysql -u root -p
+ docker exec -it db mysql -u root -p
 ```
 
 
