@@ -11,10 +11,18 @@ export default function Navigation() {
   return (
     <BottomNavigation
       showLabels
+      id="nav-bar"
       value={value}
       onChange={(event, newValue) => {
         setValue(newValue);
       }}
+       sx={(theme) => ({
+        bgcolor: theme.palette.headerBackground,
+        borderTop: theme.palette.divider.width,
+        borderColor: theme.palette.divider.color,
+        padding: 2,
+
+      })}
     >
       <BottomNavigationAction label="Home" value="home" icon={<Home></Home>} />
       <BottomNavigationAction label="User" value="user" icon={<User></User>} />
@@ -31,3 +39,4 @@ export default function Navigation() {
     </BottomNavigation>
   );
 }
+
