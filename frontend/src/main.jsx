@@ -8,22 +8,23 @@ import "@fontsource/roboto/700.css";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Login from "./Login";
 
+const black = "#221F1F";
 const theme = createTheme({
   palette: {
     primary: {
       main: "#D22C22",
     },
     secondary: {
-      main: "#221F1F",
+      main: black,
     },
     headerBackground: "#FFFDFB",
     divider: {
       color: "#EBE7E4",
-      width: 2 
-    }
+      width: 2,
+    },
   },
   text: {
-    primary: "#221F1F",
+    primary: black,
     secondary: "#7D7B7B",
   },
   background: {
@@ -35,8 +36,7 @@ const theme = createTheme({
     MuiBottomNavigationAction: {
       styleOverrides: {
         root: {
-          color: "#221F1F", // Default color for inactive buttons 
-          
+          color: black, // Default color for inactive buttons
         },
       },
     },
@@ -46,9 +46,38 @@ const theme = createTheme({
           height: "40px",
         },
       },
-    }
+    },
+    MuiFormLabel: {
+      styleOverrides: {
+        root: {
+          color: black,
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: black,
+          fontSize: "1.2rem",
+        },
+        asterisk: {
+          display: "none",
+        },
+      },
+    },
+    MuiInput: {
+      styleOverrides: {
+        root: {
+          color: black,
+          "&::before": {
+            borderColor: "#757575",
+            borderWidth: 2,
+          },
+        },
+      },
+    },
+    
   },
-  
 });
 
 createRoot(document.getElementById("root")).render(
