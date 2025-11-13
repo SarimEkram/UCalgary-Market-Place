@@ -17,7 +17,7 @@ const db = mysql.createConnection({
 
 app.get("/", function(req, res, next) {
   //Random table to make sure that db connection is working 
-  db.query('SELECT * FROM cats;', function (err, results) {
+  db.query('SELECT * FROM users;', function (err, results) {
     if (err) {
       console.error("Error executing query:", err);
       return res.status(500).json({ error: "Error feing data from database",   msg: err});
