@@ -5,6 +5,7 @@ export default function CustomButton({
   style,
   onClick,
   children,
+  ...props
 }) {
   const buttonColor = color == "red" ? "primary" : "secondary";
   return (
@@ -12,6 +13,7 @@ export default function CustomButton({
       variant="contained"
       onClick={onClick}
       sx={[style, { bgColor: buttonColor }, buttonStyle]}
+      {...props}
     >
       {children}
     </Button>
