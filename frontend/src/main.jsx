@@ -17,6 +17,10 @@ const theme = createTheme({
       main: "#221F1F",
     },
     headerBackground: "#FFFDFB",
+    divider: {
+      color: "#EBE7E4",
+      width: 2 
+    }
   },
   text: {
     primary: "#221F1F",
