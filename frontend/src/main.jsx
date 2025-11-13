@@ -36,9 +36,17 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           color: "#221F1F", // Default color for inactive buttons 
+          
         },
       },
     },
+    MuiBottomNavigation: {
+      styleOverrides: {
+        root: {
+          height: "40px",
+        },
+      },
+    }
   },
   
 });
