@@ -3,6 +3,9 @@ DROP DATABASE IF EXISTS marketplace;
 CREATE DATABASE marketplace;
 USE marketplace;
 
+-- turn on event scheduler
+SET GLOBAL event_scheduler = ON;
+
 /** TABLES **/
 -- USERS
 CREATE TABLE users (
@@ -120,6 +123,24 @@ CREATE TABLE images (
     FOREIGN KEY (post_id) REFERENCES posts(post_id)
 );
 
+
+-- CREATE AN EVENT HANDLER which deletes expired verifcication codes every 4 minutes 
+CREATE EVENT IF NOT EXISTS expire_codes_event
+ON SCHEDULE EVERY 4 MINUTE 
+DO
+  DELETE FROM verification_codes
+  WHERE expiration_date < CURTIME();
+  
+-- VERIFICATION CODES
+CREATE TABLE IF NOT EXISTS verification_codes (
+    randomCode VARCHAR(8) PRIMARY KEY,
+    expiration_date TIME
+);
+
+-- Add index to make checking the expiration_date faster
+ALTER TABLE verification_codes 
+ADD INDEX (expiration_date);
+
 /** SEED DATA **/
 
 -- USERS
@@ -199,3 +220,9 @@ INSERT INTO admin_actions (action_id, admin_id, action, action_timestamp) VALUES
 INSERT INTO banned_users (action_id, user_email) VALUES
 (601, 'kai.lee@ucalgary.ca');
 
+--  VERIFICATION CODES ( insert some sample data, which will expire in 5 minutes ) 
+INSERT INTO verification_codes (randomCode, expiration_date) VALUES
+(  UPPER(LEFT( UUID(), 8)), DATE_ADD(CURTIME(), INTERVAL 5 MINUTE) ); 
+
+INSERT INTO verification_codes (randomCode, expiration_date) VALUES
+( UPPER(LEFT( UUID(), 8)) , DATE_ADD(CURTIME(), INTERVAL 5 MINUTE) ); 
