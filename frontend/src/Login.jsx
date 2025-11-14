@@ -1,57 +1,100 @@
-import { Box, Container, Link, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  FormHelperText,
+  Link,
+  Stack,
+  Typography,
+} from "@mui/material";
 import ProfileIcon from "./assets/ProfileIconSVG";
 import CustomButton from "./components/CustomButton";
 import Header from "./components/Header";
 import InputField from "./components/InputField";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 export default function Login() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const [loginFailed, setLoginFailed] = useState(false);
+  const onSubmit = (data) => {
+    console.log("form data", data);
+    setLoginFailed(true);
+  };
+
   return (
-    <Stack
-      id="login"
-      direction="column"
-      sx={(theme) => {
-        ({
-          bgcolor: "background.paper",
-          ...styles.page,
-        });
-      }}
-    >
+    <Stack id="login" direction="column" spacing={2} sx={styles.page}>
       <Header></Header>
-      <Container spacing={2} maxWidth={"sm"} sx={styles.main}>
-        <Stack direction="column" component={"form"}>
-          <Box sx={styles.icon}>
-            <ProfileIcon></ProfileIcon>
-          </Box>
-          <InputField
-            placeholder={"joe.doe@ucalgary.ca"}
-            label={"Email"}
-            helpText={"Please enter a valid Ucalgary email address."}
-          ></InputField>
-          <InputField
-            placeholder={"Password"}
-            label={"Password"}
-            helpText={"Please enter a password."}
-            inputProps={{ type: "password" }}
-          ></InputField>
-          <CustomButton type="submit">Submit</CustomButton>
-        </Stack>
+      <Container maxWidth={"sm"} sx={styles.main}>
+        <Box sx={styles.icon}>
+          <ProfileIcon></ProfileIcon>
+        </Box>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <Stack direction="column" component={"div"} spacing={4}>
+            <InputField
+              placeholder={"joe.doe@ucalgary.ca"}
+              label={"Email"}
+              errorMsg={errors["email"] ? errors["email"].message : null}
+              {...register("email", {
+                required: "Email is required.",
+                maxLength: {
+                  value: 255,
+                  message: "Maximum length of 255 characters.",
+                },
+                pattern: {
+                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  message: "Please enter a valid email. Ex: xxx@gmail.com",
+                },
+              })}
+            ></InputField>
+            <InputField
+              placeholder={"Password"}
+              label={"Password"}
+              inputProps={{ type: "password" }}
+              errorMsg={errors["password"] ? errors["password"].message : null}
+              {...register("password", {
+                required: "Password is required.",
+                minLength: {
+                  value: 8,
+                  message: "Miniumum length of 8 characters.",
+                },
+                maxLength: {
+                  value: 20,
+                  message: "Miniumum length of 20 characters.",
+                },
+              })}
+            ></InputField>
+            <CustomButton type="submit">Login</CustomButton>
+          </Stack>
+        </form>
         <Stack spacing={2} sx={styles.bottomContent}>
+          <FormHelperText
+  
+            error={true}
+            sx={[{ textAlign: "center", fontSize:  "1rem" }, {visibility : loginFailed ?  "visible" : "hidden"}]}
+          >
+              Email or password was invalid.<br></br>Please try again.
+          </FormHelperText>
           <Stack direction="row" spacing={2} sx={styles.stackRow}>
-          <Typography>New User ? </Typography>
-          <Link color="primary">
-            <Typography>Sign Up</Typography>
-          </Link>
-        </Stack>
-        <Stack direction="row" sx={styles.stackRow}>
-          {/*TODO: Make links clickablle, handle redirection */}
-          {/* TODO: Create Forgot password, and Sign Up page */}
-          {/* TODO: Error handling/validation for forms using patterns fro online.  */}
-          {/* TODO: Stub Submitting content to the backend */}
-          {/* TODO: Popup email CODE */}
-          <Link color="textSecondary">
-          <Typography>Forgot Password</Typography>
-          </Link>
-        </Stack>
+            <Typography>New User ? </Typography>
+            <Link color="primary">
+              <Typography>Sign Up</Typography>
+            </Link>
+          </Stack>
+          <Stack direction="row" sx={styles.stackRow}>
+            {/*TODO: Make links clickablle, handle redirection */}
+            {/* TODO: Create Forgot password, and Sign Up page */}
+            {/* TODO: Error handling/validation for forms using patterns fro online.  */}
+            {/* TODO: Stub Submitting content to the backend */}
+            {/* TODO: Popup email CODE */}
+            <Link color="textSecondary">
+              <Typography>Forgot Password</Typography>
+            </Link>
+          </Stack>
         </Stack>
       </Container>
     </Stack>
@@ -64,8 +107,10 @@ const styles = {
     paddingBottom: 5,
   },
   page: {
+    bgcolor: "background.paper",
     minHeight: "100vh",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
+    alignItems: "center"
   },
   main: {
     display: "flex",
@@ -75,12 +120,14 @@ const styles = {
     padding: 10,
   },
 
+  bottomContent: {
+    paddingTop: 2, 
+  },
+
   stackRow: {
     justifyContent: "center",
     alignItems: "center",
   },
 
-  bottomContent:{
-    paddingTop: 12, 
-  }
+ 
 };
