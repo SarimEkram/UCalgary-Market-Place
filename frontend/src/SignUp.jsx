@@ -30,6 +30,7 @@ export default function SignUp() {
 
   const PassHelpText = () => {
     return (
+     
       <Stack
         component={"ul"}
         sx={{
@@ -39,14 +40,15 @@ export default function SignUp() {
       >
         <Box component={"li"}>8-20 characters</Box>
         <Box component={"li"}>Has at least 1 number</Box>
-        <Box component={"li"}>Has at least 1 special character</Box>
+        <Box component={"li"}>Has at least 1 special character (!@#$%^&*(),.?:{}|<></>)</Box>
       </Stack>
+     
     );
   };
 
   const validatePasswords = () => {
-    passwords = getValues(["newPassword", "password"]);
-    ans = passwords[0] == passwords[1] ? true : "Passwords do not match.";
+    const passwords = getValues(["newPassword", "password"]);
+    const ans = passwords[0] == passwords[1] ? true : "Passwords do not match.";
     return ans;
   };
 
@@ -92,9 +94,9 @@ export default function SignUp() {
                   message: "Maxiumum length of 20 characters.",
                 },
                 pattern: {
-                  value: /^(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).*$/,
+                  value: /^(?=.*\d)(?=.*[!@#$%^&*(),.?:{}|<>]).*$/,
                   message:
-                    "Must have at least one number and one special character.",
+                    "Must have at least one number and one special character (!@#$%^&*(),.?:{}|<></>).",
                 },
               })}
             ></InputField>
