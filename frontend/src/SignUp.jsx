@@ -13,7 +13,7 @@ import InputField from "./components/InputField";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 
-export default function Login() {
+export default function SignUp() {
   const {
     register,
     handleSubmit,
