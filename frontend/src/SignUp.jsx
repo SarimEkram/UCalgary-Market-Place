@@ -21,10 +21,11 @@ export default function Login() {
     formState: { errors },
   } = useForm();
 
-  const [signUpFailed, setLoginFailed] = useState(false);
+  const [signUpFailed, setSignUpFailed] = useState(false);
   const onSubmit = (data) => {
+    delete data["newPassword"]; 
     console.log("form data", data);
-    setLoginFailed(true);
+    setSignUpFailed(true);
   };
 
   const PassHelpText = () => {
@@ -88,7 +89,7 @@ export default function Login() {
                 },
                 maxLength: {
                   value: 20,
-                  message: "Miniumum length of 20 characters.",
+                  message: "Maxiumum length of 20 characters.",
                 },
                 pattern: {
                   value: /^(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).*$/,
