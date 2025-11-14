@@ -17,6 +17,7 @@ export default function InputField({
     >
       {helpText && (
         <FormHelperText
+        component={"div"}
           sx={(theme) => {
             return { color: theme.palette.text.primary, paddingTop: 1};
           }}
