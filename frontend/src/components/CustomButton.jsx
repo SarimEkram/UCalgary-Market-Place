@@ -3,7 +3,6 @@ import { Button } from "@mui/material";
 export default function CustomButton({
   color = "red",
   style,
-  onClick,
   children,
   ...props
 }) {
@@ -23,12 +22,11 @@ export default function CustomButton({
 const buttonStyle = {
   boxShadow: "none",
   fontSize: "1rem",
-  paddingTop: 1,
-  paddingBottom: 1,
+  paddingTop: 0.5,
+  paddingBottom: 0.5
 };
 
 // Documentation
 // -----------------------
 // color: "red" or "black"
-// style: style object passed to sx
-// onCLick:  onClick function
+// style: to override styling
