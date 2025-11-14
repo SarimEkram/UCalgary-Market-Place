@@ -64,7 +64,7 @@ export default function Login() {
                 },
                 maxLength: {
                   value: 20,
-                  message: "Miniumum length of 20 characters.",
+                  message: "Maxiumum length of 20 characters.",
                 },
               })}
             ></InputField>
@@ -87,8 +87,7 @@ export default function Login() {
           </Stack>
           <Stack direction="row" sx={styles.stackRow}>
             {/*TODO: Make links clickablle, handle redirection */}
-            {/* TODO: Create Forgot password, and Sign Up page */}
-            {/* TODO: Error handling/validation for forms using patterns fro online.  */}
+            {/* TODO: Create Forgot password */}
             {/* TODO: Stub Submitting content to the backend */}
             {/* TODO: Popup email CODE */}
             <Link color="textSecondary">
