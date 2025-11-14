@@ -5,32 +5,38 @@ export default function InputField({
   label,
   placeholder,
   helpText,
-  inputProps
+  errorMsg,
+  ...inputProps
 }) {
   return (
     <FormControl
-      required={true}
       variant="standard"
       fullWidth
       autoComplete={autoComplete}
+      error={errorMsg ? true : false}
     >
-      <InputLabel
-        shrink
-        htmlFor={label + "-input"}
-      >
+      {helpText && (
+        <FormHelperText
+          sx={(theme) => {
+            return { color: theme.palette.text.primary, paddingTop: 1};
+          }}
+          id={label + "-helper-text"}
+        >
+          {helpText}
+        </FormHelperText>
+      )}
+      <InputLabel shrink htmlFor={label + "-input"}>
         {label}
       </InputLabel>
-      <Input {...inputProps} placeholder={placeholder} id={label + "-input"} aria-describedby={label + "-helper-text"} />
-      <FormHelperText
-        disabled
-        sx={{
-          "&.Mui-disabled": { visibility: "hidden" },
-          "&.Mui-error": { visibility: "initial" },
-        }}
-        id={label + "-helper-text"}
-      >
-        *Required field. {helpText}
-      </FormHelperText>
+      <Input
+        {...inputProps}
+        type="text"
+        placeholder={placeholder}
+        id={label + "-input"}
+      />
+      {errorMsg && (
+        <FormHelperText id={label + "-error-text"}>{errorMsg}</FormHelperText>
+      )}
     </FormControl>
   );
 }
