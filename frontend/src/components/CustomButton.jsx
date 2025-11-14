@@ -10,7 +10,6 @@ export default function CustomButton({
   return (
     <Button
       variant="contained"
-      onClick={onClick}
       sx={[style, { bgColor: buttonColor }, buttonStyle]}
       {...props}
     >
