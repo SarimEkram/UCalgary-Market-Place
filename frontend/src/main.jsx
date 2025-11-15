@@ -81,11 +81,12 @@ const theme = createTheme({
   },
 });
 
+
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
-      {/* <ResetPassword  handleClose={()=>{}}open={true}></ResetPassword> */}
-      <Login></Login>
+      <SignUp></SignUp>
     </ThemeProvider>
   </StrictMode>
 );
