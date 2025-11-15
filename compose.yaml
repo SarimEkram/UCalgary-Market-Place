@@ -22,7 +22,6 @@ services:
       - ./backend/src:/code/src:ro
       - ./backend/package.json:/code/package.json
       - ./backend/package-lock.json:/code/package-lock.json
-      - ./backend/node_modules:/code/node_modules
     depends_on:
       db:
         condition: service_healthy
