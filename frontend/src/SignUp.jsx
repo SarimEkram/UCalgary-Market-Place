@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import VerifyNewUser from "./components/VerifyNewUser";
 
+// 2 Backend Task(s) (Ctrl+F "BTASK")
 export default function SignUp() {
   const {
     register,
@@ -26,14 +27,50 @@ export default function SignUp() {
 
   const onSubmit = (data) => {
     delete data["newPassword"];
+
     if (verified) {
-      //faking a rejected request 
-      console.log("send create user request  to the backend...");
-      const  rejectedRequest = true; 
-      if (rejectedRequest){
+      console.log("send create user request to the backend...", data);
+
+      /**
+     * 
+      BTASK
+      ------- 
+      Creating a new user account using `data` object. 
+      Update the boolean variable "createAccountFailed" based on the status.
+      
+      Example data
+      ------------
+      {
+      "email": "enibalo2@gmail.com",
+      "password": "butter123#",
+      "firstName": "eni",
+      "lastName": "balogun"
+      }
+
+     */
+      const createAccountFailed = false;
+      if (createAccountFailed) {
         setSignUpFailed(true);
       }
     } else {
+      /***
+       * BTASK
+       * -------
+       * Send a verification code to an email address using `sendEmailData`.
+       *
+       * Example data
+       * ------
+       * 
+        {
+        "email": "enibalo2@gmail.com"
+        }
+
+       */
+      const sendEmailData = { email: data["email"] };
+      console.log(
+        "sending a: pls send verification email to a user, request to the backend...",
+        sendEmailData
+      );
       setOpen(true);
     }
   };
