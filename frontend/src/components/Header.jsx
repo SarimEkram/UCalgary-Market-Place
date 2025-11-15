@@ -8,7 +8,6 @@ export default function Header() {
       direction="row"
       spacing={2}
       sx={(theme) => {
-        console.log(theme);
         return {
           borderBottom: theme.palette.dividerWidth,
           borderColor: theme.palette.divider,
