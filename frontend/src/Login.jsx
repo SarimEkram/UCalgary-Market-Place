@@ -12,6 +12,7 @@ import ProfileIcon from "./assets/ProfileIconSVG";
 import CustomButton from "./components/CustomButton";
 import Header from "./components/Header";
 import InputField from "./components/InputField";
+import ResetPassword from "./components/ResetPassword";
 
 export default function Login() {
   const {
@@ -23,8 +24,14 @@ export default function Login() {
   const [loginFailed, setLoginFailed] = useState(false);
   const onSubmit = (data) => {
     console.log("form data", data);
+    // fake an unsuccseful response from backend 
     setLoginFailed(true);
   };
+
+   const [open, setOpen] = useState(false);
+    const handleClose = () => {
+      setOpen(false);
+    };
 
   return (
     <Stack id="login" direction="column" spacing={2} sx={styles.page}>
@@ -89,13 +96,13 @@ export default function Login() {
           </Stack>
           <Stack direction="row" sx={styles.stackRow}>
             {/*TODO: Make links clickablle, handle redirection */}
-            {/* TODO: Create Forgot password, and Email code popup */}
-            {/* TODO: Stub Submitting content to the backend */}
-            <Link color="textSecondary">
+            <Link color="textSecondary" sx={{ cursor: "pointer"}} onClick={()=>{setOpen(true)}}>
               <Typography>Forgot Password</Typography>
             </Link>
           </Stack>
         </Stack>
+        <ResetPassword open={open} handleClose={handleClose}>
+        </ResetPassword>
       </Container>
     </Stack>
   );
