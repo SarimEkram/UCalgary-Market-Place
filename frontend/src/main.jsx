@@ -86,7 +86,7 @@ const theme = createTheme({
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
-      <SignUp></SignUp>
+      <ResetPassword open={true}></ResetPassword>
     </ThemeProvider>
   </StrictMode>
 );

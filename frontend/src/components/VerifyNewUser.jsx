@@ -14,7 +14,7 @@ import InputField from "./InputField";
 // 1 Backend Task (Ctrl+F "BTASK")
 export default function VerifyNewUser({ open, handleClose, setVerified }) {
   return (
-    <Dialog onClose={handleClose} open={open}>
+    <Dialog onClose={handleClose} open={open} sx={{"& .MuiDialog-paper" :{overflowX: "hidden"}, "& .MuiDialog-root" :{overflowX: "hidden"}}}>
       <Box sx={{ padding: 3, paddingBottom: 6 }}>
           <FirstPage setVerified={setVerified} handleClose={handleClose}></FirstPage>
       </Box>
@@ -59,7 +59,7 @@ const FirstPage = ({  handleClose, setVerified }) => {
 
   return (
     <>
-      <DialogTitle sx={{ padding: 0 }}>
+      <DialogTitle sx={{ padding: 0, width: "520px", minWidth: "fit-content"}}>
         Please enter the 8-digit code that was sent to your email.
       </DialogTitle>
       <Divider

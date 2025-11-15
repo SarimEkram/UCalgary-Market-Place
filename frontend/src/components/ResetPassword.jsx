@@ -19,8 +19,8 @@ export default function ResetPassword({ open, handleClose }) {
   const [email, setEmail] = useState("")
 
   return (
-    <Dialog onClose={handleClose} open={open}>
-      <Box sx={{ padding: 3, paddingBottom: 6 }}>
+    <Dialog onClose={handleClose} open={open} sx={{"& .MuiDialog-paper" :{overflowX: "hidden"}, "& .MuiDialog-root" :{overflowX: "hidden"}}}>
+      <Box sx={{ padding: 3, paddingBottom: 6,}}>
         {page == 1 && (
           <FirstPage setPage={setPage} handleClose={handleClose} setEmail={setEmail}></FirstPage>
         )}
@@ -74,7 +74,7 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
 
   return (
     <>
-      <DialogTitle sx={{ padding: 0 }}>
+      <DialogTitle sx={{ padding: 0, width: "520px", minWidth: "fit-content"}}>
         Please enter your email.
       </DialogTitle>
       <Divider
@@ -153,7 +153,7 @@ const SecondPage = ({ setPage, handleClose }) => {
 
   return (
     <>
-      <DialogTitle sx={{ padding: 0 }}>
+      <DialogTitle sx={{ padding: 0, width: "520px", minWidth: "fit-content"}}>
         Please enter the 8-digit code that was sent to your email.
       </DialogTitle>
       <Divider
@@ -280,7 +280,7 @@ const ThirdPage = ({ setPage, handleClose, email }) => {
 
   return (
     <>
-      <DialogTitle sx={{ padding: 0 }}>
+       <DialogTitle sx={{ padding: 0, width: "520px", minWidth: "fit-content"}}>
         Change your password.
       </DialogTitle>
       <Divider
@@ -362,7 +362,7 @@ const FourthPage = ({ handleClose }) => {
           <CheckMark></CheckMark>
         </Stack>
         <DialogTitle
-          sx={(theme) => ({ padding: 0, color: theme.palette.success.main })}
+          sx={(theme) => ({ padding: 0, color: theme.palette.success.main, width: "520px", minWidth: "fit-content" })}
         >
           Password change was succesful.
         </DialogTitle>
