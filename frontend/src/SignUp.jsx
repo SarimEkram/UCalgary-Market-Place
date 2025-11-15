@@ -12,6 +12,7 @@ import Header from "./components/Header";
 import InputField from "./components/InputField";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import VerifyNewUser from "./components/VerifyNewUser";
 
 export default function SignUp() {
   const {
@@ -22,15 +23,23 @@ export default function SignUp() {
   } = useForm();
 
   const [signUpFailed, setSignUpFailed] = useState(false);
+
   const onSubmit = (data) => {
-    delete data["newPassword"]; 
-    console.log("form data", data);
-    setSignUpFailed(true);
+    delete data["newPassword"];
+    if (verified) {
+      //faking a rejected request 
+      console.log("send create user request  to the backend...");
+      const  rejectedRequest = true; 
+      if (rejectedRequest){
+        setSignUpFailed(true);
+      }
+    } else {
+      setOpen(true);
+    }
   };
 
   const PassHelpText = () => {
     return (
-     
       <Stack
         component={"ul"}
         sx={{
@@ -40,9 +49,10 @@ export default function SignUp() {
       >
         <Box component={"li"}>8-20 characters</Box>
         <Box component={"li"}>Has at least 1 number</Box>
-        <Box component={"li"}>Has at least 1 special character (!@#$%^&*(),.?:{}|<></>)</Box>
+        <Box component={"li"}>
+          Has at least 1 special character (!@#$%^&*(),.?:{}|<></>)
+        </Box>
       </Stack>
-     
     );
   };
 
@@ -51,6 +61,13 @@ export default function SignUp() {
     const ans = passwords[0] == passwords[1] ? true : "Passwords do not match.";
     return ans;
   };
+
+  const [open, setOpen] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const [verified, setVerified] = useState(false);
 
   return (
     <Stack id="login" direction="column" spacing={2} sx={styles.page}>
@@ -131,9 +148,7 @@ export default function SignUp() {
               placeholder={"Doe"}
               label={"Last Name"}
               inputProps={{ type: "text" }}
-              errorMsg={
-                errors["lastName"] ? errors["lastName"].message : null
-              }
+              errorMsg={errors["lastName"] ? errors["lastName"].message : null}
               {...register("lastName", {
                 required: "Last name is required.",
                 pattern: {
@@ -162,6 +177,11 @@ export default function SignUp() {
             </Link>
           </Stack>
         </Stack>
+        <VerifyNewUser
+          open={open}
+          handleClose={handleClose}
+          setVerified={setVerified}
+        ></VerifyNewUser>
       </Container>
     </Stack>
   );
