@@ -4,14 +4,14 @@ import {
   FormHelperText,
   Link,
   Stack,
-  Typography,
+  Typography
 } from "@mui/material";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import ProfileIcon from "./assets/ProfileIconSVG";
 import CustomButton from "./components/CustomButton";
 import Header from "./components/Header";
 import InputField from "./components/InputField";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
 
 export default function Login() {
   const {
@@ -73,11 +73,13 @@ export default function Login() {
         </form>
         <Stack spacing={2} sx={styles.bottomContent}>
           <FormHelperText
-  
             error={true}
-            sx={[{ textAlign: "center", fontSize:  "1rem" }, {visibility : loginFailed ?  "visible" : "hidden"}]}
+            sx={[
+              { textAlign: "center", fontSize: "1rem" },
+              { visibility: loginFailed ? "visible" : "hidden" },
+            ]}
           >
-              Email or password was invalid.<br></br>Please try again.
+            Email or password was invalid.<br></br>Please try again.
           </FormHelperText>
           <Stack direction="row" spacing={2} sx={styles.stackRow}>
             <Typography>New User ? </Typography>
@@ -87,9 +89,8 @@ export default function Login() {
           </Stack>
           <Stack direction="row" sx={styles.stackRow}>
             {/*TODO: Make links clickablle, handle redirection */}
-            {/* TODO: Create Forgot password */}
+            {/* TODO: Create Forgot password, and Email code popup */}
             {/* TODO: Stub Submitting content to the backend */}
-            {/* TODO: Popup email CODE */}
             <Link color="textSecondary">
               <Typography>Forgot Password</Typography>
             </Link>
@@ -100,6 +101,7 @@ export default function Login() {
   );
 }
 
+
 const styles = {
   icon: {
     alignSelf: "center",
@@ -109,7 +111,7 @@ const styles = {
     bgcolor: "background.paper",
     minHeight: "100vh",
     justifyContent: "flex-start",
-    alignItems: "center"
+    alignItems: "center",
   },
   main: {
     display: "flex",
@@ -120,13 +122,11 @@ const styles = {
   },
 
   bottomContent: {
-    paddingTop: 2, 
+    paddingTop: 2,
   },
 
   stackRow: {
     justifyContent: "center",
     alignItems: "center",
   },
-
- 
 };
