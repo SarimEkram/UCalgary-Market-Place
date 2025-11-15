@@ -14,6 +14,7 @@ import Header from "./components/Header";
 import InputField from "./components/InputField";
 import ResetPassword from "./components/ResetPassword";
 
+// 1 Backend Tasks (Ctrl+F "BTASK")
 export default function Login() {
   const {
     register,
@@ -23,9 +24,30 @@ export default function Login() {
 
   const [loginFailed, setLoginFailed] = useState(false);
   const onSubmit = (data) => {
-    console.log("form data", data);
-    // fake an unsuccseful response from backend 
-    setLoginFailed(true);
+    console.log("send a login request to the server... using this data:", data);
+    /**
+     * 
+     BTASK
+     ------
+     Validating a login attempt.
+     Setting the variable `success` based on the results.   
+
+     Example Data
+     --------
+     {
+    "email": "enibalo2@gmail.com",
+    "password": "butter123#"
+    
+    }
+     */
+
+
+    const success = true; 
+    if (success){
+       //navigate to home page
+    } else{
+      setLoginFailed(true);
+    }
   };
 
    const [open, setOpen] = useState(false);

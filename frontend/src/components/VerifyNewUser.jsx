@@ -11,8 +11,8 @@ import { useForm } from "react-hook-form";
 import CustomButton from "./CustomButton";
 import InputField from "./InputField";
 
+// 1 Backend Task (Ctrl+F "BTASK")
 export default function VerifyNewUser({ open, handleClose, setVerified }) {
-  console.log("dupe for messaging the backend to send an email....");
   return (
     <Dialog onClose={handleClose} open={open}>
       <Box sx={{ padding: 3, paddingBottom: 6 }}>
@@ -33,9 +33,23 @@ const FirstPage = ({  handleClose, setVerified }) => {
 
   const onSubmit = (data) => {
     console.log("dupe for checking verification code using this data: ", data);
+
+     /**
+     * 
+      BTASK
+      -------
+      Checking if a verification code is valid. 
+      Setting the variabble `isValid` based on the results. 
+       Example data
+      ------------
+      {
+      "code": "12345678"
+      }
+     */
+    
     // fake a succesful rsponse from the backend
-    const validated = true;
-    if (validated == false) {
+    const isValid = true;
+    if (isValid == false) {
       setFailed(true);
     } else {
       setVerified(true);
