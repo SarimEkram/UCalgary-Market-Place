@@ -13,29 +13,111 @@ import CustomButton from "./CustomButton";
 import InputField from "./InputField";
 import CheckMark from "../assets/CheckMarkSVG";
 
+// 3 Backend Tasks (Ctrl+F "BTASK")
 export default function ResetPassword({ open, handleClose }) {
-  console.log("dupe for messaging the backend to send an email....");
-
   const [page, setPage] = useState(1);
+  const [email, setEmail] = useState("")
 
   return (
     <Dialog onClose={handleClose} open={open}>
       <Box sx={{ padding: 3, paddingBottom: 6 }}>
         {page == 1 && (
-          <FirstPage setPage={setPage} handleClose={handleClose}></FirstPage>
+          <FirstPage setPage={setPage} handleClose={handleClose} setEmail={setEmail}></FirstPage>
         )}
         {page == 2 && (
           <SecondPage handleClose={handleClose} setPage={setPage}></SecondPage>
         )}
         {page == 3 && (
-          <ThirdPage handleClose={handleClose} setPage={setPage}></ThirdPage>
+          <ThirdPage handleClose={handleClose} setPage={setPage} email={email}></ThirdPage>
+        )}
+        {page == 4 && (
+          <FourthPage handleClose={handleClose} setPage={setPage}></FourthPage>
         )}
       </Box>
     </Dialog>
   );
 }
 
-const FirstPage = ({ setPage, handleClose }) => {
+const FirstPage = ({ setPage, handleClose, setEmail }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = (data) => {
+    console.log(
+      "mssging backend to send a verification code to a user email...",
+      data
+    );
+
+    setEmail(data["email"]);
+   
+    /***
+       * BTASK
+       * -------
+       * Send a verification code to an email address using `data`.
+       *
+       * Example data
+       * ------
+       * 
+       {
+    "email": "enibalo2@gmail.com"
+}
+
+       */
+    
+      setPage(2);
+  };
+
+
+
+  return (
+    <>
+      <DialogTitle sx={{ padding: 0 }}>
+        Please enter your email.
+      </DialogTitle>
+      <Divider
+        variant="fullWidth"
+        sx={(theme) => ({
+          boxSizing: "border-box",
+          borderBottom: theme.palette.dividerWidth,
+          borderColor: theme.palette.divider,
+          marginTop: 3,
+          marginBottom: 3,
+        })}
+      ></Divider>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Stack spacing={2}>
+             <InputField
+            placeholder={"joe.doe@ucalgary.ca"}
+            label={"Email"}
+            errorMsg={errors["email"] ? errors["email"].message : null}
+            {...register("email", {
+              required: "Email is required.",
+              maxLength: {
+                value: 255,
+                message: "Maximum length of 255 characters.",
+              },
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: "Please enter a valid email. Ex: xxx@gmail.com",
+              },
+            })}
+          ></InputField>
+          <Stack direction={"row"} sx={{ justifyContent: "space-between" }}>
+            <CustomButton color="black" onClick={handleClose}>
+              Exit
+            </CustomButton>
+            <CustomButton type="submit">Next</CustomButton>
+          </Stack>
+        </Stack>
+      </form>
+    </>
+  );
+};
+
+const SecondPage = ({ setPage, handleClose }) => {
   const {
     register,
     handleSubmit,
@@ -46,12 +128,26 @@ const FirstPage = ({ setPage, handleClose }) => {
 
   const onSubmit = (data) => {
     console.log("dupe for checking verification code using this data: ", data);
-    const validated = true;
+    /**
+     * 
+      BTASK
+      -------
+      Checking if a verification code is valid. 
+      Setting the  `isValid` variable based on the results. 
+      
+       Example data
+      ------------
+            {
+            "code": "12345678"
+        }
+     */
+    const isValid = true;
+
     //fake succesful response from backend
-    if (validated == false) {
+    if (isValid == false) {
       setFailed(true);
     } else {
-      setPage(2);
+      setPage(3);
     }
   };
 
@@ -115,7 +211,7 @@ const FirstPage = ({ setPage, handleClose }) => {
   );
 };
 
-const SecondPage = ({ setPage, handleClose }) => {
+const ThirdPage = ({ setPage, handleClose, email }) => {
   const {
     register,
     handleSubmit,
@@ -126,14 +222,35 @@ const SecondPage = ({ setPage, handleClose }) => {
   const [failed, setFailed] = useState(false);
 
   const onSubmit = (data) => {
-    console.log("mssging backend to change the password using this data...", data);
+
     delete data["newPassword"];
-    const success = true;
-    // fake succesfsul response frmo backend 
-    if (success == false) {
+    data["email"] = email;
+
+    console.log(
+      "mssging backend to change the password using this data...",
+      data
+    );
+    /**
+     * 
+     BTASK
+     ------
+     Changing a user's password. 
+     Set boolean variable `isSuccess` based on the results. 
+     Example Data
+     --------
+     {
+    "password": "password123#",
+    "email": "enibalo2@gmail.com"
+}
+     */
+
+
+    const isSuccess = true;
+    // fake succesfsul response frmo backend
+    if (isSuccess == false) {
       setFailed(true);
     } else {
-      setPage(3);
+      setPage(4);
     }
   };
 
@@ -164,7 +281,7 @@ const SecondPage = ({ setPage, handleClose }) => {
   return (
     <>
       <DialogTitle sx={{ padding: 0 }}>
-        Please enter the 8-digit code that was sent to your email.
+        Change your password.
       </DialogTitle>
       <Divider
         variant="fullWidth"
@@ -237,7 +354,7 @@ const SecondPage = ({ setPage, handleClose }) => {
   );
 };
 
-const ThirdPage = ({ handleClose }) => {
+const FourthPage = ({ handleClose }) => {
   return (
     <>
       <Stack spacing={2}>
