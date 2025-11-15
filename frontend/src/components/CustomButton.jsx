@@ -10,7 +10,8 @@ export default function CustomButton({
   return (
     <Button
       variant="contained"
-      sx={[style, { bgColor: buttonColor }, buttonStyle]}
+      color={buttonColor}
+      sx={[style, buttonStyle]}
       {...props}
     >
       {children}
@@ -22,7 +23,8 @@ const buttonStyle = {
   boxShadow: "none",
   fontSize: "1rem",
   paddingTop: 0.5,
-  paddingBottom: 0.5
+  paddingBottom: 0.5,
+  textTransform: "none",
 };
 
 // Documentation
