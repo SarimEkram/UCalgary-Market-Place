@@ -18,8 +18,8 @@ export default function Navigation() {
       }}
        sx={(theme) => ({
         bgcolor: theme.palette.headerBackground,
-        borderTop: theme.palette.divider.width,
-        borderColor: theme.palette.divider.color,
+        borderTop: theme.palette.dividerWidth,
+        borderColor: theme.palette.divider,
         padding: 2,
 
       })}

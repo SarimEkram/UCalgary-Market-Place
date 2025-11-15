@@ -7,11 +7,14 @@ export default function Header() {
       id="hello"
       direction="row"
       spacing={2}
-      sx={(theme) => ({
-        borderBottom: theme.palette.divider.width,
-        borderColor: theme.palette.divider.color,
-        ...styles.container
-      })}
+      sx={(theme) => {
+        console.log(theme);
+        return {
+          borderBottom: theme.palette.dividerWidth,
+          borderColor: theme.palette.divider,
+          ...styles.container,
+        };
+      }}
     >
       <Box
         component="img"
@@ -36,6 +39,5 @@ const styles = {
     paddingBottom: 2,
     paddingTop: 2,
     width: "100%",
-   
   },
 };

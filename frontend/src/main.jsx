@@ -6,6 +6,8 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import SignUp from "./SignUp";
+import ResetPassword from "./components/ResetPassword";
 import Login from "./Login";
 
 const black = "#221F1F";
@@ -18,14 +20,13 @@ const theme = createTheme({
       main: black,
     },
     headerBackground: "#FFFDFB",
-    divider: {
-      color: "#EBE7E4",
-      width: 2,
-    },
+    dividerWidth: 2,
+    divider: "#EBE7E4"
   },
   text: {
     primary: black,
     secondary: "#7D7B7B",
+   
   },
   background: {
     paper: "#FFFFFB",
@@ -83,7 +84,8 @@ const theme = createTheme({
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
-      <Login />
+      {/* <ResetPassword  handleClose={()=>{}}open={true}></ResetPassword> */}
+      <Login></Login>
     </ThemeProvider>
   </StrictMode>
 );
