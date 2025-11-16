@@ -116,9 +116,8 @@ const theme = createTheme({
       main: black,
     },
     headerBackground: "#FFFDFB",
-
-    // IMPORTANT: divider must be a simple color string, NOT an object
-    divider: "#EBE7E4",
+   dividerWidth: 2,
+   divider: "#EBE7E4",
   },
   text: {
     primary: black,
@@ -178,7 +177,7 @@ const theme = createTheme({
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
-      <Home />
+    <Market></Market>
     </ThemeProvider>
   </StrictMode>
 );
