@@ -20,8 +20,8 @@ export default function Home() {
         maxWidth="lg"
         sx={{
           flexGrow: 1,
-          py: { xs: 2, md: 4 },          // less vertical padding on mobile
-          px: { xs: 2, sm: 3, md: 6 },   // tighter padding on small screens
+          py: { xs: 2, md: 4 },          
+          px: { xs: 2, sm: 3, md: 6 },   
           display: "flex",
           flexDirection: "column",
           gap: { xs: 3, md: 4 },
@@ -33,7 +33,7 @@ export default function Home() {
             bgcolor: "background.paper",
             borderRadius: 3,
             boxShadow: "0px 8px 24px rgba(0,0,0,0.08)",
-            p: { xs: 2, sm: 3, md: 4 },    // smaller padding on mobile
+            p: { xs: 2, sm: 3, md: 4 },    
           }}
         >
           <Stack
@@ -42,7 +42,7 @@ export default function Home() {
             alignItems="center"
             justifyContent="space-between"
           >
-            {/* LEFT: TEXT */}
+            {/* TEXT */}
             <Box sx={{ flex: 1, pr: { md: 3 } }}>
               <Typography
                 variant="h5"
@@ -70,11 +70,11 @@ export default function Home() {
               </Typography>
             </Box>
 
-            {/* RIGHT: IMAGE PLACEHOLDER */}
+            {/*  IMAGE PLACEHOLDER */}
             <Box
               sx={{
                 flexShrink: 0,
-                mt: { xs: 2, md: 0 }, // push below text on mobile
+                mt: { xs: 2, md: 0 }, 
                 width: { xs: 140, sm: 180, md: 260 },
                 height: { xs: 140, sm: 180, md: 260 },
                 borderRadius: 3,
@@ -160,7 +160,7 @@ export default function Home() {
   );
 }
 
-/* ===== SECTION (title + responsive cards grid) ===== */
+/*title + responsive cards grid */
 
 function Section({ title, items }) {
   return (
@@ -189,14 +189,14 @@ function Section({ title, items }) {
         </Button>
       </Stack>
 
-      {/* Cards – now using CSS grid for reliable columns */}
+      
       <Box
         sx={{
           display: "grid",
           gridTemplateColumns: {
-            xs: "repeat(2, minmax(0, 1fr))", // ✅ always 2 per row on phones
-            sm: "repeat(3, minmax(0, 1fr))", // ~3 per row on small tablets
-            md: "repeat(4, minmax(0, 1fr))", // ~4 per row on desktop
+            xs: "repeat(2, minmax(0, 1fr))", // 2 rows on mobile
+            sm: "repeat(3, minmax(0, 1fr))", // 3 rows on small tablets
+            md: "repeat(4, minmax(0, 1fr))", // 4 rows on desktop
           },
           columnGap: 2,
           rowGap: 2,
@@ -235,7 +235,7 @@ function ItemCard({ title, subtitle, price, variant }) {
       <Box
         sx={{
           width: "100%",
-          aspectRatio: "4 / 3", // same ratio on all devices
+          aspectRatio: "4 / 3",
           borderRadius: 1.5,
           bgcolor: "#EEE",
           backgroundImage: gradientByVariant[variant] || "none",
