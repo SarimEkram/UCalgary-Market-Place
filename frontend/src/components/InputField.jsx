@@ -1,4 +1,4 @@
-import { FormControl, FormHelperText, Input, InputLabel } from "@mui/material";
+import { FormControl, FormHelperText, Input, InputLabel, Box } from "@mui/material";
 
 export default function InputField({
   autoComplete,
@@ -6,6 +6,7 @@ export default function InputField({
   placeholder,
   helpText,
   errorMsg,
+  addPadding,
   ...inputProps
 }) {
   return (
@@ -29,6 +30,7 @@ export default function InputField({
       <InputLabel shrink htmlFor={label + "-input"}>
         {label}
       </InputLabel>
+      { addPadding && <Box sx={{margin: 2}}></Box>}
       <Input
         {...inputProps}
         type="text"

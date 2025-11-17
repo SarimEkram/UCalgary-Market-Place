@@ -97,6 +97,7 @@ import "./index.css";
 import Login from "./Login";
 import Home from "./Home";
 import DesktopNav from "./components/DesktopNav";
+import MyPosts from "./EditPost";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -107,6 +108,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Market from "./Market";
 
 const black = "#221F1F";
+const  inputBorderColor= "#757575"; 
 
 const theme = createTheme({
   palette: {
@@ -119,6 +121,7 @@ const theme = createTheme({
     headerBackground: "#FFFDFB",
    dividerWidth: 2,
    divider: "#EBE7E4",
+   inputBorderColor: inputBorderColor
   },
   text: {
     primary: black,
@@ -127,6 +130,7 @@ const theme = createTheme({
   background: {
     paper: "#FFFFFB",
     default: "#FFFFFB",
+    
   },
   components: {
     MuiBottomNavigationAction: {
@@ -166,7 +170,7 @@ const theme = createTheme({
         root: {
           color: black,
           "&::before": {
-            borderColor: "#757575",
+            borderColor: inputBorderColor,
             borderWidth: 2,
           },
         },
@@ -178,7 +182,7 @@ const theme = createTheme({
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
-    <DesktopNav></DesktopNav>
+   <MyPosts></MyPosts>
     </ThemeProvider>
   </StrictMode>
 );
