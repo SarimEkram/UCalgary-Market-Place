@@ -96,6 +96,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import Login from "./Login";
 import Home from "./Home";
+import DesktopNav from "./components/DesktopNav";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -177,7 +178,7 @@ const theme = createTheme({
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
-    <Market></Market>
+    <DesktopNav></DesktopNav>
     </ThemeProvider>
   </StrictMode>
 );
