@@ -2,8 +2,8 @@
 export default function Shoppingbag() {
   return (
     <svg
-      width="48"
-      height="48"
+      width="100%"
+      height="auto"
       viewBox="0 0 48 48"
       fill="none"
       stroke="currentColor"
