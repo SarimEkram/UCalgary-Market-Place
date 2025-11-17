@@ -2,8 +2,8 @@
 export default function User() {
   return (
     <svg
-      width="48"
-      height="48"
+      width="100%"
+      height="auto"
       viewBox="0 0 48 48"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
