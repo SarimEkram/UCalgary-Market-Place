@@ -1,5 +1,5 @@
 import db from "../../config/db.js";
-import bcrypt from "bcryptjs";
+//import bcrypt from "bcryptjs"; -- causing moduleNotFound Error....needs to be added to package.json and package-lock.json...
 
 // Allowed email domain (e.g., @ucalgary.ca)
 const ALLOWED_DOMAIN = "@ucalgary.ca";

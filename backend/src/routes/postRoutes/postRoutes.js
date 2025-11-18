@@ -10,18 +10,23 @@ import {
 
 const router = express.Router();
 
-// get posts for homepage thumbnails
+// get posts for home thumbnails - supports optional ?type=market|event
+// Also expose at root so frontend can call `/api/posts?type=...`
 router.get("/", getPosts);
+router.get("/postfetch", getPosts);
 
 // get search results for marketplace
-router.get("/", getMarketResults);
+router.get("/marketres", getMarketResults);
 
 // get search results for events
-router.get("/", getEventResults);
-
-// get specific event by id
-router.get("/", getEventById);
+router.get("/eventres", getEventResults);
 
 // get specific marketplace item by id
-router.get("/", getMarketItemById);
+router.get("/itemdetails/:id", getMarketItemById);
+
+// get specific event by id
+router.get("/eventdetails/:id", getEventById);
+
+export default router;
+
 

@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import registrationRoutes from "./routes/authRoutes/registrationRoutes.js";
+import postRoutes from "./routes/postRoutes/postRoutes.js";
 
 const app = express();
 
@@ -9,5 +10,8 @@ app.use(cors()); // Allow Vite frontend
 
 // Registration routes
 app.use("/api/registration", registrationRoutes);
+
+// Post routes
+app.use("/api/posts", postRoutes);
 
 export default app;

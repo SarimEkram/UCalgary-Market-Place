@@ -29,7 +29,7 @@ services:
   db:
     image: mysql:8.0
     container_name: db 
-    command: '--default-authentication-plugin=mysql_native_password'
+    command: '--default-authentication-plugin=mysql_native_password --secure-file-priv=/docker-entrypoint-initdb.d/seeding_imgs'
     volumes:
       - db-data:/var/lib/mysql
       - ./db:/docker-entrypoint-initdb.d

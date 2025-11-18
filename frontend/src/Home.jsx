@@ -1,5 +1,6 @@
 // Home.jsx
 import { Box, Container, Stack, Typography, Button } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import Header from "./components/Header";
 import Navigation from "./components/Navigation";
 
@@ -84,80 +85,71 @@ export default function Home() {
           </Stack>
         </Box>
 
-        {/* MARKET SECTION */}
-        <Section
-          title="Market"
-          items={[
-            {
-              id: 1,
-              title: "Pearsons: Linear Algebra",
-              subtitle: "NW, Calgary",
-              price: "$0",
-              variant: "book",
-            },
-            {
-              id: 2,
-              title: "CPSC 213 Tutor",
-              subtitle: "NW, Calgary",
-              price: "$15/hr",
-              variant: "tutor",
-            },
-            {
-              id: 5,
-              title: "Math 249 Textbook",
-              subtitle: "SE, Calgary",
-              price: "$20",
-              variant: "book",
-            },
-            {
-              id: 6,
-              title: "CPSC 331 Tutor",
-              subtitle: "Online",
-              price: "$18/hr",
-              variant: "tutor",
-            },
-          ]}
-        />
+        {/* MARKET SECTION (populated from API) */}
+        <DynamicSection title="Market" typeFilter="market" />
 
-        {/* EVENTS SECTION */}
-        <Section
-          title="Events"
-          items={[
-            {
-              id: 3,
-              title: "Networking Tips: From Experts…",
-              subtitle: "Student Union",
-              price: "$0",
-              variant: "event1",
-            },
-            {
-              id: 4,
-              title: "Blast From the Past! – CSUS",
-              subtitle: "CSUS",
-              price: "$5",
-              variant: "event2",
-            },
-            {
-              id: 7,
-              title: "Resume Review Night",
-              subtitle: "Engineering Lounge",
-              price: "$0",
-              variant: "event1",
-            },
-            {
-              id: 8,
-              title: "Game Jam Weekend",
-              subtitle: "CSUS",
-              price: "$10",
-              variant: "event2",
-            },
-          ]}
-        />
+        {/* EVENTS SECTION (populated from API) */}
+        <DynamicSection title="Events" typeFilter="event" />
       </Container>
 
       <Navigation />
     </Stack>
   );
+}
+
+// Wrapper to fetch posts of a given type and render the Section.
+function DynamicSection({ title, typeFilter }) {
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    // typeFilter is "market" | "event"
+    const url = `http://localhost:8080/api/posts/postfetch?type=${encodeURIComponent(
+      typeFilter
+    )}&limit=8`;
+
+    fetch(url)
+      .then((res) => {
+        if (!res.ok) throw new Error(`API error ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (!mounted) return;
+
+        const mapped = (data || []).map((p) => {
+          // For Market: subtitle = location (use postal for now)
+          // For Events: subtitle = organization name
+          const subtitle =
+            typeFilter === "event"
+              ? p.organization_name || ""
+              : p.postal_code || "";
+
+          const price =
+            p.price != null ? `$${Number(p.price)}` : "$0";
+
+          return {
+            id: p.id,
+            title: p.title,
+            subtitle,
+            price,
+            // Backend returns thumbnail as { image_id, data } where `data` is base64
+            thumbnailBase64: p.thumbnail?.data || null,
+          };
+        });
+
+        setItems(mapped);
+      })
+      .catch((err) => {
+        console.error("Failed to load posts for", typeFilter, err);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [typeFilter]);
+
+  return <Section title={title} items={items} />;
 }
 
 /*title + responsive cards grid */
@@ -213,14 +205,11 @@ function Section({ title, items }) {
 
 
 /* ===== SINGLE CARD ===== */
-
-function ItemCard({ title, subtitle, price, variant }) {
-  const gradientByVariant = {
-    book: "linear-gradient(135deg, #FFF3CD, #FFE0B2)",
-    tutor: "linear-gradient(135deg, #E0F0FF, #D1C4E9)",
-    event1: "linear-gradient(135deg, #0D1B46, #3E4E8B)",
-    event2: "linear-gradient(135deg, #D1C4E9, #F2D7FF)",
-  };
+function ItemCard({ title, subtitle, price, thumbnailBase64 }) {
+  // Clean up any whitespace/newlines in the base64 string
+  const cleanedThumb = thumbnailBase64
+    ? thumbnailBase64.replace(/\s/g, "")
+    : null;
 
   return (
     <Stack
@@ -232,17 +221,29 @@ function ItemCard({ title, subtitle, price, variant }) {
         boxShadow: "0px 2px 6px rgba(0,0,0,0.08)",
       })}
     >
-      <Box
-        sx={{
-          width: "100%",
-          aspectRatio: "4 / 3",
-          borderRadius: 1.5,
-          bgcolor: "#EEE",
-          backgroundImage: gradientByVariant[variant] || "none",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      />
+      {cleanedThumb ? (
+        <Box
+          component="img"
+          src={`data:image/jpeg;base64,${cleanedThumb}`}
+          alt={title}
+          sx={{
+            width: "100%",
+            aspectRatio: "4 / 3",
+            borderRadius: 1.5,
+            objectFit: "cover",
+            display: "block",
+          }}
+        />
+      ) : (
+        <Box
+          sx={{
+            width: "100%",
+            aspectRatio: "4 / 3",
+            borderRadius: 1.5,
+            bgcolor: "#EEE", // simple grey fallback
+          }}
+        />
+      )}
 
       <Typography
         variant="body2"

@@ -177,7 +177,7 @@ const theme = createTheme({
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
-    <Market></Market>
+    <Home></Home>
     </ThemeProvider>
   </StrictMode>
 );

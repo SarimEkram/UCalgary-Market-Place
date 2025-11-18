@@ -1,72 +1,67 @@
 import db from "../../config/db.js";
 
-// This function retrieves posts with filtering for post type.
-// For use in homepage feed
 export function getPosts(req, res) {
+    console.log("[getPosts] incoming", { url: req.originalUrl, query: req.query });
+
     const { type, limit = 20 } = req.query;
+    const lim = Math.max(1, Math.min(100, Number(limit) || 20));
 
-    // Validate limit
-    let lim = parseInt(limit, 10);
-    if (isNaN(lim) || lim <= 0) lim = 20;
-    const MAX_LIMIT = 100;
-    if (lim > MAX_LIMIT) lim = MAX_LIMIT;
-
-    const where = [];
-    const params = [];
-
-    if (type) {
-        where.push("p.post_type = ?");
-        params.push(type);
-    }
-
-    // Build SQL: map DB columns to front-end field names, include images aggregated
     const sql = `
         SELECT
-        p.post_id        AS id,
-        p.name           AS title,
-        p.description    AS description,
-        p.price          AS price,
-        p.post_type      AS type,
-        p.postal_code    AS postal_code,
-        p.user_id        AS seller_id,
-        p.posted_date    AS posted_date,
-        JSON_ARRAYAGG(
-            JSON_OBJECT(
-            'image_id', i.image_id,
-            'data', TO_BASE64(i.image_text_data)
-            )
-        ) AS images
+        p.post_id       AS id,
+        p.name          AS title,
+        p.price         AS price,
+        p.post_type     AS post_type,
+        p.postal_code   AS postal_code,
+        p.posted_date   AS posted_date,
+        e.organization_name,
+        i.image_id,
+        i.image_text_data AS thumbnail_data
         FROM posts p
-        LEFT JOIN images i ON i.post_id = p.post_id
-        ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
-        GROUP BY p.post_id
+        LEFT JOIN event_posts e
+        ON e.event_id = p.post_id
+        LEFT JOIN images i
+        ON i.post_id = p.post_id
+        AND i.image_id = (
+            SELECT MIN(i2.image_id)
+            FROM images i2
+            WHERE i2.post_id = p.post_id
+            )
+        ${type ? "WHERE p.post_type = ?" : ""}
         ORDER BY p.posted_date DESC
         LIMIT ?
     `;
 
+    const params = [];
+    if (type) params.push(type);
     params.push(lim);
 
     db.query(sql, params, (err, rows) => {
         if (err) {
-        console.error("getPosts sql error:", err);
-        return res.status(500).json({ error: "Failed to fetch posts" });
+        console.error("[getPosts] DB error", err);
+        return res.status(500).json({ error: "Database error" });
         }
 
-        // MySQL returns the JSON aggregation as a string; parse it and normalize nulls
-        const normalized = rows.map((r) => {
-        let imgs = [];
-        try {
-            imgs = r.images ? JSON.parse(r.images) : [];
-            // JSON_ARRAYAGG over no rows may be [null] or null; filter out nulls
-            if (!Array.isArray(imgs)) imgs = [];
-            imgs = imgs.filter(Boolean);
-        } catch (e) {
-            imgs = [];
-        }
-        return { ...r, images: imgs };
-        });
+        const mapped = rows.map((row) => ({
+        id: row.id,
+        title: row.title,
+        price: row.price,
+        post_type: row.post_type,
+        postal_code: row.postal_code,
+        posted_date: row.posted_date,
+        organization_name: row.organization_name || null,
+        thumbnail: row.image_id
+            ? {
+                image_id: row.image_id,
+                data:
+                row.thumbnail_data && Buffer.isBuffer(row.thumbnail_data)
+                    ? row.thumbnail_data.toString("base64")
+                    : null,
+            }
+            : null,
+        }));
 
-        res.json(normalized);
+        res.json(mapped);
     });
 }
 
