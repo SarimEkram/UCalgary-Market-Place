@@ -356,3 +356,7 @@ template {
   padding: 0; 
 }
 
+
+#condition-toggle button[data-selected="true"]{
+  background-color: white;
+}
