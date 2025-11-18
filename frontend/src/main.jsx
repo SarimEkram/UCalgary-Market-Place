@@ -97,7 +97,7 @@ import "./index.css";
 import Login from "./Login";
 import Home from "./Home";
 import DesktopNav from "./components/DesktopNav";
-import MyPosts from "./EditPost";
+import MyPosts from "./EditEvent";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -177,6 +177,7 @@ const theme = createTheme({
       },
     },
   },
+  
 });
 
 createRoot(document.getElementById("root")).render(
