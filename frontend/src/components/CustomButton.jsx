@@ -25,6 +25,12 @@ const buttonStyle = {
   paddingTop: 0.5,
   paddingBottom: 0.5,
   textTransform: "none",
+  '&.MuiButton-root': {
+      textTransform: 'none', // Overrides text transformation
+    },
+    '&.MuiButtonBase-root': {
+      textTransform: 'none', // Overrides text transformation
+    },
 };
 
 // Documentation
