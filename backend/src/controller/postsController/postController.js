@@ -343,7 +343,6 @@ export function getEventResults(req, res) {
 // --------------------------------------------
 // Get full details for a single event listing
 // --------------------------------------------
-
 export function getEventById(req, res) {
     const { id } = req.params;
 
@@ -394,19 +393,39 @@ export function getEventById(req, res) {
 
         const row = rows[0];
 
-        // Normalize images
+        // Normalize images to array of { image_id, data }
         let imgs = [];
         try {
-        imgs = row.images ? JSON.parse(row.images) : [];
-        if (!Array.isArray(imgs)) imgs = [];
-        imgs = imgs.filter(Boolean);
+        if (!row.images) {
+            imgs = [];
+        } else if (typeof row.images === "string") {
+            const parsed = JSON.parse(row.images);
+            imgs = Array.isArray(parsed) ? parsed : [];
+        } else if (Array.isArray(row.images)) {
+            imgs = row.images;
+        } else {
+            imgs = [];
+        }
+
+        imgs = imgs
+            .filter(Boolean)
+            .filter((im) => im.image_id != null && im.data != null)
+            .map((im) => ({
+            image_id: im.image_id,
+            data: im.data, // already base64 from TO_BASE64
+            }));
         } catch (e) {
+        console.error("Error parsing event images JSON:", e);
         imgs = [];
         }
 
-        res.json({ ...row, images: imgs });
+        res.json({
+        ...row,
+        images: imgs,
+        });
     });
 }
+
 
 
 // -----------------------------------------------
@@ -421,8 +440,8 @@ export function getMarketItemById(req, res) {
         return res.status(400).json({ error: "Invalid market item id" });
     }
 
-    const sql = `
-        SELECT
+const sql = `
+    SELECT
         p.post_id        AS id,
         p.name           AS title,
         p.description    AS description,
@@ -437,18 +456,18 @@ export function getMarketItemById(req, res) {
         mp.item_condition AS item_condition,
         JSON_ARRAYAGG(
             JSON_OBJECT(
-            'image_id', i.image_id,
-            'data', TO_BASE64(i.image_text_data)
+                'image_id', i.image_id,
+                'data', TO_BASE64(i.image_text_data)
             )
         ) AS images
-        FROM posts p
-        JOIN market_posts mp ON mp.market_id = p.post_id
-        JOIN users u         ON u.user_id = p.user_id
-        LEFT JOIN images i   ON i.post_id = p.post_id
-        WHERE p.post_id = ? AND p.post_type = 'market'
-        GROUP BY p.post_id, u.user_id, mp.market_id
-        LIMIT 1
-    `;
+    FROM posts p
+    JOIN market_posts mp ON mp.market_id = p.post_id
+    JOIN users u         ON u.user_id = p.user_id
+    LEFT JOIN images i   ON i.post_id = p.post_id
+    WHERE p.post_id = ? AND p.post_type = 'market'
+    GROUP BY p.post_id, u.user_id, mp.market_id
+    LIMIT 1
+`;
 
     db.query(sql, [postId], (err, rows) => {
         if (err) {
@@ -462,16 +481,36 @@ export function getMarketItemById(req, res) {
 
         const row = rows[0];
 
-        // Normalize images
+        // Normalize images to array of { image_id, data }
         let imgs = [];
         try {
-        imgs = row.images ? JSON.parse(row.images) : [];
-        if (!Array.isArray(imgs)) imgs = [];
-        imgs = imgs.filter(Boolean);
+        if (!row.images) {
+            imgs = [];
+        } else if (typeof row.images === "string") {
+            const parsed = JSON.parse(row.images);
+            imgs = Array.isArray(parsed) ? parsed : [];
+        } else if (Array.isArray(row.images)) {
+            imgs = row.images;
+        } else {
+            imgs = [];
+        }
+
+        // Remove nulls / bad entries and normalize shape
+        imgs = imgs
+            .filter(Boolean)
+            .filter((im) => im.image_id != null && im.data != null)
+            .map((im) => ({
+            image_id: im.image_id,
+            data: im.data, // already base64 from TO_BASE64
+            }));
         } catch (e) {
+        console.error("Error parsing images JSON:", e);
         imgs = [];
         }
 
-        res.json({ ...row, images: imgs });
+        res.json({
+        ...row,
+        images: imgs,
+        });
     });
 }

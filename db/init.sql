@@ -184,8 +184,9 @@ INSERT INTO images (image_id, post_id, image_text_data) VALUES
 (401, 101, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/linear_algebra_book.jpg')),
 (402, 102, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/gaming_chair.png')),
 (403, 103, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/ti84_calc.png')),
-(404, 201, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/study_group_flyer.jpg')),
-(405, 202, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/career_fair_poster.jpg'));
+(404, 103, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/ti84-img2.jpg')),
+(405, 201, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/study_group_flyer.jpg')),
+(406, 202, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/career_fair_poster.jpg'));
 
 -- SAVED POSTS
 INSERT INTO saved_posts (user_id, post_id) VALUES
