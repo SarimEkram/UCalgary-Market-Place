@@ -50,6 +50,7 @@ export function getPosts(req, res) {
         postal_code: row.postal_code,
         posted_date: row.posted_date,
         organization_name: row.organization_name,
+        // returns thumbnail as { image_id, data } where `data` is base64
         thumbnail: row.image_id
             ? {
                 image_id: row.image_id,
@@ -65,8 +66,10 @@ export function getPosts(req, res) {
     });
 }
 
-// This function returns marketplace search results
+// --------------------------------------------
+// This function returns marketplace search results for marketplace pages
 // Only posts of type 'market' with filters + keyword search.
+// --------------------------------------------
 export function getMarketResults(req, res) {
     const {
         searchTerms,
@@ -117,53 +120,52 @@ export function getMarketResults(req, res) {
     }
 
     // Keyword search on name + description
-    // If searchTerms are provided, split them into words and add OR-ed LIKE filters
-    // on p.name and p.description (with escaping), capped to 10 terms for performance.
-
     if (searchTerms) {
         const raw = Array.isArray(searchTerms)
-        ? searchTerms.join(" ")
-        : String(searchTerms);
+            ? searchTerms.join(" ")
+            : String(searchTerms);
 
         const terms = raw
-        .trim()
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 10); // cap terms for performance
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 10); // cap terms
 
         if (terms.length) {
-        const likeClauses = [];
-        for (const t of terms) {
-            const pat = `%${t.replace(/[\\%_]/g, "\\$&")}%`;
-            likeClauses.push("(p.name LIKE ? ESCAPE '\\' OR p.description LIKE ? ESCAPE '\\')");
+            const likeClauses = [];
+            for (const t of terms) {
+            const pat = `%${t}%`; // simple "contains" pattern
+            likeClauses.push("(p.name LIKE ? OR p.description LIKE ?)");
             params.push(pat, pat);
-        }
-        // "Any word matches" behaviour
-        where.push(`(${likeClauses.join(" OR ")})`);
+            }
+            // Any term can match
+            where.push(`(${likeClauses.join(" OR ")})`);
         }
     }
 
     const sql = `
         SELECT
-        p.post_id        AS id,
-        p.name           AS title,
-        p.description    AS description,
-        p.price          AS price,
-        p.posted_date    AS posted_date,
-        p.postal_code    AS postal_code,
-        p.user_id        AS seller_id,
+        p.post_id         AS id,
+        p.name            AS title,
+        p.description     AS description,
+        p.price           AS price,
+        p.posted_date     AS posted_date,
+        p.postal_code     AS postal_code,
+        p.user_id         AS seller_id,
         mp.item_condition AS item_condition,
-        JSON_ARRAYAGG(
-            JSON_OBJECT(
-            'image_id', i.image_id,
-            'data', TO_BASE64(i.image_text_data)
-            )
-        ) AS images
+        i.image_id,
+        i.image_text_data AS thumbnail_data
         FROM posts p
-        JOIN market_posts mp ON mp.market_id = p.post_id
-        LEFT JOIN images i   ON i.post_id = p.post_id
+        JOIN market_posts mp
+        ON mp.market_id = p.post_id
+        LEFT JOIN images i
+        ON i.post_id = p.post_id
+        AND i.image_id = (
+        SELECT MIN(i2.image_id)
+        FROM images i2
+        WHERE i2.post_id = p.post_id
+        )
         ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
-        GROUP BY p.post_id
         ORDER BY p.posted_date DESC
         LIMIT ?
     `;
@@ -176,26 +178,36 @@ export function getMarketResults(req, res) {
         return res.status(500).json({ error: "Failed to fetch marketplace posts" });
         }
 
-        // Normalize images same way as getPosts
-        const normalized = rows.map((r) => {
-        let imgs = [];
-        try {
-            imgs = r.images ? JSON.parse(r.images) : [];
-            if (!Array.isArray(imgs)) imgs = [];
-            imgs = imgs.filter(Boolean);
-        } catch (e) {
-            imgs = [];
+    const normalized = rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    price: row.price,
+    posted_date: row.posted_date,
+    postal_code: row.postal_code,
+    seller_id: row.seller_id,
+    item_condition: row.item_condition,
+    thumbnail: row.image_id
+        ? {
+            image_id: row.image_id,
+            data:
+            row.thumbnail_data && Buffer.isBuffer(row.thumbnail_data)
+                ? row.thumbnail_data.toString("base64")
+                : row.thumbnail_data || null,
         }
-        return { ...r, images: imgs };
-        });
+        : null,
+    }));
 
-        res.json(normalized);
+    res.json(normalized);
     });
 }
 
 
-// This function returns event search results
+
+// --------------------------------------------
+// This function returns event search results for events pages
 // Only posts of type 'event' with filters + keyword search.
+// --------------------------------------------
 export function getEventResults(req, res) {
     const {
         searchTerms,
@@ -240,87 +252,98 @@ export function getEventResults(req, res) {
         params.push(maxPrice);
     }
 
-    // Keyword search on name + description
-    // If searchTerms are provided, split them into words and add OR-ed LIKE filters
-    // on p.name and p.description (with escaping), capped to 10 terms for performance.
+  // Keyword search on name + description
     if (searchTerms) {
         const raw = Array.isArray(searchTerms)
-        ? searchTerms.join(" ")
-        : String(searchTerms);
+            ? searchTerms.join(" ")
+            : String(searchTerms);
 
         const terms = raw
-        .trim()
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 10); // cap terms for performance
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 10); // cap terms
 
         if (terms.length) {
-        const likeClauses = [];
-        for (const t of terms) {
-            // Escape %, _ and \ so they behave as literals if present
-            const pat = `%${t.replace(/[\\%_]/g, "\\$&")}%`;
-            likeClauses.push(
-            "(p.name LIKE ? ESCAPE '\\' OR p.description LIKE ? ESCAPE '\\')"
-            );
+            const likeClauses = [];
+            for (const t of terms) {
+            const pat = `%${t}%`; // simple "contains" pattern
+            likeClauses.push("(p.name LIKE ? OR p.description LIKE ?)");
             params.push(pat, pat);
-        }
-        // "Any word matches" behaviour
-        where.push(`(${likeClauses.join(" OR ")})`);
+            }
+            // Any term can match
+            where.push(`(${likeClauses.join(" OR ")})`);
         }
     }
 
-    const sql = `
-        SELECT
-        p.post_id          AS id,
-        p.name             AS title,
-        p.description      AS description,
-        p.price            AS price,
-        p.posted_date      AS posted_date,
-        p.postal_code      AS postal_code,
-        p.user_id          AS organizer_id,
-        e.organization_name AS organization_name,
-        e.event_date       AS event_date,
-        JSON_ARRAYAGG(
-            JSON_OBJECT(
-            'image_id', i.image_id,
-            'data', TO_BASE64(i.image_text_data)
-            )
-        ) AS images
-        FROM posts p
-        JOIN event_posts e ON e.event_id = p.post_id
-        LEFT JOIN images i ON i.post_id = p.post_id
-        ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
-        GROUP BY p.post_id
-        ORDER BY e.event_date ASC
-        LIMIT ?
-    `;
 
-    params.push(lim);
+  const sql = `
+    SELECT
+      p.post_id           AS id,
+      p.name              AS title,
+      p.description       AS description,
+      p.price             AS price,
+      p.posted_date       AS posted_date,
+      p.postal_code       AS postal_code,
+      p.user_id           AS organizer_id,
+      e.organization_name AS organization_name,
+      e.event_date        AS event_date,
+      i.image_id,
+      i.image_text_data   AS thumbnail_data
+    FROM posts p
+    JOIN event_posts e
+      ON e.event_id = p.post_id
+    LEFT JOIN images i
+      ON i.post_id = p.post_id
+     AND i.image_id = (
+       SELECT MIN(i2.image_id)
+       FROM images i2
+       WHERE i2.post_id = p.post_id
+     )
+    ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
+    ORDER BY e.event_date ASC
+    LIMIT ?
+  `;
 
-    db.query(sql, params, (err, rows) => {
-        if (err) {
-        console.error("getEventResults sql error:", err);
-        return res.status(500).json({ error: "Failed to fetch event posts" });
-        }
+  params.push(lim);
 
-        // Normalize images same way as other endpoints
-        const normalized = rows.map((r) => {
-        let imgs = [];
-        try {
-            imgs = r.images ? JSON.parse(r.images) : [];
-            if (!Array.isArray(imgs)) imgs = [];
-            imgs = imgs.filter(Boolean);
-        } catch (e) {
-            imgs = [];
-        }
-        return { ...r, images: imgs };
-        });
+  db.query(sql, params, (err, rows) => {
+    if (err) {
+      console.error("getEventResults sql error:", err);
+      return res.status(500).json({ error: "Failed to fetch event posts" });
+    }
 
-        res.json(normalized);
-    });
+    const normalized = rows.map((r) => ({
+      id: r.id,
+      title: r.title,
+      description: r.description,
+      price: r.price,
+      posted_date: r.posted_date,
+      postal_code: r.postal_code,
+      organizer_id: r.organizer_id,
+      organization_name: r.organization_name,
+      event_date: r.event_date,
+      thumbnail: r.image_id
+        ? {
+            image_id: r.image_id,
+            data:
+              r.thumbnail_data && Buffer.isBuffer(r.thumbnail_data)
+                ? r.thumbnail_data.toString("base64")
+                : r.thumbnail_data || null,
+          }
+        : null,
+    }));
+
+    res.json(normalized);
+  });
 }
 
+
+
+// --------------------------------------------
 // Get full details for a single event listing
+// --------------------------------------------
+
 export function getEventById(req, res) {
     const { id } = req.params;
 
@@ -385,7 +408,11 @@ export function getEventById(req, res) {
     });
 }
 
+
+// -----------------------------------------------
 // Get full details for a single marketplace item
+// -----------------------------------------------
+
 export function getMarketItemById(req, res) {
     const { id } = req.params;
 
