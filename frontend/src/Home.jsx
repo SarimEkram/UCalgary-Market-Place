@@ -116,7 +116,7 @@ function DynamicSection({ title, typeFilter }) {
         if (!mounted) return;
 
         const mapped = (data || []).map((p) => {
-          // For Market: subtitle = location (use postal for now) - should be city region eventually (need to add api)
+          // For Market: subtitle = location (use postal for now) - should be city region eventually (need to add api ***or change to post date like homepage?***)
           // For Events: subtitle = organization name
           const subtitle =
             typeFilter === "event"
