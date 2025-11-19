@@ -14,7 +14,7 @@ export function getPosts(req, res) {
         p.post_type     AS post_type,
         p.postal_code   AS postal_code,
         p.posted_date   AS posted_date,
-        e.organization_name,
+        e.organization_name AS organization_name,
         i.image_id,
         i.image_text_data AS thumbnail_data
         FROM posts p
@@ -49,7 +49,7 @@ export function getPosts(req, res) {
         post_type: row.post_type,
         postal_code: row.postal_code,
         posted_date: row.posted_date,
-        organization_name: row.organization_name || null,
+        organization_name: row.organization_name,
         thumbnail: row.image_id
             ? {
                 image_id: row.image_id,

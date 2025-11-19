@@ -105,9 +105,7 @@ function DynamicSection({ title, typeFilter }) {
     let mounted = true;
 
     // typeFilter is "market" | "event"
-    const url = `http://localhost:8080/api/posts/postfetch?type=${encodeURIComponent(
-      typeFilter
-    )}&limit=8`;
+    const url = `http://localhost:8080/api/posts/postfetch?type=${encodeURIComponent(typeFilter)}&limit=8`;
 
     fetch(url)
       .then((res) => {
@@ -118,7 +116,7 @@ function DynamicSection({ title, typeFilter }) {
         if (!mounted) return;
 
         const mapped = (data || []).map((p) => {
-          // For Market: subtitle = location (use postal for now)
+          // For Market: subtitle = location (use postal for now) - should be city region eventually (need to add api)
           // For Events: subtitle = organization name
           const subtitle =
             typeFilter === "event"

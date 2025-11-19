@@ -12,7 +12,6 @@ const router = express.Router();
 
 // get posts for home thumbnails - supports optional ?type=market|event
 // Also expose at root so frontend can call `/api/posts?type=...`
-router.get("/", getPosts);
 router.get("/postfetch", getPosts);
 
 // get search results for marketplace
