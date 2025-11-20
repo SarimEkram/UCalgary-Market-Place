@@ -39,7 +39,7 @@ export const forgotPassword = (req, res) => {
                     .status(500)
                     .json({ success: false, error: "Failed to generate reset code" });
             }
-
+            // remove later
             console.log(`Password reset code for ${email}: ${code}`);
 
             return res.status(200).json({
@@ -52,6 +52,7 @@ export const forgotPassword = (req, res) => {
     const adminQuery = "SELECT admin_id FROM admins WHERE email = ?";
     db.query(adminQuery, [email], (err, adminRows) => {
         if (err) {
+            //remove later
             console.error("DB error (forgot/admin):", err);
             return res
                 .status(500)
