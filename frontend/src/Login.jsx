@@ -4,7 +4,7 @@ import {
   FormHelperText,
   Link,
   Stack,
-  Typography
+  Typography,
 } from "@mui/material";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -14,6 +14,7 @@ import Header from "./components/Header";
 import InputField from "./components/InputField";
 import ResetPassword from "./components/ResetPassword";
 
+import { Link as RouterLink } from "react-router";
 // 1 Backend Tasks (Ctrl+F "BTASK")
 export default function Login() {
   const {
@@ -41,19 +42,18 @@ export default function Login() {
     }
      */
 
-
-    const success = true; 
-    if (success){
-       //navigate to home page
-    } else{
+    const success = true;
+    if (success) {
+      //navigate to home page
+    } else {
       setLoginFailed(true);
     }
   };
 
-   const [open, setOpen] = useState(false);
-    const handleClose = () => {
-      setOpen(false);
-    };
+  const [open, setOpen] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <Stack id="login" direction="column" spacing={2} sx={styles.page}>
@@ -112,24 +112,38 @@ export default function Login() {
           </FormHelperText>
           <Stack direction="row" spacing={2} sx={styles.stackRow}>
             <Typography>New User ? </Typography>
-            <Link color="primary">
-              <Typography>Sign Up</Typography>
-            </Link>
+            <RouterLink to="/signup">
+              <Link
+                component="div"
+                sx={{
+                  "& .MuiTypography-root": { textDecoration: "underline" },
+                  "& .MuiLink-root": { textDecoration: "underline" },
+                }}
+                color="primary"
+              >
+                <Typography>Sign Up</Typography>
+              </Link>
+            </RouterLink>
           </Stack>
           <Stack direction="row" sx={styles.stackRow}>
             {/*TODO: Make links clickablle, handle redirection */}
-            <Link color="textSecondary" sx={{ cursor: "pointer"}} onClick={()=>{setOpen(true)}}>
+            <Link
+              component={"div"}
+              color="textSecondary"
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                setOpen(true);
+              }}
+            >
               <Typography>Forgot Password</Typography>
             </Link>
           </Stack>
         </Stack>
-        <ResetPassword open={open} handleClose={handleClose}>
-        </ResetPassword>
+        <ResetPassword open={open} handleClose={handleClose}></ResetPassword>
       </Container>
     </Stack>
   );
 }
-
 
 const styles = {
   icon: {
