@@ -1,5 +1,6 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import {
+  InputLabel,
   Box,
   Container,
   Divider,
@@ -11,10 +12,12 @@ import {
 } from "@mui/material";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { Link as RouterLink } from "react-router";
 import ProfileIcon from "./assets/ProfileIconSVG";
 import CustomButton from "./components/CustomButton";
 import Header from "./components/Header";
 import InputField from "./components/InputField";
+
 // 1 Backend Tasks (Ctrl+F "BTASK")
 export default function MyPosts() {
   const {
@@ -90,10 +93,11 @@ export default function MyPosts() {
   };
 
   return (
-    <Stack id="login" direction="column" spacing={2} sx={styles.page}>
+    <Stack direction="column" spacing={2} sx={styles.page}>
       <Header></Header>
       <Container maxWidth={"sm"} sx={styles.main}>
-        <Link
+        <RouterLink to=".."  style={{textDecoration : "none"}}>
+        <Link component={"div"}
           color="secondary"
           sx={{
             display: "flex",
@@ -108,6 +112,7 @@ export default function MyPosts() {
             Back to My Events
           </Typography>
         </Link>
+        </RouterLink>
         <Divider
           variant="fullWidth"
           sx={(theme) => ({
@@ -220,7 +225,7 @@ export default function MyPosts() {
               </CustomButton>
 
               <Typography
-                id="star"
+
                 sx={[{ fontSize: "1rem", visibility: newImages.length != 0 }]}
               >
                 Selected files:{" "}

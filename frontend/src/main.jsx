@@ -1,12 +1,17 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router";
+import MySettings from "./MySettings";
 import "./index.css";
 import Login from "./Login";
 import Home from "./Home";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Market from "./Market";
 import SignUp from "./SignUp";
+import CreatePost from "./CreatePost";
+import EditPost from "./EditPost"; 
+import EditEvent from "./EditEvent";
+import CreateEvent from "./CreateEvent";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -93,20 +98,37 @@ createRoot(document.getElementById("root")).render(
           <Route path="/" element={<Login />}></Route>
           <Route path="signup" element={<SignUp></SignUp>}></Route>
           <Route path="user">
-            <Route index element={<div>Not finished</div>} />
-            <Route path="create-post" element={<div>Not finished</div>}></Route>
-            <Route
-              path="create-event"
-              element={<div>Not finished</div>}
+            <Route index element={<MySettings></MySettings>} />
+            <Route path="posts">
+              <Route
+              index
+              element={<div>My Posts page - Not finished.</div>}
             ></Route>
-            <Route
-              path="edit-post/:id"
-              element={<div>Not finished</div>}
+             <Route
+              path="new"
+              element={<CreatePost></CreatePost>}
             ></Route>
-            <Route
-              path="edit-event/:id"
-              element={<div>Not finished</div>}
+           <Route
+              path=":id"
+              element={<EditPost></EditPost>}
             ></Route>
+           
+            </Route>
+             <Route path="events">
+              <Route
+              index
+              element={<div>My Events page - Not finished.</div>}
+            ></Route>
+              <Route
+              path="new"
+              element={<CreateEvent></CreateEvent>}
+            ></Route>
+           <Route
+              path=":id"
+              element={<EditEvent></EditEvent>}
+            ></Route>
+        
+            </Route>
           </Route>
           {/* @ Deep, feel free to customize as needed. i made this for testing. */}
           <Route path="home" element={<Home></Home>}></Route>

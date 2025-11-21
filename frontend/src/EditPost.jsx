@@ -17,6 +17,7 @@ import ProfileIcon from "./assets/ProfileIconSVG";
 import CustomButton from "./components/CustomButton";
 import Header from "./components/Header";
 import InputField from "./components/InputField";
+import { Link as RouterLink } from "react-router";
 // 2 Backend Tasks (Ctrl+F "BTASK")
 export default function MyPosts() {
   const {
@@ -33,7 +34,7 @@ export default function MyPosts() {
   const [currentImage, setCurrentImage] = useState(null);
 
   const fileInputRef = useRef(null);
-// TODO: find  a way to handle deleted images 
+  // TODO: find  a way to handle deleted images
   const onSubmit = (data) => {
     data["condition"] = condition;
     data["deleted_images"] = deletedImages;
@@ -103,9 +104,9 @@ export default function MyPosts() {
   };
 
   //TODO: finish getPost
-  const [name, setName] = useState(""); 
+  const [name, setName] = useState("");
   const [location, setLocation] = useState("");
-  const getPost = ()=>{
+  const getPost = () => {
     /**
      * BTASK 
      * GET POST
@@ -119,28 +120,29 @@ export default function MyPosts() {
       }
      * 
      */
-
-  }
+  };
 
   return (
-    <Stack id="login" direction="column" spacing={2} sx={styles.page}>
+    <Stack direction="column" spacing={2} sx={styles.page}>
       <Header></Header>
       <Container maxWidth={"sm"} sx={styles.main}>
-        <Link
-          color="secondary"
-          sx={{
-            display: "flex",
-            justifyContent: "flex-start",
-            alignItems: "center",
-            textDecoration: "none",
-          }}
-          variant="text"
-        >
-          <ChevronLeftIcon></ChevronLeftIcon>
-          <Typography variant="h6" sx={{ fontWeight: "400" }}>
-            Back to My Posts
-          </Typography>
-        </Link>
+        <RouterLink to=".." style={{textDecoration : "none"}}>
+          <Link
+            color="secondary"
+            sx={{
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              textDecoration: "none",
+            }}
+            variant="text"
+          >
+            <ChevronLeftIcon></ChevronLeftIcon>
+            <Typography variant="h6" sx={{ fontWeight: "400" }}>
+              Back to My Posts
+            </Typography>
+          </Link>
+        </RouterLink>
         <Divider
           variant="fullWidth"
           sx={(theme) => ({
@@ -206,7 +208,7 @@ export default function MyPosts() {
               errorMsg={errors["price"] ? errors["price"].message : null}
               {...register("price", {
                 required: "Price is required.",
-                valueAsNumber : true
+                valueAsNumber: true,
               })}
             ></InputField>
             <ToggleButtonGroup
@@ -274,7 +276,7 @@ export default function MyPosts() {
               </CustomButton>
 
               <Typography
-                id="star"
+               
                 sx={[{ fontSize: "1rem", visibility: newImages.length != 0 }]}
               >
                 Selected files:{" "}
