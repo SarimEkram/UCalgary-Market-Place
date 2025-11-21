@@ -1,18 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router";
-import MySettings from "./MySettings";
-import "./index.css";
-import Login from "./Login";
-import Home from "./Home";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import Market from "./Market";
-import SignUp from "./SignUp";
-import CreatePost from "./CreatePost";
-import EditPost from "./EditPost"; 
-import EditEvent from "./EditEvent";
-import CreateEvent from "./CreateEvent";
-
+import "./index.css";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
+import Market from "./pages/Market";
+import SignUp from "./pages/SignUp";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";

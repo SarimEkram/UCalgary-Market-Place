@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import loginRoutes from "./routes/authRoutes/loginRoutes.js";
 import registrationRoutes from "./routes/authRoutes/registrationRoutes.js";
 import postRoutes from "./routes/postRoutes/postRoutes.js";
 
@@ -8,6 +9,17 @@ const app = express();
 app.use(express.json());
 app.use(cors()); // Allow Vite frontend
 
+<<<<<<< HEAD
+=======
+app.get("/", (req, res) => {
+    res.json({ message: "Backend is running" });
+});
+
+
+//login route
+app.use("/api/login", loginRoutes);
+
+>>>>>>> main
 // Registration routes
 app.use("/api/registration", registrationRoutes);
 
