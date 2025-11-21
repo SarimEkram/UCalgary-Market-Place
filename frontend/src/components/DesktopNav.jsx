@@ -12,11 +12,14 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import { useNavigate } from "react-router";
 
 export default function DesktopNav() {
   const [value, setValue] = useState("Home");
   const drawerWidth = 200;
-  const GetIcon = function ({ value }) {
+  const navigate = useNavigate();
+
+  const Icon = function ({ value }) {
     if (value == "Home") {
       return <Home></Home>;
     } else if (value == "User") {
@@ -27,6 +30,12 @@ export default function DesktopNav() {
       return <Calendar></Calendar>;
     }
   };
+
+  const path = { Home: "home", User: "", Market: "", Events: "" };
+  function handleChange(value) {
+    setValue(value);
+    navigate("/" + path[value]);
+  }
 
   return (
     <Drawer
@@ -51,14 +60,10 @@ export default function DesktopNav() {
       {/* TODO: FIX DEFAULT COLOR, AND DYNAMICALLY CHANGE COLR BASED ON VALUE */}
       {/* TODO: RESIZE SVG */}
       <List id="list" sx={{ paddingTop: 10 }}>
-        {["Home", "User", "Market", "Events"].map((text) => (
+        {["Home", "User", "Market", "Events"].map((title) => (
           <>
-            <ListItem
-              key={text}
-              disablePadding
-            >
-              <ListItemButton
-              onClick={() => setValue(text)}>
+            <ListItem key={title} disablePadding>
+              <ListItemButton onClick={() => handleChange(title)}>
                 <ListItemIcon
                   sx={{
                     display: "flex",
@@ -69,25 +74,27 @@ export default function DesktopNav() {
                   <Box
                     component="span"
                     // sx={{ width: "2rem", padding: 0, }}
-                    sx={(theme)=>(
-                      {  width: "2rem",
-                         padding: 0, 
-                        color:
-                          value == text
-                            ? theme.palette.primary.main
-                            : theme.palette.secondary.main,
-                     })}
+                    sx={(theme) => ({
+                      width: "2rem",
+                      padding: 0,
+                      color:
+                        value == title
+                          ? theme.palette.primary.main
+                          : theme.palette.secondary.main,
+                    })}
                   >
-                    <GetIcon value={text}></GetIcon>
+                    <Icon value={title}></Icon>
                   </Box>
                 </ListItemIcon>
-                <ListItemText 
-                sx={(theme)=>({ color:
-                          value == text
-                            ? theme.palette.primary.main
-                            : theme.palette.secondary.main,
-                     })}
-              primary={text} />
+                <ListItemText
+                  sx={(theme) => ({
+                    color:
+                      value == title
+                        ? theme.palette.primary.main
+                        : theme.palette.secondary.main,
+                  })}
+                  primary={title}
+                />
               </ListItemButton>
             </ListItem>
           </>

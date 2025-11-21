@@ -13,6 +13,7 @@ import InputField from "./components/InputField";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import VerifyNewUser from "./components/VerifyNewUser";
+import { Link as RouterLink } from "react-router";
 
 // 2 Backend Task(s) (Ctrl+F "BTASK")
 export default function SignUp() {
@@ -209,9 +210,18 @@ export default function SignUp() {
           </FormHelperText>
           <Stack direction="row" spacing={2} sx={styles.stackRow}>
             <Typography>Existing User ? </Typography>
-            <Link color="primary">
-              <Typography>Sign In</Typography>
-            </Link>
+            <RouterLink to="/">
+              <Link
+                component="div"
+                sx={{
+                  "& .MuiTypography-root": { textDecoration: "underline" },
+                  "& .MuiLink-root": { textDecoration: "underline" },
+                }}
+                color="primary"
+              >
+                <Typography>Sign Up</Typography>
+              </Link>
+            </RouterLink>
           </Stack>
         </Stack>
         <VerifyNewUser
