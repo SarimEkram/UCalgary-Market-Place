@@ -7,6 +7,13 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Market from "./pages/Market";
 import SignUp from "./pages/SignUp";
+import CreatePost from "./pages/CreatePost";
+import EditPost from "./pages/EditPost"; 
+import EditEvent from "./pages/EditEvent";
+import CreateEvent from "./pages/CreateEvent";
+import MySettings from "./pages/MySettings";
+
+
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";

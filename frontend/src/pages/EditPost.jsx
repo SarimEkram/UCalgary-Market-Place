@@ -13,10 +13,10 @@ import {
 } from "@mui/material";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import ProfileIcon from "./assets/ProfileIconSVG";
-import CustomButton from "./components/CustomButton";
-import Header from "./components/Header";
-import InputField from "./components/InputField";
+import ProfileIcon from "../assets/ProfileIconSVG";
+import CustomButton from "../components/CustomButton";
+import Header from "../components/Header";
+import InputField from "../components/InputField";
 import { Link as RouterLink } from "react-router";
 // 2 Backend Tasks (Ctrl+F "BTASK")
 export default function MyPosts() {

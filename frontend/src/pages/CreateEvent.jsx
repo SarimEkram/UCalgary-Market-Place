@@ -1,5 +1,6 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import {
+  InputLabel,
   Box,
   Container,
   Divider,
@@ -7,17 +8,16 @@ import {
   Input,
   Link,
   Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
+  Typography
 } from "@mui/material";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import ProfileIcon from "./assets/ProfileIconSVG";
-import CustomButton from "./components/CustomButton";
-import Header from "./components/Header";
-import InputField from "./components/InputField";
 import { Link as RouterLink } from "react-router";
+import ProfileIcon from "../assets/ProfileIconSVG";
+import CustomButton from "../components/CustomButton";
+import Header from "../components/Header";
+import InputField from "../components/InputField";
+
 // 1 Backend Tasks (Ctrl+F "BTASK")
 export default function MyPosts() {
   const {
@@ -28,6 +28,7 @@ export default function MyPosts() {
 
   const [createFailed, setCreateFailed] = useState(false);
   const [newImages, setNewImages] = useState([]);
+  const [date, setDate] = useState(null);
 
   //set the current image in image slider
   const [currentImage, setCurrentImage] = useState(null);
@@ -35,8 +36,9 @@ export default function MyPosts() {
   const fileInputRef = useRef(null);
 
   const onSubmit = (data) => {
-    data["condition"] = condition;
     data["images"] = Array.from(newImages);
+    data["date"] = date;
+
     console.log(
       "send create post request to the server... using this data:",
       data
@@ -55,7 +57,7 @@ export default function MyPosts() {
     "description": "rni",
     "location": "t3a2m1",
     "price": 13,
-    "condition": "new",
+    "date": idk 
     "images": [Fileobject, Fileobject  ]
 }
 }
@@ -67,15 +69,6 @@ export default function MyPosts() {
     } else {
       setCreateFailed(true);
     }
-  };
-
-  const [condition, setCondition] = useState("new");
-
-  const handleConditionChange = (event, value) => {
-    if (value != null) {
-      setCondition(value);
-    }
-    console.log(condition);
   };
 
   function handleDeletedImage() {
@@ -103,22 +96,22 @@ export default function MyPosts() {
     <Stack direction="column" spacing={2} sx={styles.page}>
       <Header></Header>
       <Container maxWidth={"sm"} sx={styles.main}>
-        <RouterLink to=".." style={{textDecoration : "none"}}>
-          <Link
-            color="secondary"
-            sx={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              textDecoration: "none",
-            }}
-            variant="text"
-          >
-            <ChevronLeftIcon></ChevronLeftIcon>
-            <Typography variant="h6" sx={{ fontWeight: "400" }}>
-              Back to My Posts
-            </Typography>
-          </Link>
+        <RouterLink to=".."  style={{textDecoration : "none"}}>
+        <Link component={"div"}
+          color="secondary"
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            textDecoration: "none",
+          }}
+          variant="text"
+        >
+          <ChevronLeftIcon></ChevronLeftIcon>
+          <Typography variant="h6" sx={{ fontWeight: "400" }}>
+            Back to My Events
+          </Typography>
+        </Link>
         </RouterLink>
         <Divider
           variant="fullWidth"
@@ -188,39 +181,18 @@ export default function MyPosts() {
                 valueAsNumber: true,
               })}
             ></InputField>
-            <ToggleButtonGroup
-              id="condition-toggle"
-              value={condition}
-              exclusive
-              onChange={handleConditionChange}
-              sx={{
-                "& .MuiToggleButtonGroup-root": {
-                  color: "#000509",
-                  backgroundColor: "#F0F0F3",
-                  textTransform: "none",
-                  fontWeight: "400",
-                  lineHeight: 0.7,
-                },
-
-                "& .MuiButtonBase-root": {
-                  color: "#000509",
-                  backgroundColor: "#F0F0F3",
-                  textTransform: "none",
-                  fontWeight: "400",
-                  lineHeight: 0.7,
-                },
-              }}
-            >
-              <ToggleButton value="new" data-selected={condition == "new"}>
-                New
-              </ToggleButton>
-              <ToggleButton value="good" data-selected={condition == "good"}>
-                Good
-              </ToggleButton>
-              <ToggleButton value="fair" data-selected={condition == "fair"}>
-                Fair
-              </ToggleButton>
-            </ToggleButtonGroup>
+            <Box>
+              <InputLabel shrink>Date</InputLabel>
+              <CustomButton
+                style={{
+                  width: "fit-content",
+                }}
+                color={"black"}
+                onClick={() => {}}
+              >
+                {"Change Date"}
+              </CustomButton>
+            </Box>
             <Box id="edit-images" sx={{ position: "relative" }}>
               {/* temporary placeholder until the image slider is done */}
               <div style={{ backgroundColor: "grey" }}>
@@ -253,7 +225,7 @@ export default function MyPosts() {
               </CustomButton>
 
               <Typography
-               
+
                 sx={[{ fontSize: "1rem", visibility: newImages.length != 0 }]}
               >
                 Selected files:{" "}
