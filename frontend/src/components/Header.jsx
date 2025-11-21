@@ -4,7 +4,6 @@ import Logo from "../assets/logo.svg";
 export default function Header() {
   return (
     <Stack
-      id="hello"
       direction="row"
       spacing={2}
       sx={(theme) => {
