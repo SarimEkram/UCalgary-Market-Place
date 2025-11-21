@@ -6,13 +6,13 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import ProfileIcon from "./assets/ProfileIconSVG";
-import CustomButton from "./components/CustomButton";
-import Header from "./components/Header";
-import InputField from "./components/InputField";
+import ProfileIcon from "../assets/ProfileIconSVG";
+import CustomButton from "../components/CustomButton";
+import Header from "../components/Header";
+import InputField from "../components/InputField";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import VerifyNewUser from "./components/VerifyNewUser";
+import VerifyNewUser from "../components/VerifyNewUser";
 
 // 2 Backend Task(s) (Ctrl+F "BTASK")
 export default function SignUp() {
