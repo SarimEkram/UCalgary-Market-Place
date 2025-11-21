@@ -5,10 +5,10 @@ import {
   Divider,
   FormHelperText,
   Input,
+  InputLabel,
   Link,
   Stack,
-  Typography,
-InputLabel
+  Typography
 } from "@mui/material";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";

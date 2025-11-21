@@ -1,23 +1,22 @@
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import {
   Box,
   Container,
+  Divider,
   FormHelperText,
+  Input,
+  Link,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
-  Link,
-  Divider,
   Typography,
-  Input,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import ProfileIcon from "./assets/ProfileIconSVG";
 import CustomButton from "./components/CustomButton";
 import Header from "./components/Header";
 import InputField from "./components/InputField";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 // 1 Backend Tasks (Ctrl+F "BTASK")
 export default function MyPosts() {
   const {
