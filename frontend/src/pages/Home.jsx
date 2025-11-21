@@ -1,8 +1,8 @@
 // Home.jsx
 import { Box, Container, Stack, Typography, Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import Header from "./components/Header";
-import Navigation from "./components/Navigation";
+import Header from "../components/Header";
+import Navigation from "../components/Navigation";
 
 export default function Home() {
   return (

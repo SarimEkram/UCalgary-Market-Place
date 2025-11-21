@@ -14,8 +14,8 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 
-import Header from "./components/Header";
-import Navigation from "./components/Navigation";
+import Header from "../components/Header";
+import Navigation from "../components/Navigation";
 
 // ===== SAMPLE DATA =====
 const RECENT_POSTS = [

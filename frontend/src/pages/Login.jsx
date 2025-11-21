@@ -8,11 +8,11 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import ProfileIcon from "./assets/ProfileIconSVG";
-import CustomButton from "./components/CustomButton";
-import Header from "./components/Header";
-import InputField from "./components/InputField";
-import ResetPassword from "./components/ResetPassword";
+import ProfileIcon from "../assets/ProfileIconSVG";
+import CustomButton from "../components/CustomButton";
+import Header from "../components/Header";
+import InputField from "../components/InputField";
+import ResetPassword from "../components/ResetPassword";
 
 import { Link as RouterLink } from "react-router";
 // 1 Backend Tasks (Ctrl+F "BTASK")
