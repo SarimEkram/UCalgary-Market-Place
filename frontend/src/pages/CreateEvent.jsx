@@ -19,7 +19,7 @@ import Header from "../components/Header";
 import InputField from "../components/InputField";
 
 // 1 Backend Tasks (Ctrl+F "BTASK")
-export default function MyPosts() {
+export default function CreateEvent() {
 
   const {
     register,
