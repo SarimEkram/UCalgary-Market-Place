@@ -20,24 +20,27 @@ import InputField from "../components/InputField";
 
 // 1 Backend Tasks (Ctrl+F "BTASK")
 export default function MyPosts() {
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
+  // keep track of status of server request 
   const [createFailed, setCreateFailed] = useState(false);
+  // keep track of new images 
   const [newImages, setNewImages] = useState([]);
-  const [date, setDate] = useState(null);
-
   //set the current image in image slider
   const [currentImage, setCurrentImage] = useState(null);
 
+  //ref of the input[type="file"]
   const fileInputRef = useRef(null);
 
+  // submit edit request to server
   const onSubmit = (data) => {
     data["images"] = Array.from(newImages);
-    data["date"] = date;
+    
 
     console.log(
       "send create post request to the server... using this data:",
@@ -71,10 +74,12 @@ export default function MyPosts() {
     }
   };
 
+  //handle Deleted Images
   function handleDeletedImage() {
     //tldr xD
   }
 
+  // handle newly uploaded images 
   const handleImagesChange = (event) => {
     const newFiles = event.target.files;
     if (newFiles.length != 0) {
@@ -82,6 +87,7 @@ export default function MyPosts() {
     }
   };
 
+  //print the names of a list of FIle objects  
   const printImageNames = (files) => {
     let result = "";
     console.log("files", files);
