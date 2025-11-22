@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { getSavedPost } from "../../controller/userSettingsController/savedPostController.js";
+import { getSavedPosts, unsavePost } from "../../controller/userSettingsController/savedPostController.js";
 
 const router = Router();
 
-router.post("/", getSavedPost);
+router.post("/", getSavedPosts);      // POST /api/getSavedPosts/
+router.post("/unsave", unsavePost);   // POST /api/getSavedPosts/unsave
 
 export default router;
+
