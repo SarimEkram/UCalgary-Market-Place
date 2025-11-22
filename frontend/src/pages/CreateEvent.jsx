@@ -37,6 +37,13 @@ export default function CreateEvent() {
   //ref of the input[type="file"]
   const fileInputRef = useRef(null);
 
+  // current selected date
+  const [range, setRange] = useState({ start: null, end: null });
+  
+  //variable for Date Picker dialog state
+  const [open, setOpen] = useState(false);
+
+
   // submit edit request to server
   const onSubmit = (data) => {
     data["images"] = Array.from(newImages);

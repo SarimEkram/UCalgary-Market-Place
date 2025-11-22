@@ -25,16 +25,31 @@ export default function EditEvent() {
     formState: { errors },
   } = useForm();
 
+  //keep track of status of edit request to server
   const [editFailed, setEditFailed] = useState(false);
+
+  //keep track of deleted images 
   const [deletedImages, setDeletedImages] = useState([]);
+
+  //keep track of uploaded images 
   const [newImages, setNewImages] = useState([]);
-  const [date, setDate] = useState(null);
+ 
+
+  // current selected date
+  const [range, setRange] = useState({ start: null, end: null });
+  
+  //variable for Date Picker dialog state
+  const [open, setOpen] = useState(false);
 
   //set the current image in image slider
   const [currentImage, setCurrentImage] = useState(null);
 
+  //ref for input[type="file"]
   const fileInputRef = useRef(null);
+
   // TODO: find  a way to handle deleted images
+
+  //send an edit request to the server
   const onSubmit = (data) => {
     data["deleted_images"] = deletedImages;
     data["new_images"] = Array.from(newImages);
@@ -71,13 +86,12 @@ export default function EditEvent() {
     }
   };
 
+  //handle deleted images
   function handleDeletedImage() {
-    let imgs = Array.from(deletedImages);
-    imgs.push(currentImage);
-    setDeletedImages(imgs);
-    console.log("delete image using this data...", data);
+   //tldr XD
   }
 
+// handle new image uploads by the user
   const handleImagesChange = (event) => {
     const newFiles = event.target.files;
     if (newFiles.length != 0) {
@@ -85,6 +99,7 @@ export default function EditEvent() {
     }
   };
 
+  //print names of a list of file objects 
   const printImageNames = (files) => {
     let result = "";
     console.log("files", files);
@@ -96,8 +111,7 @@ export default function EditEvent() {
   };
 
   //TODO: finish getPost
-  const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
+  // send get event post request to the server
   const getPost = () => {
     /**
      * BTASK 
