@@ -3,6 +3,7 @@ import cors from "cors";
 import loginRoutes from "./routes/authRoutes/loginRoutes.js";
 import registrationRoutes from "./routes/authRoutes/registrationRoutes.js";
 import postRoutes from "./routes/postRoutes/postRoutes.js";
+import passwordRoutes from "./routes/authRoutes/passwordRoutes.js";
 
 const app = express();
 
@@ -19,7 +20,9 @@ app.get("/", (req, res) => {
 //login route
 app.use("/api/login", loginRoutes);
 
->>>>>>> main
+//password route
+app.use("/api/password", passwordRoutes);
+
 // Registration routes
 app.use("/api/registration", registrationRoutes);
 
