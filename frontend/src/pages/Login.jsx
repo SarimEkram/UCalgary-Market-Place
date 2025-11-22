@@ -27,6 +27,8 @@ export default function Login() {
 
   const [open, setOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   const onSubmit = async (formData) => {
 
     try {
@@ -42,9 +44,9 @@ export default function Login() {
       if (response.ok) {
         // Save the username to localStorage
         data.user["isAdmin"] = data.isAdmin; 
-        localStorage.setItem("user", data.user);
+        localStorage.setItem("user", JSON.stringify(data.user));
          //navigate to home page. 
-         useNavigate("/home");
+        navigate("/home");
       } else {
         // Handle case where username/password doesn't match
          setLoginFailed(data.error);
