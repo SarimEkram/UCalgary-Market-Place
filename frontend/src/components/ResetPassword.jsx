@@ -5,33 +5,53 @@ import {
   Divider,
   FormHelperText,
   Stack,
-  useTheme,
 } from "@mui/material";
 import { useState } from "react";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import CustomButton from "./CustomButton";
 import InputField from "./InputField";
 import CheckMark from "../assets/CheckMarkSVG";
 
 // 3 Backend Tasks (Ctrl+F "BTASK")
 export default function ResetPassword({ open, handleClose }) {
-  const [page, setPage] = useState(1);
-  const [email, setEmail] = useState("")
+  const [page, setPage] = useState(3);
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+
+  const closeDialog = () => {
+    handleClose();
+  };
 
   return (
-    <Dialog onClose={handleClose} open={open} sx={{"& .MuiDialog-paper" :{overflowX: "hidden"}, "& .MuiDialog-root" :{overflowX: "hidden"}}}>
-      <Box sx={{ padding: 3, paddingBottom: 6,}}>
+    <Dialog
+      onClose={closeDialog}
+      open={open}
+      sx={{
+        "& .MuiDialog-paper": { overflowX: "hidden" },
+        "& .MuiDialog-root": { overflowX: "hidden" },
+      }}
+    >
+      <Box sx={{ padding: 3, paddingBottom: 6 }}>
         {page == 1 && (
-          <FirstPage setPage={setPage} handleClose={handleClose} setEmail={setEmail}></FirstPage>
+          <FirstPage
+            setPage={setPage}
+            handleClose={closeDialog}
+            setEmail={setEmail}
+          ></FirstPage>
         )}
         {page == 2 && (
-          <SecondPage handleClose={handleClose} setPage={setPage}></SecondPage>
+          <SecondPage handleClose={closeDialog} setPage={setPage} setCode={setCode}></SecondPage>
         )}
         {page == 3 && (
-          <ThirdPage handleClose={handleClose} setPage={setPage} email={email}></ThirdPage>
+          <ThirdPage
+            handleClose={closeDialog}
+            setPage={setPage}
+            email={email}
+            code={code}
+          ></ThirdPage>
         )}
         {page == 4 && (
-          <FourthPage handleClose={handleClose} setPage={setPage}></FourthPage>
+          <FourthPage handleClose={closeDialog} setPage={setPage}></FourthPage>
         )}
       </Box>
     </Dialog>
@@ -45,14 +65,41 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(
-      "mssging backend to send a verification code to a user email...",
-      data
-    );
+  const [submitStatus, setSubmitStatus] = useState({
+    success: null,
+    msg: "No message.",
+  });
 
-    setEmail(data["email"]);
-   
+  const onSubmit = async (formData) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/password/forgot",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await response.json();
+
+      // handle successful cases where the email was sent
+      if (response.ok) {
+        setEmail(formData["email"]);
+        setPage(2);
+      } else {
+        // Handle case where email failed to send
+        const status = { ...submitStatus };
+        status.success = false;
+        status.msg = data.error;
+        setSubmitStatus(status);
+      }
+    } catch (error) {
+      alert("An error occurred. Please try again later.");
+    }
+
     /***
        * BTASK
        * -------
@@ -63,18 +110,14 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
        * 
        {
     "email": "enibalo2@gmail.com"
-}
+      }
 
        */
-    
-      setPage(2);
   };
-
-
 
   return (
     <>
-      <DialogTitle sx={{ padding: 0, width: "520px", minWidth: "fit-content"}}>
+      <DialogTitle sx={{ padding: 0, width: "520px", minWidth: "fit-content" }}>
         Please enter your email.
       </DialogTitle>
       <Divider
@@ -89,22 +132,34 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
       ></Divider>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Stack spacing={2}>
-             <InputField
-            placeholder={"joe.doe@ucalgary.ca"}
-            label={"Email"}
-            errorMsg={errors["email"] ? errors["email"].message : null}
-            {...register("email", {
-              required: "Email is required.",
-              maxLength: {
-                value: 255,
-                message: "Maximum length of 255 characters.",
-              },
-              pattern: {
-                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                message: "Please enter a valid email. Ex: xxx@gmail.com",
-              },
-            })}
-          ></InputField>
+          <Stack spacing={1} sx={{ height: "fit-content" }}>
+            <InputField
+              placeholder={"joe.doe@ucalgary.ca"}
+              label={"Email"}
+              errorMsg={errors["email"] ? errors["email"].message : null}
+              {...register("email", {
+                required: "Email is required.",
+                maxLength: {
+                  value: 255,
+                  message: "Maximum length of 255 characters.",
+                },
+                pattern: {
+                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  message: "Please enter a valid email. Ex: xxx@gmail.com",
+                },
+              })}
+            ></InputField>
+            <FormHelperText
+              error={true}
+              sx={{
+                marginTop: 1,
+                visibility: submitStatus.success == null ? "hidden" : "visible",
+                textAlign: "center",
+              }}
+            >
+              {submitStatus.msg}
+            </FormHelperText>
+          </Stack>
           <Stack direction={"row"} sx={{ justifyContent: "space-between" }}>
             <CustomButton color="black" onClick={handleClose}>
               Exit
@@ -117,43 +172,52 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
   );
 };
 
-const SecondPage = ({ setPage, handleClose }) => {
+const SecondPage = ({ setPage, handleClose, setCode }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const [failed, setFailed] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState({
+    success: null,
+    msg: "No message.",
+  });
 
-  const onSubmit = (data) => {
-    console.log("dupe for checking verification code using this data: ", data);
-    /**
-     * 
-      BTASK
-      -------
-      Checking if a verification code is valid. 
-      Setting the  `isValid` variable based on the results. 
-      
-       Example data
-      ------------
-            {
-            "code": "12345678"
+  const onSubmit = async (formData) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/password/verify",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         }
-     */
-    const isValid = true;
+      );
 
-    //fake succesful response from backend
-    if (isValid == false) {
-      setFailed(true);
-    } else {
-      setPage(3);
+      const data = await response.json();
+
+      // handle successful case
+      if (response.ok) {
+        setCode(formData["code"]);
+        setPage(3);
+      } else {
+        // Handle failures
+        const status = { ...submitStatus };
+        status.success = false;
+        status.msg = data.error;
+        setSubmitStatus(status);
+      }
+    } catch (error) {
+      alert("An error occurred. Please try again later.");
     }
   };
 
   return (
     <>
-      <DialogTitle sx={{ padding: 0, width: "520px", minWidth: "fit-content"}}>
+      <DialogTitle sx={{ padding: 0, width: "520px", minWidth: "fit-content" }}>
         Please enter the 8-digit code that was sent to your email.
       </DialogTitle>
       <Divider
@@ -167,51 +231,54 @@ const SecondPage = ({ setPage, handleClose }) => {
         })}
       ></Divider>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <InputField
-          placeholder={""}
-          label={"Verifcation Code"}
-          inputProps={{ type: "text" }}
-          errorMsg={errors["code"] ? errors["code"].message : null}
-          {...register("code", {
-            required: "Verification code is required.",
-            minLength: {
-              value: 8,
-              message: "Verification code must be 8 characters. ",
-            },
-            maxLength: {
-              value: 8,
-              message: "Verification code must be 8 characters. ",
-            },
-          })}
-        ></InputField>
-        <FormHelperText
-          error={true}
-          sx={[
-            {
-              textAlign: "center",
-              fontSize: "1rem",
-              paddingTop: 1,
-              paddingBottom: 1,
-              visibility: failed ? "visible" : "hidden",
-            },
-          ]}
-        >
-          Verification code was invalid.<br></br>Please try again.
-        </FormHelperText>
-        <Stack direction={"row"} sx={{ justifyContent: "space-between" }}>
-          <CustomButton color="black" onClick={handleClose}>
-            Exit
-          </CustomButton>
-          <CustomButton color="black" type="submit">
-            Next
-          </CustomButton>
+        <Stack spacing={2}>
+          <Stack spacing={1}>
+            <InputField
+              placeholder={""}
+              label={"Verifcation Code"}
+              inputProps={{ type: "text" }}
+              errorMsg={errors["code"] ? errors["code"].message : null}
+              {...register("code", {
+                required: "Verification code is required.",
+                minLength: {
+                  value: 8,
+                  message: "Verification code must be 8 characters. ",
+                },
+                maxLength: {
+                  value: 8,
+                  message: "Verification code must be 8 characters. ",
+                },
+              })}
+            ></InputField>
+            <FormHelperText
+              error={true}
+              sx={[
+                {
+                  textAlign: "center",
+                  visibility:
+                    submitStatus.success == null ? "hidden" : "visible",
+                },
+              ]}
+            >
+              {submitStatus.msg + ". "}
+              Please try again.
+            </FormHelperText>
+          </Stack>
+          <Stack direction={"row"} sx={{ justifyContent: "space-between" }}>
+            <CustomButton color="black" onClick={handleClose}>
+              Exit
+            </CustomButton>
+            <CustomButton color="black" type="submit">
+              Next
+            </CustomButton>
+          </Stack>
         </Stack>
       </form>
     </>
   );
 };
 
-const ThirdPage = ({ setPage, handleClose, email }) => {
+const ThirdPage = ({ setPage, handleClose, email, code }) => {
   const {
     register,
     handleSubmit,
@@ -219,40 +286,46 @@ const ThirdPage = ({ setPage, handleClose, email }) => {
     formState: { errors },
   } = useForm();
 
-  const [failed, setFailed] = useState(false);
+ 
 
-  const onSubmit = (data) => {
+  const [submitStatus, setSubmitStatus] = useState({
+    success: null,
+    msg: "No message.",
+  });
 
-    delete data["newPassword"];
-    data["email"] = email;
+  const onSubmit = async (formData) => {
+    delete formData["password"];
+    formData["email"] = email;
+    formData["code"] = code;
+   
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/password/reset",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
-    console.log(
-      "mssging backend to change the password using this data...",
-      data
-    );
-    /**
-     * 
-     BTASK
-     ------
-     Changing a user's password. 
-     Set boolean variable `isSuccess` based on the results. 
-     Example Data
-     --------
-     {
-    "password": "password123#",
-    "email": "enibalo2@gmail.com"
-}
-     */
-
-
-    const isSuccess = true;
-    // fake succesfsul response frmo backend
-    if (isSuccess == false) {
-      setFailed(true);
-    } else {
-      setPage(4);
-    }
+      const data = await response.json();
+      // handle successful case
+      if (response.ok) {
+         setPage(4);
+      } else {
+        // Handle failures
+        const status = { ...submitStatus };
+        status.success = false;
+        status.msg = data.error;
+        setSubmitStatus(status);
+      }
+    } catch (error) {
+      alert("An error occurred. Please try again later.");
+    }  
   };
+
 
   const PassHelpText = () => {
     return (
@@ -280,7 +353,7 @@ const ThirdPage = ({ setPage, handleClose, email }) => {
 
   return (
     <>
-       <DialogTitle sx={{ padding: 0, width: "520px", minWidth: "fit-content"}}>
+      <DialogTitle sx={{ padding: 0, width: "520px", minWidth: "fit-content" }}>
         Change your password.
       </DialogTitle>
       <Divider
@@ -318,6 +391,7 @@ const ThirdPage = ({ setPage, handleClose, email }) => {
               },
             })}
           ></InputField>
+          <Stack spacing={1}>
           <InputField
             placeholder={"New Password"}
             label={"Re-enter Your Password"}
@@ -335,13 +409,13 @@ const ThirdPage = ({ setPage, handleClose, email }) => {
             sx={[
               {
                 textAlign: "center",
-                fontSize: "1rem",
-                visibility: failed ? "visible" : "hidden",
+                visibility: submitStatus.success != null ? "visible" : "hidden",
               },
             ]}
           >
-            Failed to reset password.<br></br>Please try again.
+            {submitStatus.msg + ". "}Please try again.
           </FormHelperText>
+          </Stack>
           <Stack direction={"row"} sx={{ justifyContent: "space-between" }}>
             <CustomButton color="black" onClick={handleClose}>
               Exit
@@ -362,7 +436,13 @@ const FourthPage = ({ handleClose }) => {
           <CheckMark></CheckMark>
         </Stack>
         <DialogTitle
-          sx={(theme) => ({ padding: 0, color: theme.palette.success.main, width: "520px", minWidth: "fit-content" })}
+          sx={(theme) => ({
+            padding: 0,
+            color: theme.palette.success.main,
+            width: "520px",
+            minWidth: "fit-content",
+            textAlign: " center",
+          })}
         >
           Password change was succesful.
         </DialogTitle>

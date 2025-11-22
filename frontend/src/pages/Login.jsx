@@ -14,7 +14,7 @@ import Header from "../components/Header";
 import InputField from "../components/InputField";
 import ResetPassword from "../components/ResetPassword";
 
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink, useNavigate } from "react-router";
 // 1 Backend Tasks (Ctrl+F "BTASK")
 export default function Login() {
   const {
@@ -23,34 +23,40 @@ export default function Login() {
     formState: { errors },
   } = useForm();
 
-  const [loginFailed, setLoginFailed] = useState(false);
-  const onSubmit = (data) => {
-    console.log("send a login request to the server... using this data:", data);
-    /**
-     * 
-     BTASK
-     ------
-     Validating a login attempt.
-     Setting the variable `success` based on the results.   
-
-     Example Data
-     --------
-     {
-    "email": "enibalo2@gmail.com",
-    "password": "butter123#"
-    
-    }
-     */
-
-    const success = true;
-    if (success) {
-      //navigate to home page
-    } else {
-      setLoginFailed(true);
-    }
-  };
+  const [loginFailed, setLoginFailed] = useState("");
 
   const [open, setOpen] = useState(false);
+
+  const onSubmit = async (formData) => {
+
+    try {
+      const response = await fetch("http://localhost:8080/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        // Save the username to localStorage
+        data.user["isAdmin"] = data.isAdmin; 
+        localStorage.setItem("user", data.user);
+         //navigate to home page. 
+         useNavigate("/home");
+      } else {
+        // Handle case where username/password doesn't match
+         setLoginFailed(data.error);
+         console.log(data);
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+      alert("An error occurred. Please try again later.");
+    }  
+
+  };
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -108,7 +114,7 @@ export default function Login() {
               { visibility: loginFailed ? "visible" : "hidden" },
             ]}
           >
-            Email or password was invalid.<br></br>Please try again.
+           {loginFailed}.<br></br>Please try again.
           </FormHelperText>
           <Stack direction="row" spacing={2} sx={styles.stackRow}>
             <Typography>New User ? </Typography>
