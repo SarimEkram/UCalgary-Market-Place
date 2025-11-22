@@ -128,6 +128,7 @@ export default function EditPost() {
       <Container maxWidth={"sm"} sx={styles.main}>
         <RouterLink to=".." style={{textDecoration : "none"}}>
           <Link
+          component="div"
             color="secondary"
             sx={{
               display: "flex",
