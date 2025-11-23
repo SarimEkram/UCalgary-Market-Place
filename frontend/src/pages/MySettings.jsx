@@ -21,7 +21,7 @@ import MenuIcon from "../assets/MenuSVG";
 import UserMenu from "../components/UserMenu";
 import User from "../assets/UserSVG";
 
-// 2 Backend Task(s) (Ctrl+F "BTASK")
+// 1 Backend Task(s) (Ctrl+F "BTASK")
 export default function MySettings() {
   const {
     register,
