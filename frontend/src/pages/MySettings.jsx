@@ -23,6 +23,7 @@ import User from "../assets/UserSVG";
 
 // 1 Backend Task(s) (Ctrl+F "BTASK")
 export default function MySettings() {
+  //get user data from local storage
   const [userData, setUserData] = useState(JSON.parse(localStorage.getItem("user")));
 
   const {
