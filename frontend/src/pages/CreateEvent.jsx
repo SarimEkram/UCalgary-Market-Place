@@ -8,7 +8,7 @@ import {
   Input,
   Link,
   Stack,
-  Typography
+  Typography,
 } from "@mui/material";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -17,19 +17,19 @@ import ProfileIcon from "../assets/ProfileIconSVG";
 import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
 import InputField from "../components/InputField";
+import DateRangeDialog from "../components/DateRangeDialog";
 
 // 1 Backend Tasks (Ctrl+F "BTASK")
 export default function CreateEvent() {
-
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  // keep track of status of server request 
+  // keep track of status of server request
   const [createFailed, setCreateFailed] = useState(false);
-  // keep track of new images 
+  // keep track of new images
   const [newImages, setNewImages] = useState([]);
   //set the current image in image slider
   const [currentImage, setCurrentImage] = useState(null);
@@ -39,20 +39,48 @@ export default function CreateEvent() {
 
   // current selected date
   const [range, setRange] = useState({ start: null, end: null });
-  
+
   //variable for Date Picker dialog state
   const [open, setOpen] = useState(false);
 
+  //handle a user changing the date
+  const handleApply = (newRange) => {
+    if (newRange.start.$d.toDateString() === newRange.end.$d.toDateString()) {
+      newRange.end = null;
+    }
+    setRange(newRange);
+  };
+
+  //turn the current date-range into a humand-readable string
+  const getDate = () => {
+    const { start, end } = range;
+ 
+    //handle a user not selecting any date
+    if (!start) {
+      return "No date selected.";
+      //handle events with start and end date
+    } else if (start && end) {
+      //format will look like this: Nov 03 2025
+      return start.format("MMM DD YYYY") + " - " + end.format("MMM DD YYYY");
+      //handle evenrs with only one date
+    } else {
+      return start.format("MMM DD YYYY");
+    }
+  };
+
+  //make sure that the user has selected a date
+  const validateDate = () => {
+    return !(range.end == null && range.start == null)
+      ? true
+      : "Date is required.";
+  };
 
   // submit edit request to server
   const onSubmit = (data) => {
     data["images"] = Array.from(newImages);
-    
-
-    console.log(
-      "send create post request to the server... using this data:",
-      data
-    );
+    const { start, end } = { range };
+    data["startDate"] = start.format("YYYY-MM-DD HH:mm:ss");
+    data["endDate"] = end.format("YYYY-MM-DD HH:mm:ss");
     /*
     *
      * 
@@ -67,7 +95,8 @@ export default function CreateEvent() {
     "description": "rni",
     "location": "t3a2m1",
     "price": 13,
-    "date": idk 
+    "start_date": YYYY-MM-DD HH:mm:ss,
+    "end_date": YYYY-MM-DD HH:mm:ss or null [for one dya events], 
     "images": [Fileobject, Fileobject  ]
 }
 }
@@ -86,7 +115,7 @@ export default function CreateEvent() {
     //tldr xD
   }
 
-  // handle newly uploaded images 
+  // handle newly uploaded images
   const handleImagesChange = (event) => {
     const newFiles = event.target.files;
     if (newFiles.length != 0) {
@@ -94,10 +123,10 @@ export default function CreateEvent() {
     }
   };
 
-  //print the names of a list of FIle objects  
+  //print the names of a list of FIle objects
   const printImageNames = (files) => {
     let result = "";
-    console.log("files", files);
+
     for (let i = 0; i < files.length; i++) {
       result += (result != "" ? ", " : "") + files[i].name;
     }
@@ -109,22 +138,23 @@ export default function CreateEvent() {
     <Stack direction="column" spacing={2} sx={styles.page}>
       <Header></Header>
       <Container maxWidth={"sm"} sx={styles.main}>
-        <RouterLink to=".."  style={{textDecoration : "none"}}>
-        <Link component={"div"}
-          color="secondary"
-          sx={{
-            display: "flex",
-            justifyContent: "flex-start",
-            alignItems: "center",
-            textDecoration: "none",
-          }}
-          variant="text"
-        >
-          <ChevronLeftIcon></ChevronLeftIcon>
-          <Typography variant="h6" sx={{ fontWeight: "400" }}>
-            Back to My Events
-          </Typography>
-        </Link>
+        <RouterLink to=".." style={{ textDecoration: "none" }}>
+          <Link
+            component={"div"}
+            color="secondary"
+            sx={{
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              textDecoration: "none",
+            }}
+            variant="text"
+          >
+            <ChevronLeftIcon></ChevronLeftIcon>
+            <Typography variant="h6" sx={{ fontWeight: "400" }}>
+              Back to My Events
+            </Typography>
+          </Link>
         </RouterLink>
         <Divider
           variant="fullWidth"
@@ -196,15 +226,36 @@ export default function CreateEvent() {
             ></InputField>
             <Box>
               <InputLabel shrink>Date</InputLabel>
+              <Input
+                sx={(theme) => ({
+                  width: "100%",
+                  "& .Mui-disabled": {
+                    color: theme.palette.text.primary,
+                    WebkitTextFillColor: "unset",
+                  },
+                })}
+                value={getDate()}
+                disabled={true}
+                disableUnderline={true}
+                {...register("date", {
+                  validate: validateDate,
+                })}
+              ></Input>
               <CustomButton
                 style={{
                   width: "fit-content",
                 }}
                 color={"black"}
-                onClick={() => {}}
+                onClick={() => setOpen(true)}
               >
                 {"Change Date"}
               </CustomButton>
+              <DateRangeDialog
+                open={open}
+                onClose={() => setOpen(false)}
+                onApply={handleApply}
+                initialRange={range}
+              />
             </Box>
             <Box id="edit-images" sx={{ position: "relative" }}>
               {/* temporary placeholder until the image slider is done */}
@@ -238,7 +289,6 @@ export default function CreateEvent() {
               </CustomButton>
 
               <Typography
-
                 sx={[{ fontSize: "1rem", visibility: newImages.length != 0 }]}
               >
                 Selected files:{" "}

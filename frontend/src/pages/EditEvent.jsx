@@ -17,6 +17,8 @@ import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
 import InputField from "../components/InputField";
 import { Link as RouterLink } from "react-router";
+import DateRangeDialog from "../components/DateRangeDialog";
+
 // 2 Backend Tasks (Ctrl+F "BTASK")
 export default function EditEvent() {
   const {
@@ -28,18 +30,49 @@ export default function EditEvent() {
   //keep track of status of edit request to server
   const [editFailed, setEditFailed] = useState(false);
 
-  //keep track of deleted images 
+  //keep track of deleted images
   const [deletedImages, setDeletedImages] = useState([]);
 
-  //keep track of uploaded images 
+  //keep track of uploaded images
   const [newImages, setNewImages] = useState([]);
- 
 
   // current selected date
   const [range, setRange] = useState({ start: null, end: null });
-  
+
   //variable for Date Picker dialog state
   const [open, setOpen] = useState(false);
+
+  //handle a user changing the date
+  const handleApply = (newRange) => {
+    if (newRange.start.$d.toDateString() === newRange.end.$d.toDateString()) {
+      newRange.end = null;
+    }
+    setRange(newRange);
+  };
+
+  //turn the current date-range into a humand-readable string
+  const getDate = () => {
+    const { start, end } = range;
+    
+    //handle a user not selecting any date
+    if (!start) {
+      return "No date selected.";
+      //handle events with start and end date
+    } else if (start && end) {
+      //format will look like this: Nov 03 2025
+      return start.format("MMM DD YYYY") + " - " + end.format("MMM DD YYYY");
+      //handle evenrs with only one date
+    } else {
+      return start.format("MMM DD YYYY");
+    }
+  };
+
+  //make sure that the user has selected a date
+  const validateDate = () => {
+    return !(range.end == null && range.start == null)
+      ? true
+      : "Date is required.";
+  };
 
   //set the current image in image slider
   const [currentImage, setCurrentImage] = useState(null);
@@ -53,7 +86,9 @@ export default function EditEvent() {
   const onSubmit = (data) => {
     data["deleted_images"] = deletedImages;
     data["new_images"] = Array.from(newImages);
-    data["date"] = date;
+    const { start, end } = { range };
+    data["start_date"] = start.format("YYYY-MM-DD HH:mm:ss");
+    data["end_date"] = end.format("YYYY-MM-DD HH:mm:ss");
     console.log(
       "send edit post request to the server... using this data:",
       data
@@ -71,7 +106,8 @@ export default function EditEvent() {
     "description": "rni",
     "location": "t3a2m1",
     "price": 13,
-    "date": idk for now. deep is handling this. 
+    "start_date": YYYY-MM-DD HH:mm:ss,
+    "end_date": YYYY-MM-DD HH:mm:ss or null [for one day events], 
     "deleted_images": [image_id1, imageid_2...etc],
     "new_images": [Fileobject, Fileobject  ]
 }
@@ -88,10 +124,10 @@ export default function EditEvent() {
 
   //handle deleted images
   function handleDeletedImage() {
-   //tldr XD
+    //tldr XD
   }
 
-// handle new image uploads by the user
+  // handle new image uploads by the user
   const handleImagesChange = (event) => {
     const newFiles = event.target.files;
     if (newFiles.length != 0) {
@@ -99,7 +135,7 @@ export default function EditEvent() {
     }
   };
 
-  //print names of a list of file objects 
+  //print names of a list of file objects
   const printImageNames = (files) => {
     let result = "";
     console.log("files", files);
@@ -132,7 +168,7 @@ export default function EditEvent() {
     <Stack direction="column" spacing={2} sx={styles.page}>
       <Header></Header>
       <Container maxWidth={"sm"} sx={styles.main}>
-        <RouterLink to=".." style={{textDecoration : "none"}}>
+        <RouterLink to=".." style={{ textDecoration: "none" }}>
           <Link
             color="secondary"
             sx={{
@@ -219,15 +255,36 @@ export default function EditEvent() {
             ></InputField>
             <Box>
               <InputLabel shrink>Date</InputLabel>
+              <Input
+                sx={(theme) => ({
+                  width: "100%",
+                  "& .Mui-disabled": {
+                    color: theme.palette.text.primary,
+                    WebkitTextFillColor: "unset",
+                  },
+                })}
+                value={getDate()}
+                disabled={true}
+                disableUnderline={true}
+                {...register("date", {
+                  validate: validateDate,
+                })}
+              ></Input>
               <CustomButton
                 style={{
                   width: "fit-content",
                 }}
                 color={"black"}
-                onClick={() => {}}
+                onClick={() => setOpen(true)}
               >
                 {"Change Date"}
               </CustomButton>
+              <DateRangeDialog
+                open={open}
+                onClose={() => setOpen(false)}
+                onApply={handleApply}
+                initialRange={range}
+              />
             </Box>
 
             <Box id="edit-images" sx={{ position: "relative" }}>
@@ -262,7 +319,6 @@ export default function EditEvent() {
               </CustomButton>
 
               <Typography
-                
                 sx={[{ fontSize: "1rem", visibility: newImages.length != 0 }]}
               >
                 Selected files:{" "}
