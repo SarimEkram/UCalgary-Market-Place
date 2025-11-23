@@ -16,16 +16,53 @@ import ProfileIcon from "../assets/ProfileIconSVG";
 import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
 import InputField from "../components/InputField";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink, useParams } from "react-router";
 import DateRangeDialog from "../components/DateRangeDialog";
 
 // 2 Backend Tasks (Ctrl+F "BTASK")
 export default function EditEvent() {
+  //get user data from local storage
+  const [userData, setUserData] = useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
+  const [eventData, setEventData] = useState({});
+  //get post id from url
+  let { id } = useParams();
+
+  useEffect(() => {
+    let isMounted = true;
+    const formData = { user_id: id, event_id: id };
+    async function fetchData() {
+      console.log("fetch event information using this id...", id);
+      setEventData({
+        name: "eni",
+        description: "rni",
+        location: "t3a2m1",
+        price: 13,
+        start_date: "2025-09-02 00:00:00",
+        end_date: "2025-09-02 00:00:00",
+        images: [],
+      });
+    }
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+    "name": eventData.name,
+    "description": eventData.description,
+    "location": eventData.location,
+    "price": eventData.price,
+},
+  });
 
   //keep track of status of edit request to server
   const [editFailed, setEditFailed] = useState(false);
@@ -34,10 +71,10 @@ export default function EditEvent() {
   const [deletedImages, setDeletedImages] = useState([]);
 
   //keep track of uploaded images
-  const [newImages, setNewImages] = useState([]);
+  const [newImages, setNewImages] = useState(eventData.images);
 
   // current selected date
-  const [range, setRange] = useState({ start: null, end: null });
+  const [range, setRange] = useState({ start: dayjs(eventData.start_date), end: dayjs(eventData.end_date) });
 
   //variable for Date Picker dialog state
   const [open, setOpen] = useState(false);
@@ -53,7 +90,7 @@ export default function EditEvent() {
   //turn the current date-range into a humand-readable string
   const getDate = () => {
     const { start, end } = range;
-    
+
     //handle a user not selecting any date
     if (!start) {
       return "No date selected.";
