@@ -9,10 +9,15 @@ import User from "../assets/UserSVG.jsx";
 export default function Navigation() {
   //get the value of root path which is home, market, e.t.c
   const location = useLocation();
+
+  //the currently selected page in the navigation bar
+  //which is initialized to the root path on the current page
   const [value, setValue] = useState((location.pathname.split("/"))[1]);
 
+   //hook which handles navigating urls 
   const navigate = useNavigate();
 
+  // navigate urls, and change the current selected page, when a user clicks on an item in the nav bar
   function handleChange(newValue) {
     setValue(() => {
       navigate("/" + newValue);
@@ -20,12 +25,13 @@ export default function Navigation() {
     });
   }
 
+   //render icon assocaited with a given value. ex: render Home icon
   const Icon = function ({ value }) {
-    if (value == "Home") {
+    if (value == "home") {
       return <Home></Home>;
-    } else if (value == "User") {
+    } else if (value == "user") {
       return <User></User>;
-    } else if (value == "Events") {
+    } else if (value == "events") {
       return <Shoppingbag></Shoppingbag>;
     } else {
       return <Calendar></Calendar>;
@@ -48,6 +54,7 @@ export default function Navigation() {
     >
       {["Home", "User", "Market", "Events"].map((title) => (
         <BottomNavigationAction
+         key={"nav-" + title.toLowerCase()}
           sx={(theme) => ({
             color:
               value == title.toLowerCase()
@@ -56,7 +63,7 @@ export default function Navigation() {
           })}
           label={title}
           value={title.toLowerCase()}
-          icon={<Icon value={title}></Icon>}
+          icon={<Icon value={title.toLowerCase()}></Icon>}
         />
       ))}
     </BottomNavigation>

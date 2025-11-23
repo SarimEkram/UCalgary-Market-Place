@@ -12,29 +12,42 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 export default function DesktopNav() {
-  const [value, setValue] = useState("Home");
+   //get the value of root path which is home, market, e.t.c
+  const location = useLocation();
+
+  //the currently selected page in the navigation bar
+  //which is initialized to the root path on the current page
+  const [value, setValue] = useState((location.pathname.split("/"))[1]);
+
+  //constant width of the navigation bar
   const drawerWidth = 200;
+
+  //hook which handles navigating urls 
   const navigate = useNavigate();
 
-  const Icon = function ({ value }) {
-    if (value == "Home") {
-      return <Home></Home>;
-    } else if (value == "User") {
-      return <User></User>;
-    } else if (value == "Events") {
-      return <Shoppingbag></Shoppingbag>;
-    } else {
-      return <Calendar></Calendar>;
-    }
-  };
+    //render icon assocaited with a given value. ex: render Home icon
+   const Icon = function ({ value }) {
+     if (value == "home") {
+       return <Home></Home>;
+     } else if (value == "user") {
+       return <User></User>;
+     } else if (value == "events") {
+       return <Shoppingbag></Shoppingbag>;
+     } else {
+       return <Calendar></Calendar>;
+     }
+   };
 
-  const path = { Home: "home", User: "", Market: "", Events: "" };
-  function handleChange(value) {
-    setValue(value);
-    navigate("/" + path[value]);
+
+  // navigate urls, and change the current selected page, when a user clicks on an item in the nav bar
+  function handleChange(newValue) {
+    setValue(() => {
+      navigate("/" + newValue);
+      return newValue;
+    });
   }
 
   return (
@@ -57,13 +70,11 @@ export default function DesktopNav() {
       variant="permanent"
       anchor="left"
     >
-      {/* TODO: FIX DEFAULT COLOR, AND DYNAMICALLY CHANGE COLR BASED ON VALUE */}
-      {/* TODO: RESIZE SVG */}
       <List id="list" sx={{ paddingTop: 10 }}>
         {["Home", "User", "Market", "Events"].map((title) => (
           <>
-            <ListItem key={title} disablePadding>
-              <ListItemButton onClick={() => handleChange(title)}>
+            <ListItem key={"nav-" + title.toLowerCase()} disablePadding>
+              <ListItemButton onClick={() => handleChange(title.toLowerCase())}>
                 <ListItemIcon
                   sx={{
                     display: "flex",
@@ -73,23 +84,22 @@ export default function DesktopNav() {
                 >
                   <Box
                     component="span"
-                    // sx={{ width: "2rem", padding: 0, }}
                     sx={(theme) => ({
                       width: "2rem",
                       padding: 0,
                       color:
-                        value == title
+                        (value ==  title.toLowerCase() )
                           ? theme.palette.primary.main
                           : theme.palette.secondary.main,
                     })}
                   >
-                    <Icon value={title}></Icon>
+                    <Icon value={title.toLowerCase()}></Icon>
                   </Box>
                 </ListItemIcon>
                 <ListItemText
                   sx={(theme) => ({
                     color:
-                      value == title
+                     (value ==  title.toLowerCase() )
                         ? theme.palette.primary.main
                         : theme.palette.secondary.main,
                   })}
