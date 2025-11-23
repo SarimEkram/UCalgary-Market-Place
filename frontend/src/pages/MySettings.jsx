@@ -23,12 +23,18 @@ import User from "../assets/UserSVG";
 
 // 1 Backend Task(s) (Ctrl+F "BTASK")
 export default function MySettings() {
+  const [userData, setUserData] = useState(JSON.parse(localStorage.getItem("user")));
+
   const {
     register,
     handleSubmit,
     getValues,
     formState: { errors },
-  } = useForm();
+  } = useForm({ defaultValues: {
+      email: userData.email,
+      firstName: userData.fname,
+      lastName: userData.lname, 
+    },});
 
   const [submitStatus, setSubmitStatus] = useState({
     success: null,
@@ -102,6 +108,7 @@ export default function MySettings() {
     </Box>
   );
 
+
   return (
     <Stack direction="column" spacing={2} sx={styles.page}>
       <Header></Header>
@@ -116,6 +123,7 @@ export default function MySettings() {
         </Box>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <Stack direction="column" component={"div"} spacing={4}>
+           
             <InputField
               placeholder={"joe.doe@ucalgary.ca"}
               label={"Email"}
