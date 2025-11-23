@@ -1,9 +1,14 @@
 import {
   Box,
   Container,
+  Divider,
   FormHelperText,
+  IconButton,
   Link,
+  Menu,
+  MenuItem,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import ProfileIcon from "../assets/ProfileIconSVG";
@@ -12,10 +17,12 @@ import Header from "../components/Header";
 import InputField from "../components/InputField";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import VerifyNewUser from "../components/VerifyNewUser";
+import MenuIcon from "../assets/MenuSVG";
+import UserMenu from "../components/UserMenu";
+import User from "../assets/UserSVG";
 
 // 2 Backend Task(s) (Ctrl+F "BTASK")
-export default function SignUp() {
+export default function MySettings() {
   const {
     register,
     handleSubmit,
@@ -23,20 +30,22 @@ export default function SignUp() {
     formState: { errors },
   } = useForm();
 
-  const [signUpFailed, setSignUpFailed] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState({
+    success: null,
+    msg: "No message.",
+  });
 
   const onSubmit = (data) => {
     delete data["newPassword"];
 
-    if (verified) {
-      console.log("send create user request to the backend...", data);
+    console.log("send create user request to the backend...", data);
 
-      /**
+    /**
      * 
       BTASK
       ------- 
       Update a user account using `data` object. 
-      Update the boolean variable "createAccountFailed" based on the status.
+      Update the submitstatus ased on the status.
       
       Example data
       ------------
@@ -48,33 +57,9 @@ export default function SignUp() {
       }
 
      */
-      const updateAccountFailed = false;
-      if (updateAccountFailed) {
-        setSignUpFailed(true);
-      }
-    } else {
-      /***
-       * BTASK
-       * -------
-       * Send a verification code to an email address using `sendEmailData`.
-       *
-       * Example data
-       * ------
-       * 
-        {
-        "email": "enibalo2@gmail.com"
-        }
-
-       */
-      const sendEmailData = { email: data["email"] };
-      console.log(
-        "sending a: pls send verification email to a user, request to the backend...",
-        sendEmailData
-      );
-      setOpen(true);
-    }
   };
 
+  //component that renders the password rules
   const PassHelpText = () => {
     return (
       <Stack
@@ -93,23 +78,39 @@ export default function SignUp() {
     );
   };
 
+  //makes sure that both passwords entered match
   const validatePasswords = () => {
     const passwords = getValues(["newPassword", "password"]);
     const ans = passwords[0] == passwords[1] ? true : "Passwords do not match.";
     return ans;
   };
 
-  const [open, setOpen] = useState(false);
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const [verified, setVerified] = useState(false);
+  //a styled divider for easy re-use
+  const CustomDivider = ({ props, style, variant, thin, marginThin }) => (
+    <Box>
+      <Divider
+        variant={variant ? variant : "fullWidth"}
+        {...props}
+        sx={(theme) => ({
+          borderBottom: thin ? 0.75 : theme.palette.dividerWidth,
+          borderColor: theme.palette.divider,
+          boxSizing: "border-box",
+          marginTop: marginThin ? 0: 3,
+          marginBottom: marginThin ? 0 : 3,
+        })}
+      ></Divider>
+    </Box>
+  );
 
   return (
-    <Stack id="login" direction="column" spacing={2} sx={styles.page}>
+    <Stack direction="column" spacing={2} sx={styles.page}>
       <Header></Header>
       <Container maxWidth={"sm"} sx={styles.main}>
+        <Stack direction={"row"} spacing={1}>
+         <UserMenu></UserMenu>          
+         <Typography variant="h4">My Settings</Typography>
+        </Stack>
+        <CustomDivider thin></CustomDivider>
         <Box sx={styles.icon}>
           <ProfileIcon></ProfileIcon>
         </Box>
@@ -202,23 +203,19 @@ export default function SignUp() {
             error={true}
             sx={[
               { textAlign: "center", fontSize: "1rem" },
-              { visibility: signUpFailed ? "visible" : "hidden" },
+              {
+                visibility: submitStatus.success != null ? "visible" : "hidden",
+              },
             ]}
           >
-            Sign up failed.<br></br>Please try again.
+            {submitStatus.msg}.<br></br>Please try again.
           </FormHelperText>
           <Stack direction="row" spacing={2} sx={styles.stackRow}>
-            <Typography>Existing User ? </Typography>
             <Link color="primary">
-              <Typography>Sign In</Typography>
+              <Typography>Save Changes</Typography>
             </Link>
           </Stack>
         </Stack>
-        <VerifyNewUser
-          open={open}
-          handleClose={handleClose}
-          setVerified={setVerified}
-        ></VerifyNewUser>
       </Container>
     </Stack>
   );
@@ -240,7 +237,7 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center",
     alignContent: "space-between",
-    padding: 10,
+    paddingTop: 3,
   },
 
   bottomContent: {
