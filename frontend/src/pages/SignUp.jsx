@@ -15,7 +15,7 @@ import { useState } from "react";
 import VerifyNewUser from "../components/VerifyNewUser";
 import { Link as RouterLink } from "react-router";
 
-// 2 Backend Task(s) (Ctrl+F "BTASK")
+// 2 Backend Task(s) (Ctrl+F "TODO")
 export default function SignUp() {
   const {
     register,
@@ -53,9 +53,8 @@ export default function SignUp() {
         setSignUpFailed(true);
       }
     } else {
-      //TODO
+      //TODO: BTASK
       /***
-       * BTASK
        * -------
        * Send a verification code to an email address using `sendEmailData`.
        *

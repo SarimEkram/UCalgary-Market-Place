@@ -15,7 +15,7 @@ import Header from "../components/Header";
 import InputField from "../components/InputField";
 import UserMenu from "../components/UserMenu";
 
-// 1 Backend Task(s) (Ctrl+F "BTASK")
+// 1 Backend Task(s) (Ctrl+F "TODO")
 export default function MySettings() {
   //get user data from local storage
   const [userData, setUserData] = useState(JSON.parse(localStorage.getItem("user")));

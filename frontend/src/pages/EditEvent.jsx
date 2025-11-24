@@ -83,7 +83,8 @@ export default function EditEvent() {
       //set images in the form imageslider 
       setImages(dataImages);
 
-      //TODO: BTASK: add end_date and start_date in response for an event ( rn i only get an event_date in the response)
+      //TODO: BTASK: 
+      // add end_date and start_date in response for an event ( rn i only get an event_date in the response)
 
       //**It renders the current day rn, because by by default dayjs constructor uses the current date,
       //** */ when passed a null value.  
@@ -167,7 +168,7 @@ export default function EditEvent() {
     );
     /**
      * 
-     BTASK
+     TODO: BTASK
      ------
      Updated an edit post.    
 
