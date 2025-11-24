@@ -8,23 +8,25 @@ import {
 } from "@mui/material";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 
-//TODO: Replace these images with actual images from BACKEND.
-const images = [
-  {
-    label: "Img 1",
-    src: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-  },
-  {
-    label: "Img 2",
-    src: "https://images.unsplash.com/photo-1470770903676-69b98201ea1c",
-  },
-  {
-    label: "Img 3",
-    src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-  },
-];
 
-export default function ImageSlider() {
+// Sample input
+//-------------------------
+// images = [
+//   {
+//     label: "Img 1",
+//     src: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+//   },
+//   {
+//     label: "Img 2",
+//     src: "https://images.unsplash.com/photo-1470770903676-69b98201ea1c",
+//   },
+//   {
+//     label: "Img 3",
+//     src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+//   },
+// ];
+
+export default function ImageSlider({images}) {
   const [currStep, setCurrStep] = useState(0);  //Current step index of image
   const numberOfSteps = images.length;          //Total number of images
 
@@ -33,8 +35,8 @@ export default function ImageSlider() {
 
   const handleBackButton = () =>                //Move to previous image
     setCurrStep((prev) => (prev - 1 + numberOfSteps) % numberOfSteps);
-
-  return (
+  console.log(images);
+  if (images.length != 0 )return (
     <Card                                       //Outer container
       sx={{ 
         position: "relative",               //for positioning arrows and dots on top
@@ -147,4 +149,5 @@ export default function ImageSlider() {
 
     </Card>
   );
+  else return (<Box sx={{ width: "100%", height: { xs: 220, sm: 260, md: 320 }, backgroundColor: "grey" }}></Box>);
 }
