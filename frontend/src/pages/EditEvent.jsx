@@ -12,17 +12,16 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import ProfileIcon from "../assets/ProfileIconSVG";
-import CustomButton from "../components/CustomButton";
-import Header from "../components/Header";
-import InputField from "../components/InputField";
 import { Link as RouterLink, useParams } from "react-router";
+import CustomButton from "../components/CustomButton";
 import DateRangeDialog from "../components/DateRangeDialog";
+import Header from "../components/Header";
 import ImageSlider from "../components/ImageSlider";
-import MyImage from "../assets/career_fair_poster.jpg";
+import InputField from "../components/InputField";
 
 import dayjs from "dayjs";
-// 2 Backend Tasks (Ctrl+F "BTASK")
+
+// incomplete backend tasks, can be found using ctrl+f "TODO". 
 export default function EditEvent() {
   //get user data from local storage
   const [userData, setUserData] = useState(
@@ -49,29 +48,28 @@ export default function EditEvent() {
     let isMounted = true;
     const formData = { event_id: id };
     async function fetchData() {
-      console.log("fetch event information using this id...", id);
-      const response = await fetch(MyImage);
-     
+      const response = await fetch(
+        `http://localhost:8080/api/posts/eventdetails/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      const data = {
-        name: "any comp-sci event",
-        description: "be there or be square",
-        location: "xxx yyy",
-        price: 13,
-        images: [response],
-        start: "2025-09-02 00:00:00",
-        end: "2025-09-13 00:00:00",
-      };
+      const data = await response.json();
+      console.log("json response", data);
 
+      // turn blobs into a URL which the browser can understand and render
       let dataImages = await Promise.all(
         data.images.map(async (image) => {
           let imageBlob = await image.blob();
-          
+
           //delete if the Content/type from server is set to jpeg/png correctly.
           imageBlob = new Blob([imageBlob], { type: "image/jpeg" });
 
           imageBlob = URL.createObjectURL(imageBlob);
-          
 
           return imageBlob;
         })
@@ -82,19 +80,24 @@ export default function EditEvent() {
         src: image,
       }));
 
-
+      //set images in the form imageslider 
       setImages(dataImages);
 
+      //TODO: BTASK: add end_date and start_date in response for an event ( rn i only get an event_date in the response)
+
+      //**It renders the current day rn, because by by default dayjs constructor uses the current date,
+      //** */ when passed a null value.  
+      //set default date in the form 
       setRange({ start: dayjs(data.start_date), end: dayjs(data.end_date) });
 
+      //set default values in the form 
       reset({
-        name: data.name,
+        title: data.title,
         description: data.description,
-        location: data.location,
+        organization_name: data.organization_name,
+        location: data.postal_code,
         price: data.price,
       });
-
-
     }
     fetchData();
     return () => {
@@ -154,10 +157,10 @@ export default function EditEvent() {
   //send an edit request to the server
   const onSubmit = (data) => {
     data["deleted_images"] = deletedImages;
-    data["images"] = Array.from(newImages);
-    const { start, end } = { range };
+    data["new_images"] = Array.from(newImages);
+    const { start, end } =  range;
     data["start_date"] = start.format("YYYY-MM-DD HH:mm:ss");
-    data["end_date"] = end.format("YYYY-MM-DD HH:mm:ss");
+    data["end_date"] = end == null ? null : end.format("YYYY-MM-DD HH:mm:ss");
     console.log(
       "send edit post request to the server... using this data:",
       data
@@ -171,7 +174,7 @@ export default function EditEvent() {
      Example Data
      --------
     {
-    "name": "eni",
+    "title": "eni",
     "description": "rni",
     "location": "t3a2m1",
     "price": 13,
@@ -215,24 +218,6 @@ export default function EditEvent() {
     return result;
   };
 
-  //TODO: finish getPost
-  // send get event post request to the server
-  const getPost = () => {
-    /**
-     * BTASK 
-     * GET POST
-     * ----- 
-     * USER ID: 
-     * POST ID: 
-     * 
-     {
-     user_id:1234 
-      post_id: 45678
-      }
-     * 
-     */
-  };
-
   return (
     <Stack direction="column" spacing={2} sx={styles.page}>
       <Header></Header>
@@ -269,11 +254,27 @@ export default function EditEvent() {
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <Stack direction="column" component={"div"} spacing={4}>
             <InputField
-              placeholder={"Name"}
-              label={"Name"}
-              errorMsg={errors["name"] ? errors["name"].message : null}
-              {...register("name", {
-                required: "Name is required.",
+              placeholder={"Title"}
+              label={"Title"}
+              errorMsg={errors["title"] ? errors["title"].message : null}
+              {...register("title", {
+                required: "Title is required.",
+                maxLength: {
+                  value: 255,
+                  message: "Maximum length of 255 characters.",
+                },
+              })}
+            ></InputField>
+            <InputField
+              placeholder={"Organization Name"}
+              label={"Organization Name"}
+              errorMsg={
+                errors["organization_name"]
+                  ? errors["organization_name"].message
+                  : null
+              }
+              {...register("organization_name", {
+                required: "Organization name is required.",
                 maxLength: {
                   value: 255,
                   message: "Maximum length of 255 characters.",
@@ -321,7 +322,7 @@ export default function EditEvent() {
               errorMsg={errors["price"] ? errors["price"].message : null}
               {...register("price", {
                 required: "Price is required.",
-                valueAsNumber: true,
+                // valueAsNumber: true,
               })}
             ></InputField>
             <Box>
@@ -359,7 +360,6 @@ export default function EditEvent() {
             </Box>
 
             <Box id="edit-images" sx={{ position: "relative" }}>
-              
               <ImageSlider images={images}></ImageSlider>
               <CustomButton
                 style={{
@@ -392,7 +392,7 @@ export default function EditEvent() {
                 {newImages.length != 0 && printImageNames(newImages)}
               </Typography>
 
-              <CustomButton type="submit">Edit</CustomButton>
+              <CustomButton type="submit">Save Changes</CustomButton>
             </Stack>
           </Stack>
           <Input

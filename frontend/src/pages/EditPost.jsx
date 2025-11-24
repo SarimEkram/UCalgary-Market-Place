@@ -13,17 +13,18 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import ProfileIcon from "../assets/ProfileIconSVG";
+import { Link as RouterLink, useParams } from "react-router";
 import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
-import InputField from "../components/InputField";
-import { Link as RouterLink, useParams } from "react-router";
 import ImageSlider from "../components/ImageSlider";
-import MyImage from "../assets/career_fair_poster.jpg";
-// 2 Backend Tasks (Ctrl+F "BTASK")
+import InputField from "../components/InputField";
+
+// incomplete backend tasks, can be found using ctrl+f "TODO". 
 export default function EditPost() {
   //get user data from local storage
-  const [userData, setUserData] = useState(JSON.parse(localStorage.getItem("user")));
+  const [userData, setUserData] = useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
 
   //get post id from url
   let { id } = useParams();
@@ -31,10 +32,10 @@ export default function EditPost() {
   //keep track of selected images
   const [images, setImages] = useState([]);
 
-  //store the item condition 
+  //store the item condition
   const [condition, setCondition] = useState("new");
 
-//react hook form 
+  //react hook form
   const {
     register,
     handleSubmit,
@@ -42,61 +43,61 @@ export default function EditPost() {
     formState: { errors },
   } = useForm();
 
-  //prefill form inputs 
-    useEffect(() => {
-      let isMounted = true;
-      const formData = { event_id: id };
-      async function fetchData() {
-        console.log("fetch event information using this id...", id);
-        const response = await fetch(MyImage);
-  
-        const data = {
-          name: "any comp-sci event",
-          description: "be there or be square",
-          location: "xxx yyy",
-          condition : "good", 
-          price: 13,
-          images: [response],
-        };
-  
-        let dataImages = await Promise.all(
-          data.images.map(async (image) => {
-            let imageBlob = await image.blob();
-           
-            //delete if the Content/type from server is set to jpeg/png correctly.
-            imageBlob = new Blob([imageBlob], { type: "image/jpeg" });
-  
-            imageBlob = URL.createObjectURL(imageBlob);
-            
-  
-            return imageBlob;
-          })
-        );
-  
-        dataImages = dataImages.map((image, index) => ({
-          label: "event-image-" + index,
-          src: image,
-        }));
-  
-       
-  
-        setImages(dataImages);
-        setCondition(data.condition.toLowerCase());
-        reset({
-          name: data.name,
-          description: data.description,
-          location: data.location,
-          price: data.price,
-        });
-      }
-      fetchData();
+  //prefill form inputs
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchData() {
+      const response = await fetch(
+        `http://localhost:8080/api/posts/itemdetails/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      
-      return () => {
-        isMounted = false;
-      };
-    }, []);
-  
+      const data = await response.json();
+      console.log("json response", data);
+
+      //TODO: BTASK 
+      // Images aren't being passed in responses. 
+      let dataImages = await Promise.all(
+        data.images.map(async (image) => {
+          let imageBlob = await image.data.blob();
+
+          //delete if the Content/type from server is set to jpeg/png correctly.
+          imageBlob = new Blob([imageBlob], { type: "image/jpeg" });
+
+          imageBlob = URL.createObjectURL(imageBlob);
+
+          image.data = imageBlob;
+
+          return image;
+        })
+      );
+
+      dataImages = dataImages.map((image, index) => ({
+        label: "event-image-" + index,
+        id: image.image_id,
+        src: image.data,
+      }));
+
+      setImages(dataImages);
+      setCondition(data.item_condition.toLowerCase());
+      reset({
+        title: data.title,
+        description: data.description,
+        location: data.postal_code,
+        price: data.price,
+      });
+    }
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const [editFailed, setEditFailed] = useState(false);
   const [deletedImages, setDeletedImages] = useState([]);
@@ -121,7 +122,7 @@ export default function EditPost() {
      Example Data
      --------
     {
-    "name": "eni",
+    "title": "eni",
     "description": "rni",
     "location": "t3a2m1",
     "price": 13,
@@ -140,7 +141,7 @@ export default function EditPost() {
     }
   };
 
-  // handle a user changing the item condition 
+  // handle a user changing the item condition
   const handleConditionChange = (event, value) => {
     if (value != null) {
       setCondition(value);
@@ -148,7 +149,7 @@ export default function EditPost() {
     console.log(condition);
   };
 
-  //handle deleted images 
+  //handle deleted images
   function handleDeletedImage() {
     let imgs = Array.from(deletedImages);
     imgs.push(currentImage);
@@ -156,14 +157,13 @@ export default function EditPost() {
     console.log("delete image using this data...", data);
   }
 
-  //handle new image uploads 
+  //handle new image uploads
   const handleImagesChange = (event) => {
     const newFiles = event.target.files;
     if (newFiles.length != 0) {
       setNewImages(newFiles);
     }
   };
-
 
   //print the name of the uploaded images
   const printImageNames = (files) => {
@@ -176,30 +176,14 @@ export default function EditPost() {
     return result;
   };
 
-  //TODO: finish getPost
-  const getPost = () => {
-    /**
-     * BTASK 
-     * GET POST
-     * ----- 
-     * USER ID: 
-     * POST ID: 
-     * 
-     {
-     user_id:1234 
-      post_id: 45678
-      }
-     * 
-     */
-  };
 
   return (
     <Stack direction="column" spacing={2} sx={styles.page}>
       <Header></Header>
       <Container maxWidth={"sm"} sx={styles.main}>
-        <RouterLink to=".." style={{textDecoration : "none"}}>
+        <RouterLink to=".." style={{ textDecoration: "none" }}>
           <Link
-          component="div"
+            component="div"
             color="secondary"
             sx={{
               display: "flex",
@@ -228,11 +212,11 @@ export default function EditPost() {
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <Stack direction="column" component={"div"} spacing={4}>
             <InputField
-              placeholder={"Name"}
-              label={"Name"}
-              errorMsg={errors["name"] ? errors["name"].message : null}
-              {...register("name", {
-                required: "Name is required.",
+              placeholder={"Title"}
+              label={"Title"}
+              errorMsg={errors["title"] ? errors["title"].message : null}
+              {...register("title", {
+                required: "Title is required.",
                 maxLength: {
                   value: 255,
                   message: "Maximum length of 255 characters.",
@@ -317,7 +301,7 @@ export default function EditPost() {
               </ToggleButton>
             </ToggleButtonGroup>
             <Box id="edit-images" sx={{ position: "relative" }}>
-             <ImageSlider images={images}></ImageSlider>
+              <ImageSlider images={images}></ImageSlider>
               <CustomButton
                 style={{
                   width: "fit-content",
@@ -343,14 +327,13 @@ export default function EditPost() {
               </CustomButton>
 
               <Typography
-               
                 sx={[{ fontSize: "1rem", visibility: newImages.length != 0 }]}
               >
                 Selected files:{" "}
                 {newImages.length != 0 && printImageNames(newImages)}
               </Typography>
 
-              <CustomButton type="submit">Edit</CustomButton>
+              <CustomButton type="submit">Save Changes</CustomButton>
             </Stack>
           </Stack>
           <Input
