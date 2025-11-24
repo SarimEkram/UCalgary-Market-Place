@@ -5,6 +5,7 @@ import {
   CardMedia,
   IconButton,
   MobileStepper,
+  Typography,
 } from "@mui/material";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 
@@ -149,5 +150,13 @@ export default function ImageSlider({images}) {
 
     </Card>
   );
-  else return (<Box sx={{ width: "100%", height: { xs: 220, sm: 260, md: 320 }, backgroundColor: "grey" }}></Box>);
+  else return (
+  <Box sx={{
+     width: "100%", 
+     height: { xs: 220, sm: 260, md: 320 }, 
+     display: "flex", alignContent: "center", 
+     justifyContent:"center", 
+      backgroundColor: "grey" }}>
+    <Typography variant="h3" sx={{color: "#b8b4b4ff", alignSelf: "center"}}>No Image</Typography>
+    </Box>);
 }
