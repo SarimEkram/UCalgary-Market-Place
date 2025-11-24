@@ -10,7 +10,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import ProfileIcon from "../assets/ProfileIconSVG";
 import CustomButton from "../components/CustomButton";
@@ -18,51 +18,89 @@ import Header from "../components/Header";
 import InputField from "../components/InputField";
 import { Link as RouterLink, useParams } from "react-router";
 import DateRangeDialog from "../components/DateRangeDialog";
+import ImageSlider from "../components/ImageSlider";
+import MyImage from "../assets/career_fair_poster.jpg";
 
+import dayjs from "dayjs";
 // 2 Backend Tasks (Ctrl+F "BTASK")
 export default function EditEvent() {
   //get user data from local storage
   const [userData, setUserData] = useState(
     JSON.parse(localStorage.getItem("user"))
   );
-  const [eventData, setEventData] = useState({});
+
   //get post id from url
   let { id } = useParams();
 
-  useEffect(() => {
-    let isMounted = true;
-    const formData = { user_id: id, event_id: id };
-    async function fetchData() {
-      console.log("fetch event information using this id...", id);
-      setEventData({
-        name: "eni",
-        description: "rni",
-        location: "t3a2m1",
-        price: 13,
-        start_date: "2025-09-02 00:00:00",
-        end_date: "2025-09-02 00:00:00",
-        images: [],
-      });
-    }
-    fetchData();
+  //keep track of selected images
+  const [images, setImages] = useState([]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  // current selected date
+  const [range, setRange] = useState({ start: null, end: null });
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-    "name": eventData.name,
-    "description": eventData.description,
-    "location": eventData.location,
-    "price": eventData.price,
-},
-  });
+  } = useForm();
+
+  useEffect(() => {
+    let isMounted = true;
+    const formData = { event_id: id };
+    async function fetchData() {
+      console.log("fetch event information using this id...", id);
+      const response = await fetch(MyImage);
+     
+
+      const data = {
+        name: "any comp-sci event",
+        description: "be there or be square",
+        location: "xxx yyy",
+        price: 13,
+        images: [response],
+        start: "2025-09-02 00:00:00",
+        end: "2025-09-13 00:00:00",
+      };
+
+      let dataImages = await Promise.all(
+        data.images.map(async (image) => {
+          let imageBlob = await image.blob();
+          
+          //delete if the Content/type from server is set to jpeg/png correctly.
+          imageBlob = new Blob([imageBlob], { type: "image/jpeg" });
+
+          imageBlob = URL.createObjectURL(imageBlob);
+          
+
+          return imageBlob;
+        })
+      );
+
+      dataImages = dataImages.map((image, index) => ({
+        label: "event-image-" + index,
+        src: image,
+      }));
+
+
+      setImages(dataImages);
+
+      setRange({ start: dayjs(data.start_date), end: dayjs(data.end_date) });
+
+      reset({
+        name: data.name,
+        description: data.description,
+        location: data.location,
+        price: data.price,
+      });
+
+
+    }
+    fetchData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   //keep track of status of edit request to server
   const [editFailed, setEditFailed] = useState(false);
@@ -70,14 +108,14 @@ export default function EditEvent() {
   //keep track of deleted images
   const [deletedImages, setDeletedImages] = useState([]);
 
-  //keep track of uploaded images
-  const [newImages, setNewImages] = useState(eventData.images);
-
-  // current selected date
-  const [range, setRange] = useState({ start: dayjs(eventData.start_date), end: dayjs(eventData.end_date) });
+  //keep track of new images
+  const [newImages, setNewImages] = useState([]);
 
   //variable for Date Picker dialog state
   const [open, setOpen] = useState(false);
+
+  //ref for input[type="file"]
+  const fileInputRef = useRef(null);
 
   //handle a user changing the date
   const handleApply = (newRange) => {
@@ -111,18 +149,12 @@ export default function EditEvent() {
       : "Date is required.";
   };
 
-  //set the current image in image slider
-  const [currentImage, setCurrentImage] = useState(null);
-
-  //ref for input[type="file"]
-  const fileInputRef = useRef(null);
-
   // TODO: find  a way to handle deleted images
 
   //send an edit request to the server
   const onSubmit = (data) => {
     data["deleted_images"] = deletedImages;
-    data["new_images"] = Array.from(newImages);
+    data["images"] = Array.from(newImages);
     const { start, end } = { range };
     data["start_date"] = start.format("YYYY-MM-DD HH:mm:ss");
     data["end_date"] = end.format("YYYY-MM-DD HH:mm:ss");
@@ -175,7 +207,7 @@ export default function EditEvent() {
   //print names of a list of file objects
   const printImageNames = (files) => {
     let result = "";
-    console.log("files", files);
+
     for (let i = 0; i < files.length; i++) {
       result += (result != "" ? ", " : "") + files[i].name;
     }
@@ -207,6 +239,7 @@ export default function EditEvent() {
       <Container maxWidth={"sm"} sx={styles.main}>
         <RouterLink to=".." style={{ textDecoration: "none" }}>
           <Link
+            component={"div"}
             color="secondary"
             sx={{
               display: "flex",
@@ -232,6 +265,7 @@ export default function EditEvent() {
             marginBottom: 3,
           })}
         ></Divider>
+
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <Stack direction="column" component={"div"} spacing={4}>
             <InputField
@@ -325,12 +359,8 @@ export default function EditEvent() {
             </Box>
 
             <Box id="edit-images" sx={{ position: "relative" }}>
-              {/* temporary placeholder until the image slider is done */}
-              <div style={{ backgroundColor: "grey" }}>
-                <div style={{ visibility: "hidden" }}>
-                  <ProfileIcon></ProfileIcon>
-                </div>
-              </div>
+              
+              <ImageSlider images={images}></ImageSlider>
               <CustomButton
                 style={{
                   width: "fit-content",

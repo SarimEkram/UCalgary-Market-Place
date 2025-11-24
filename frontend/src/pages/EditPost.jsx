@@ -11,13 +11,15 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import ProfileIcon from "../assets/ProfileIconSVG";
 import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
 import InputField from "../components/InputField";
 import { Link as RouterLink, useParams } from "react-router";
+import ImageSlider from "../components/ImageSlider";
+import MyImage from "../assets/career_fair_poster.jpg";
 // 2 Backend Tasks (Ctrl+F "BTASK")
 export default function EditPost() {
   //get user data from local storage
@@ -26,18 +28,79 @@ export default function EditPost() {
   //get post id from url
   let { id } = useParams();
 
+  //keep track of selected images
+  const [images, setImages] = useState([]);
+
+  //store the item condition 
+  const [condition, setCondition] = useState("new");
+
+//react hook form 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
+
+  //prefill form inputs 
+    useEffect(() => {
+      let isMounted = true;
+      const formData = { event_id: id };
+      async function fetchData() {
+        console.log("fetch event information using this id...", id);
+        const response = await fetch(MyImage);
+  
+        const data = {
+          name: "any comp-sci event",
+          description: "be there or be square",
+          location: "xxx yyy",
+          condition : "good", 
+          price: 13,
+          images: [response],
+        };
+  
+        let dataImages = await Promise.all(
+          data.images.map(async (image) => {
+            let imageBlob = await image.blob();
+           
+            //delete if the Content/type from server is set to jpeg/png correctly.
+            imageBlob = new Blob([imageBlob], { type: "image/jpeg" });
+  
+            imageBlob = URL.createObjectURL(imageBlob);
+            
+  
+            return imageBlob;
+          })
+        );
+  
+        dataImages = dataImages.map((image, index) => ({
+          label: "event-image-" + index,
+          src: image,
+        }));
+  
+       
+  
+        setImages(dataImages);
+        setCondition(data.condition.toLowerCase());
+        reset({
+          name: data.name,
+          description: data.description,
+          location: data.location,
+          price: data.price,
+        });
+      }
+      fetchData();
+
+      
+      return () => {
+        isMounted = false;
+      };
+    }, []);
+  
 
   const [editFailed, setEditFailed] = useState(false);
   const [deletedImages, setDeletedImages] = useState([]);
   const [newImages, setNewImages] = useState([]);
-
-  //set the current image in image slider
-  const [currentImage, setCurrentImage] = useState(null);
 
   const fileInputRef = useRef(null);
   // TODO: find  a way to handle deleted images
@@ -77,7 +140,7 @@ export default function EditPost() {
     }
   };
 
-  const [condition, setCondition] = useState("new");
+  // handle a user changing the item condition 
   const handleConditionChange = (event, value) => {
     if (value != null) {
       setCondition(value);
@@ -85,6 +148,7 @@ export default function EditPost() {
     console.log(condition);
   };
 
+  //handle deleted images 
   function handleDeletedImage() {
     let imgs = Array.from(deletedImages);
     imgs.push(currentImage);
@@ -92,6 +156,7 @@ export default function EditPost() {
     console.log("delete image using this data...", data);
   }
 
+  //handle new image uploads 
   const handleImagesChange = (event) => {
     const newFiles = event.target.files;
     if (newFiles.length != 0) {
@@ -99,6 +164,8 @@ export default function EditPost() {
     }
   };
 
+
+  //print the name of the uploaded images
   const printImageNames = (files) => {
     let result = "";
     console.log("files", files);
@@ -110,8 +177,6 @@ export default function EditPost() {
   };
 
   //TODO: finish getPost
-  const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
   const getPost = () => {
     /**
      * BTASK 
@@ -252,12 +317,7 @@ export default function EditPost() {
               </ToggleButton>
             </ToggleButtonGroup>
             <Box id="edit-images" sx={{ position: "relative" }}>
-              {/* temporary placeholder until the image slider is done */}
-              <div style={{ backgroundColor: "grey" }}>
-                <div style={{ visibility: "hidden" }}>
-                  <ProfileIcon></ProfileIcon>
-                </div>
-              </div>
+             <ImageSlider images={images}></ImageSlider>
               <CustomButton
                 style={{
                   width: "fit-content",
