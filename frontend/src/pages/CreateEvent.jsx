@@ -75,12 +75,14 @@ export default function CreateEvent() {
       : "Date is required.";
   };
 
-  // submit edit request to server
+  // submit create request to server
   const onSubmit = (data) => {
     data["images"] = Array.from(newImages);
-    const { start, end } = { range };
+    const { start, end } = range;
+    console.log(start,end);
     data["startDate"] = start.format("YYYY-MM-DD HH:mm:ss");
-    data["endDate"] = end.format("YYYY-MM-DD HH:mm:ss");
+    data["endDate"] = end  == null ? null : end.format("YYYY-MM-DD HH:mm:ss");
+    console.log("sending create request to server...", data);
     /*
     *
      * 
@@ -91,7 +93,7 @@ export default function CreateEvent() {
      Example Data
      --------
     {
-    "name": "eni",
+    "title": "eni",
     "description": "rni",
     "location": "t3a2m1",
     "price": 13,
@@ -169,11 +171,23 @@ export default function CreateEvent() {
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <Stack direction="column" component={"div"} spacing={4}>
             <InputField
-              placeholder={"Name"}
-              label={"Name"}
-              errorMsg={errors["name"] ? errors["name"].message : null}
-              {...register("name", {
-                required: "Name is required.",
+              placeholder={"Title"}
+              label={"Title"}
+              errorMsg={errors["title"] ? errors["title"].message : null}
+              {...register("title", {
+                required: "Title is required.",
+                maxLength: {
+                  value: 255,
+                  message: "Maximum length of 255 characters.",
+                },
+              })}
+            ></InputField>
+             <InputField
+              placeholder={"Organization Name"}
+              label={"Organization Name"}
+              errorMsg={errors["organization_name"] ? errors["organization_name"].message : null}
+              {...register("organization_name", {
+                required: "Organization name is required.",
                 maxLength: {
                   value: 255,
                   message: "Maximum length of 255 characters.",
@@ -295,7 +309,7 @@ export default function CreateEvent() {
                 {newImages.length != 0 && printImageNames(newImages)}
               </Typography>
 
-              <CustomButton type="submit">Edit</CustomButton>
+              <CustomButton type="submit">Create</CustomButton>
             </Stack>
           </Stack>
           <Input
