@@ -10,8 +10,6 @@ const app = express();
 app.use(express.json());
 app.use(cors()); // Allow Vite frontend
 
-<<<<<<< HEAD
-=======
 app.get("/", (req, res) => {
     res.json({ message: "Backend is running" });
 });
