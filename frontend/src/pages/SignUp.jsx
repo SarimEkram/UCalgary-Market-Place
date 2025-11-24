@@ -34,10 +34,9 @@ export default function SignUp() {
 
       /**
      * 
-      BTASK
+      TODO: BTASK
       ------- 
       Creating a new user account using `data` object. 
-      Update the boolean variable "createAccountFailed" based on the status.
       
       Example data
       ------------
@@ -54,6 +53,7 @@ export default function SignUp() {
         setSignUpFailed(true);
       }
     } else {
+      //TODO
       /***
        * BTASK
        * -------

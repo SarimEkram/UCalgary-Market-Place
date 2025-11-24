@@ -3,23 +3,17 @@ import {
   Container,
   Divider,
   FormHelperText,
-  IconButton,
   Link,
-  Menu,
-  MenuItem,
   Stack,
-  Tooltip,
-  Typography,
+  Typography
 } from "@mui/material";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import ProfileIcon from "../assets/ProfileIconSVG";
 import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
 import InputField from "../components/InputField";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import MenuIcon from "../assets/MenuSVG";
 import UserMenu from "../components/UserMenu";
-import User from "../assets/UserSVG";
 
 // 1 Backend Task(s) (Ctrl+F "BTASK")
 export default function MySettings() {
@@ -49,7 +43,7 @@ export default function MySettings() {
 
     /**
      * 
-      BTASK
+      TODO: BTASK
       ------- 
       Update a user account using `data` object. 
       Update the submitstatus ased on the status.

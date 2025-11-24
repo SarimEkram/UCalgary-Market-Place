@@ -99,19 +99,6 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
       alert("An error occurred. Please try again later.");
     }
 
-    /***
-       * BTASK
-       * -------
-       * Send a verification code to an email address using `data`.
-       *
-       * Example data
-       * ------
-       * 
-       {
-    "email": "enibalo2@gmail.com"
-      }
-
-       */
   };
 
   return (

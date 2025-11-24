@@ -15,7 +15,7 @@ import InputField from "../components/InputField";
 import ResetPassword from "../components/ResetPassword";
 
 import { Link as RouterLink, useNavigate } from "react-router";
-// 1 Backend Tasks (Ctrl+F "BTASK")
+
 export default function Login() {
   const {
     register,
