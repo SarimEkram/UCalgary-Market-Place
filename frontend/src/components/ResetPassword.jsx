@@ -12,9 +12,8 @@ import CustomButton from "./CustomButton";
 import InputField from "./InputField";
 import CheckMark from "../assets/CheckMarkSVG";
 
-// 3 Backend Tasks (Ctrl+F "BTASK")
 export default function ResetPassword({ open, handleClose }) {
-  const [page, setPage] = useState(3);
+  const [page, setPage] = useState(1);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
 
@@ -157,7 +156,7 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
                 textAlign: "center",
               }}
             >
-              {submitStatus.msg}
+              {submitStatus.msg}.
             </FormHelperText>
           </Stack>
           <Stack direction={"row"} sx={{ justifyContent: "space-between" }}>
