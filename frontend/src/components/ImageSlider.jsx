@@ -35,7 +35,7 @@ export default function ImageSlider({images}) {
 
   const handleBackButton = () =>                //Move to previous image
     setCurrStep((prev) => (prev - 1 + numberOfSteps) % numberOfSteps);
-  console.log(images);
+  
   if (images.length != 0 )return (
     <Card                                       //Outer container
       sx={{ 
