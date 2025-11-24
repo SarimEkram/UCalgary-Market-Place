@@ -51,7 +51,7 @@ export default function CreatePost() {
      Example Data
      --------
     {
-    "name": "eni",
+    "title": "eni",
     "description": "rni",
     "location": "t3a2m1",
     "price": 13,
@@ -134,11 +134,11 @@ export default function CreatePost() {
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <Stack direction="column" component={"div"} spacing={4}>
             <InputField
-              placeholder={"Name"}
-              label={"Name"}
-              errorMsg={errors["name"] ? errors["name"].message : null}
-              {...register("name", {
-                required: "Name is required.",
+              placeholder={"Title"}
+              label={"Title"}
+              errorMsg={errors["title"] ? errors["title"].message : null}
+              {...register("title", {
+                required: "Title is required.",
                 maxLength: {
                   value: 255,
                   message: "Maximum length of 255 characters.",
@@ -261,7 +261,7 @@ export default function CreatePost() {
                 {newImages.length != 0 && printImageNames(newImages)}
               </Typography>
 
-              <CustomButton type="submit">Edit</CustomButton>
+              <CustomButton type="submit">Create</CustomButton>
             </Stack>
           </Stack>
           <Input
