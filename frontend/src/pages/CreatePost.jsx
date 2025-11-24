@@ -18,7 +18,8 @@ import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
 import InputField from "../components/InputField";
 import { Link as RouterLink } from "react-router";
-// 1 Backend Tasks (Ctrl+F "BTASK")
+
+// backend tasks, can be found using ctrl+f "TODO". 
 export default function CreatePost() {
   const {
     register,
