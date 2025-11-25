@@ -43,9 +43,11 @@ CREATE TABLE posts (
 CREATE TABLE event_posts (
     event_id          INT PRIMARY KEY,
     organization_name VARCHAR(255),
-    event_date        DATETIME NOT NULL,
+    event_start       DATETIME NOT NULL,
+    event_end         DATETIME NOT NULL,
     FOREIGN KEY (event_id) REFERENCES posts(post_id)
 );
+
 
 -- MARKET POSTS (market_id = post_id)
 CREATE TABLE market_posts (
@@ -168,10 +170,11 @@ INSERT INTO posts (post_id, post_type, postal_code, price, posted_date, name, de
 (203, 'event', 'T2L2M3', NULL, '2025-10-15 00:00:00', 'FSC Meetup',       'FSC general meeting', 3);
 
 -- EVENT DETAILS
-INSERT INTO event_posts (event_id, organization_name, event_date) VALUES
-(201, 'Student Union', '2025-10-29 19:00:00'),
-(202, 'LOREN Club',    '2025-10-31 18:00:00'),
-(203, 'FSC',           '2025-10-22 17:30:00');
+INSERT INTO event_posts (event_id, organization_name, event_start, event_end) VALUES
+(201, 'Student Union', '2025-10-29 19:00:00', '2025-10-29 22:00:00'),
+(202, 'LOREN Club',    '2025-10-31 18:00:00', '2025-11-01 01:00:00'),
+(203, 'FSC',           '2025-10-22 17:30:00', '2025-10-22 19:00:00');
+
 
 -- MARKET DETAILS
 INSERT INTO market_posts (market_id, item_condition) VALUES
