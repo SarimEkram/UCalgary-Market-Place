@@ -122,6 +122,14 @@ export default function MySettings() {
             <InputField
               placeholder={"joe.doe@ucalgary.ca"}
               label={"Email"}
+              disabled
+              disableUnderline={true}
+              sx={(theme) => ({
+                  "& .Mui-disabled": {
+                    color: theme.palette.text.primary,
+                    WebkitTextFillColor: "unset",
+                  },
+                })}
               errorMsg={errors["email"] ? errors["email"].message : null}
               {...register("email", {
                 required: "Email is required.",
