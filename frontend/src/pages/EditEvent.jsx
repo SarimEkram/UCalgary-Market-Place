@@ -37,6 +37,24 @@ export default function EditEvent() {
   // current selected date
   const [range, setRange] = useState({ start: null, end: null });
 
+    //keep track of status of edit request to server
+  const [editFailed, setEditFailed] = useState(false);
+
+  //keep track of deleted images
+  const [deletedImages, setDeletedImages] = useState([]);
+
+  //keep track of new images
+  const [newImages, setNewImages] = useState([]);
+
+  //variable for Date Picker dialog state
+  const [open, setOpen] = useState(false);
+
+  //ref for input[type="file"]
+  const fileInputRef = useRef(null);
+  //keep track of current image in the image slider
+  const [currentImageID, setCurrentImageID] = useState(null);
+
+
   const {
     register,
     handleSubmit,
@@ -58,20 +76,19 @@ export default function EditEvent() {
       );
 
       const data = await response.json();
-      console.log("json response", data);
 
-      // turn image data into a URL which the browser can understand and render
       let dataImages = data.images.map((image, index) => {
         const blob = image.data.replace(/\s/g, "");
         const src = `data:image/jpeg;base64,${blob}`;
         return {
           label: "event-image-" + index,
+          image_id: image.image_id,
           src: src,
         };
       });
 
-      //set images in the form imageslider
       setImages(dataImages);
+      setCurrentImageID(dataImages.length == 0 ? null : dataImages[0].image_id); 
 
       let startDate = dayjs(data.event_start);
       let endDate = dayjs(data.event_end);
@@ -95,20 +112,6 @@ export default function EditEvent() {
     };
   }, []);
 
-  //keep track of status of edit request to server
-  const [editFailed, setEditFailed] = useState(false);
-
-  //keep track of deleted images
-  const [deletedImages, setDeletedImages] = useState([]);
-
-  //keep track of new images
-  const [newImages, setNewImages] = useState([]);
-
-  //variable for Date Picker dialog state
-  const [open, setOpen] = useState(false);
-
-  //ref for input[type="file"]
-  const fileInputRef = useRef(null);
 
   //handle a user changing the date
   const handleApply = (newRange) => {
@@ -184,9 +187,16 @@ export default function EditEvent() {
     }
   };
 
-  //handle deleted images
+   //handle deleted images
   function handleDeletedImage() {
-    //tldr XD
+    if (images.length !== 0) {
+      let imgs = Array.from(deletedImages);
+      imgs.push(currentImageID);
+      setDeletedImages(imgs);
+      const newImages = images.filter((item) => item.image_id != currentImageID);
+      setImages(newImages);
+      setCurrentImageID(newImages.length == 0 ? null : newImages[0].image_id); 
+    }
   }
 
   // handle new image uploads by the user
@@ -350,7 +360,7 @@ export default function EditEvent() {
             </Box>
 
             <Box id="edit-images" sx={{ position: "relative" }}>
-              <ImageSlider images={images}></ImageSlider>
+              <ImageSlider images={images} setCurrentImageID={setCurrentImageID}></ImageSlider>
               <CustomButton
                 style={{
                   width: "fit-content",
