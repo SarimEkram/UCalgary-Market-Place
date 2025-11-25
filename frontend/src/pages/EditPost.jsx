@@ -19,7 +19,7 @@ import Header from "../components/Header";
 import ImageSlider from "../components/ImageSlider";
 import InputField from "../components/InputField";
 
-// incomplete backend tasks, can be found using ctrl+f "TODO". 
+// incomplete backend tasks, can be found using ctrl+f "TODO".
 export default function EditPost() {
   //get user data from local storage
   const [userData, setUserData] = useState(
@@ -58,21 +58,20 @@ export default function EditPost() {
       );
 
       const data = await response.json();
-      console.log("json response", data);
 
-      //TODO: BTASK 
-      // Images aren't being passed in responses. 
-        // turn image data into a URL which the browser can understand and render
       let dataImages = data.images.map((image, index) => {
         const blob = image.data.replace(/\s/g, "");
         const src = `data:image/jpeg;base64,${blob}`;
         return {
           label: "event-image-" + index,
+          image_id: image.image_id,
           src: src,
         };
       });
 
       setImages(dataImages);
+      setCurrentImageID(dataImages.length == 0 ? null : dataImages[0].image_id); 
+
       setCondition(data.item_condition.toLowerCase());
       reset({
         title: data.title,
@@ -91,9 +90,9 @@ export default function EditPost() {
   const [editFailed, setEditFailed] = useState(false);
   const [deletedImages, setDeletedImages] = useState([]);
   const [newImages, setNewImages] = useState([]);
+  const [currentImageID, setCurrentImageID] = useState(null);
 
   const fileInputRef = useRef(null);
-  // TODO: find  a way to handle deleted images
   const onSubmit = (data) => {
     data["condition"] = condition;
     data["deleted_images"] = deletedImages;
@@ -116,8 +115,8 @@ export default function EditPost() {
     "location": "t3a2m1",
     "price": 13,
     "condition": "new",
-    "deleted_images": [image_id1, imageid_2...etc],
-    "new_images": [Fileobject, Fileobject  ]
+    "deleted_images": [401, 402...etc], list of image ids 
+    "new_images": [Fileobject, Fileobject]
 }
 }
      */
@@ -135,15 +134,20 @@ export default function EditPost() {
     if (value != null) {
       setCondition(value);
     }
-    console.log(condition);
+   
   };
 
   //handle deleted images
   function handleDeletedImage() {
-    let imgs = Array.from(deletedImages);
-    imgs.push(currentImage);
-    setDeletedImages(imgs);
-    console.log("delete image using this data...", data);
+    if (images.length !== 0) {
+      let imgs = Array.from(deletedImages);
+      imgs.push(currentImageID);
+      setDeletedImages(imgs);
+      const newImages = images.filter((item) => item.image_id != currentImageID);
+      setImages(newImages);
+      console.log("deleted image", currentImageID);
+      setCurrentImageID(newImages.length == 0 ? null : newImages[0].image_id); 
+    }
   }
 
   //handle new image uploads
@@ -157,14 +161,13 @@ export default function EditPost() {
   //print the name of the uploaded images
   const printImageNames = (files) => {
     let result = "";
-    console.log("files", files);
+   
     for (let i = 0; i < files.length; i++) {
       result += (result != "" ? ", " : "") + files[i].name;
     }
 
     return result;
   };
-
 
   return (
     <Stack direction="column" spacing={2} sx={styles.page}>
@@ -290,7 +293,10 @@ export default function EditPost() {
               </ToggleButton>
             </ToggleButtonGroup>
             <Box id="edit-images" sx={{ position: "relative" }}>
-              <ImageSlider images={images}></ImageSlider>
+              <ImageSlider
+                images={images}
+                setCurrentImageID={setCurrentImageID}
+              ></ImageSlider>
               <CustomButton
                 style={{
                   width: "fit-content",

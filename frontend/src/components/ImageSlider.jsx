@@ -27,15 +27,20 @@ import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 //   },
 // ];
 
-export default function ImageSlider({images}) {
+export default function ImageSlider({images, setCurrentImageID}) {
   const [currStep, setCurrStep] = useState(0);  //Current step index of image
   const numberOfSteps = images.length;          //Total number of images
-
+  
   const handleNextButton = () =>                //Move to next image
-    setCurrStep((prev) => (prev + 1) % numberOfSteps);
+   { setCurrStep((prev) => (prev + 1) % numberOfSteps);
+    setCurrentImageID(images[currStep].image_id);
+   }
+
 
   const handleBackButton = () =>                //Move to previous image
-    setCurrStep((prev) => (prev - 1 + numberOfSteps) % numberOfSteps);
+  {  setCurrStep((prev) => (prev - 1 + numberOfSteps) % numberOfSteps);
+    setCurrentImageID(images[currStep].image_id);
+  }
   
   if (images.length != 0 )return (
     <Card                                       //Outer container
