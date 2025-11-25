@@ -218,7 +218,7 @@ export default function SignUp() {
                 }}
                 color="primary"
               >
-                <Typography>Sign Up</Typography>
+                <Typography>Sign In</Typography>
               </Link>
             </RouterLink>
           </Stack>
