@@ -37,7 +37,7 @@ export default function EditEvent() {
   // current selected date
   const [range, setRange] = useState({ start: null, end: null });
 
-    //keep track of status of edit request to server
+  //keep track of status of edit request to server
   const [editFailed, setEditFailed] = useState(false);
 
   //keep track of deleted images
@@ -51,9 +51,6 @@ export default function EditEvent() {
 
   //ref for input[type="file"]
   const fileInputRef = useRef(null);
-  //keep track of current image in the image slider
-  const [currentImageID, setCurrentImageID] = useState(null);
-
 
   const {
     register,
@@ -88,7 +85,6 @@ export default function EditEvent() {
       });
 
       setImages(dataImages);
-      setCurrentImageID(dataImages.length == 0 ? null : dataImages[0].image_id); 
 
       let startDate = dayjs(data.event_start);
       let endDate = dayjs(data.event_end);
@@ -111,7 +107,6 @@ export default function EditEvent() {
       isMounted = false;
     };
   }, []);
-
 
   //handle a user changing the date
   const handleApply = (newRange) => {
@@ -152,8 +147,11 @@ export default function EditEvent() {
     const { start, end } = range;
 
     data["event_start"] = start.format("YYYY-MM-DD HH:mm:ss");
-    //backend needs an end_date even if the event is only one day. 
-    data["event_end"] = end == null ? start.format("YYYY-MM-DD HH:mm:ss") : end.format("YYYY-MM-DD HH:mm:ss");
+    //backend needs an end_date even if the event is only one day.
+    data["event_end"] =
+      end == null
+        ? start.format("YYYY-MM-DD HH:mm:ss")
+        : end.format("YYYY-MM-DD HH:mm:ss");
     console.log(
       "send edit post request to the server... using this data:",
       data
@@ -186,18 +184,6 @@ export default function EditEvent() {
       setEditFailed(true);
     }
   };
-
-   //handle deleted images
-  function handleDeletedImage() {
-    if (images.length !== 0) {
-      let imgs = Array.from(deletedImages);
-      imgs.push(currentImageID);
-      setDeletedImages(imgs);
-      const newImages = images.filter((item) => item.image_id != currentImageID);
-      setImages(newImages);
-      setCurrentImageID(newImages.length == 0 ? null : newImages[0].image_id); 
-    }
-  }
 
   // handle new image uploads by the user
   const handleImagesChange = (event) => {
@@ -359,22 +345,12 @@ export default function EditEvent() {
               />
             </Box>
 
-            <Box id="edit-images" sx={{ position: "relative" }}>
-              <ImageSlider images={images} setCurrentImageID={setCurrentImageID}></ImageSlider>
-              <CustomButton
-                style={{
-                  width: "fit-content",
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                  margin: 2,
-                }}
-                color={"red"}
-                onClick={handleDeletedImage}
-              >
-                {"Delete"}
-              </CustomButton>
-            </Box>
+            <ImageSlider
+              images={images}
+              setDeletedImages={setDeletedImages}
+              showDelete
+            ></ImageSlider>
+
             <Stack spacing={3}>
               <CustomButton
                 color="black"

@@ -35,17 +35,13 @@ export default function EditPost() {
   //store the item condition
   const [condition, setCondition] = useState("new");
 
-
-  //keep trac of submit stauts 
+  //keep trac of submit stauts
   const [editFailed, setEditFailed] = useState(false);
-  //keep track of ids of deleted images 
+  //keep track of ids of deleted images
   const [deletedImages, setDeletedImages] = useState([]);
   //store file objects of the images the user uploads
   const [newImages, setNewImages] = useState([]);
-  //keep track of id of the current image in the image slider
-  const [currentImageID, setCurrentImageID] = useState(null);
 
-  
   const fileInputRef = useRef(null);
 
   //react hook form
@@ -83,7 +79,6 @@ export default function EditPost() {
       });
 
       setImages(dataImages);
-      setCurrentImageID(dataImages.length == 0 ? null : dataImages[0].image_id); 
 
       setCondition(data.item_condition.toLowerCase());
       reset({
@@ -141,20 +136,7 @@ export default function EditPost() {
     if (value != null) {
       setCondition(value);
     }
-   
   };
-
-  //handle deleted images
-  function handleDeletedImage() {
-    if (images.length !== 0) {
-      let imgs = Array.from(deletedImages);
-      imgs.push(currentImageID);
-      setDeletedImages(imgs);
-      const newImages = images.filter((item) => item.image_id != currentImageID);
-      setImages(newImages);
-      setCurrentImageID(newImages.length == 0 ? null : newImages[0].image_id); 
-    }
-  }
 
   //handle new image uploads
   const handleImagesChange = (event) => {
@@ -167,7 +149,7 @@ export default function EditPost() {
   //print the name of the uploaded images
   const printImageNames = (files) => {
     let result = "";
-   
+
     for (let i = 0; i < files.length; i++) {
       result += (result != "" ? ", " : "") + files[i].name;
     }
@@ -298,25 +280,11 @@ export default function EditPost() {
                 Fair
               </ToggleButton>
             </ToggleButtonGroup>
-            <Box id="edit-images" sx={{ position: "relative" }}>
-              <ImageSlider
-                images={images}
-                setCurrentImageID={setCurrentImageID}
-              ></ImageSlider>
-              <CustomButton
-                style={{
-                  width: "fit-content",
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                  margin: 2,
-                }}
-                color={"red"}
-                onClick={handleDeletedImage}
-              >
-                {"Delete"}
-              </CustomButton>
-            </Box>
+            <ImageSlider
+              images={images}
+              setDeletedImages={setDeletedImages}
+              showDelete
+            ></ImageSlider>
             <Stack spacing={3}>
               <CustomButton
                 color="black"
