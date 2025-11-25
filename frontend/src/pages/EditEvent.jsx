@@ -21,7 +21,7 @@ import InputField from "../components/InputField";
 
 import dayjs from "dayjs";
 
-// incomplete backend tasks, can be found using ctrl+f "TODO". 
+// incomplete backend tasks, can be found using ctrl+f "TODO".
 export default function EditEvent() {
   //get user data from local storage
   const [userData, setUserData] = useState(
@@ -61,37 +61,28 @@ export default function EditEvent() {
       const data = await response.json();
       console.log("json response", data);
 
-      // turn blobs into a URL which the browser can understand and render
-      let dataImages = await Promise.all(
-        data.images.map(async (image) => {
-          let imageBlob = await image.blob();
+      // turn image data into a URL which the browser can understand and render
+      let dataImages = data.images.map((image, index) => {
+        const blob = image.data.replace(/\s/g, "");
+        const src = `data:image/jpeg;base64,${blob}`;
+        return {
+          label: "event-image-" + index,
+          src: src,
+        };
+      });
 
-          //delete if the Content/type from server is set to jpeg/png correctly.
-          imageBlob = new Blob([imageBlob], { type: "image/jpeg" });
-
-          imageBlob = URL.createObjectURL(imageBlob);
-
-          return imageBlob;
-        })
-      );
-
-      dataImages = dataImages.map((image, index) => ({
-        label: "event-image-" + index,
-        src: image,
-      }));
-
-      //set images in the form imageslider 
+      //set images in the form imageslider
       setImages(dataImages);
 
-      //TODO: BTASK: 
+      //TODO: BTASK:
       // add end_date and start_date in response for an event ( rn i only get an event_date in the response)
 
       //**It renders the current day rn, because by by default dayjs constructor uses the current date,
-      //** */ when passed a null value.  
-      //set default date in the form 
+      //** */ when passed a null value.
+      //set default date in the form
       setRange({ start: dayjs(data.start_date), end: dayjs(data.end_date) });
 
-      //set default values in the form 
+      //set default values in the form
       reset({
         title: data.title,
         description: data.description,
@@ -159,7 +150,7 @@ export default function EditEvent() {
   const onSubmit = (data) => {
     data["deleted_images"] = deletedImages;
     data["new_images"] = Array.from(newImages);
-    const { start, end } =  range;
+    const { start, end } = range;
     data["start_date"] = start.format("YYYY-MM-DD HH:mm:ss");
     data["end_date"] = end == null ? null : end.format("YYYY-MM-DD HH:mm:ss");
     console.log(

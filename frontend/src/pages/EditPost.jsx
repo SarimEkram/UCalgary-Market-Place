@@ -62,26 +62,15 @@ export default function EditPost() {
 
       //TODO: BTASK 
       // Images aren't being passed in responses. 
-      let dataImages = await Promise.all(
-        data.images.map(async (image) => {
-          let imageBlob = await image.data.blob();
-
-          //delete if the Content/type from server is set to jpeg/png correctly.
-          imageBlob = new Blob([imageBlob], { type: "image/jpeg" });
-
-          imageBlob = URL.createObjectURL(imageBlob);
-
-          image.data = imageBlob;
-
-          return image;
-        })
-      );
-
-      dataImages = dataImages.map((image, index) => ({
-        label: "event-image-" + index,
-        id: image.image_id,
-        src: image.data,
-      }));
+        // turn image data into a URL which the browser can understand and render
+      let dataImages = data.images.map((image, index) => {
+        const blob = image.data.replace(/\s/g, "");
+        const src = `data:image/jpeg;base64,${blob}`;
+        return {
+          label: "event-image-" + index,
+          src: src,
+        };
+      });
 
       setImages(dataImages);
       setCondition(data.item_condition.toLowerCase());
