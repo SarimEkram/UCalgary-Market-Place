@@ -134,7 +134,6 @@ export default function Login() {
             </RouterLink>
           </Stack>
           <Stack direction="row" sx={styles.stackRow}>
-            {/*TODO: Make links clickablle, handle redirection */}
             <Link
               component={"div"}
               color="textSecondary"
