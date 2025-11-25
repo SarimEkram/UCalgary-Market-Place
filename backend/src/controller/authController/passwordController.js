@@ -1,5 +1,15 @@
 import db from "../../config/db.js";
 import bcrypt from "bcryptjs";
+import nodemailer from "nodemailer";
+
+// Nodemailer transporter using Gmail app password
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER, // e.g. ucaglarymarketplace@gmail.com
+        pass: process.env.EMAIL_PASS, // app password from .env / Docker
+    },
+});
 
 const generateVerificationCode = () => {
     const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -39,12 +49,32 @@ export const forgotPassword = (req, res) => {
                     .status(500)
                     .json({ success: false, error: "Failed to generate reset code" });
             }
-            // remove later
-            console.log(`Password reset code for ${email}: ${code}`);
 
-            return res.status(200).json({
-                success: true,
-                message: "Reset code generated. Please check your email.",
+            // Send password reset email
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: email,
+                subject: "Your Marketplace Password Reset Code",
+                text: `Your password reset code is: ${code}\n\nThis code will expire in 5 minutes.`,
+            };
+
+            transporter.sendMail(mailOptions, (mailErr, info) => {
+                if (mailErr) {
+
+                    return res.status(500).json({
+                        success: false,
+                        error: "Failed to send password reset email",
+                    });
+                }
+
+                console.log("Password reset email sent:", info.response);
+                // remove later
+                console.log(`Password reset code for ${email}: ${code}`);
+
+                return res.status(200).json({
+                    success: true,
+                    message: "Reset code generated and email sent. Please check your inbox.",
+                });
             });
         });
     };
@@ -52,7 +82,6 @@ export const forgotPassword = (req, res) => {
     const adminQuery = "SELECT admin_id FROM admins WHERE email = ?";
     db.query(adminQuery, [email], (err, adminRows) => {
         if (err) {
-            //remove later
             console.error("DB error (forgot/admin):", err);
             return res
                 .status(500)
@@ -98,10 +127,10 @@ export const verifyResetCode = (req, res) => {
     const normalizedCode = code.toUpperCase();
 
     const verifyQuery = `
-    SELECT randomCode
-    FROM verification_codes
-    WHERE randomCode = ? AND expiration_date > CURTIME()
-  `;
+        SELECT randomCode
+        FROM verification_codes
+        WHERE randomCode = ? AND expiration_date > CURTIME()
+    `;
 
     db.query(verifyQuery, [normalizedCode], (err, rows) => {
         if (err) {
@@ -109,7 +138,7 @@ export const verifyResetCode = (req, res) => {
             return res
                 .status(500)
                 .json({ success: false, isValid: false, error: "Database error" });
-        };
+        }
 
         if (rows.length === 0) {
             return res.status(400).json({
@@ -140,10 +169,10 @@ export const resetPassword = (req, res) => {
     const normalizedCode = code.toUpperCase();
 
     const verifyQuery = `
-    SELECT randomCode
-    FROM verification_codes
-    WHERE randomCode = ? AND expiration_date > CURTIME()
-  `;
+        SELECT randomCode
+        FROM verification_codes
+        WHERE randomCode = ? AND expiration_date > CURTIME()
+    `;
 
     const deleteCode = () => {
         const deleteQuery = "DELETE FROM verification_codes WHERE randomCode = ?";
