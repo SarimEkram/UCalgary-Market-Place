@@ -35,6 +35,19 @@ export default function EditPost() {
   //store the item condition
   const [condition, setCondition] = useState("new");
 
+
+  //keep trac of submit stauts 
+  const [editFailed, setEditFailed] = useState(false);
+  //keep track of ids of deleted images 
+  const [deletedImages, setDeletedImages] = useState([]);
+  //store file objects of the images the user uploads
+  const [newImages, setNewImages] = useState([]);
+  //keep track of id of the current image in the image slider
+  const [currentImageID, setCurrentImageID] = useState(null);
+
+  
+  const fileInputRef = useRef(null);
+
   //react hook form
   const {
     register,
@@ -87,12 +100,6 @@ export default function EditPost() {
     };
   }, []);
 
-  const [editFailed, setEditFailed] = useState(false);
-  const [deletedImages, setDeletedImages] = useState([]);
-  const [newImages, setNewImages] = useState([]);
-  const [currentImageID, setCurrentImageID] = useState(null);
-
-  const fileInputRef = useRef(null);
   const onSubmit = (data) => {
     data["condition"] = condition;
     data["deleted_images"] = deletedImages;
@@ -145,7 +152,6 @@ export default function EditPost() {
       setDeletedImages(imgs);
       const newImages = images.filter((item) => item.image_id != currentImageID);
       setImages(newImages);
-      console.log("deleted image", currentImageID);
       setCurrentImageID(newImages.length == 0 ? null : newImages[0].image_id); 
     }
   }
