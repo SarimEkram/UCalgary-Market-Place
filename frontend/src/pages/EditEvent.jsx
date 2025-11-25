@@ -46,7 +46,6 @@ export default function EditEvent() {
 
   useEffect(() => {
     let isMounted = true;
-    const formData = { event_id: id };
     async function fetchData() {
       const response = await fetch(
         `http://localhost:8080/api/posts/eventdetails/${id}`,
@@ -74,13 +73,12 @@ export default function EditEvent() {
       //set images in the form imageslider
       setImages(dataImages);
 
-      //TODO: BTASK:
-      // add end_date and start_date in response for an event ( rn i only get an event_date in the response)
-
-      //**It renders the current day rn, because by by default dayjs constructor uses the current date,
-      //** */ when passed a null value.
-      //set default date in the form
-      setRange({ start: dayjs(data.start_date), end: dayjs(data.end_date) });
+      let startDate = dayjs(data.event_start);
+      let endDate = dayjs(data.event_end);
+      if (endDate.$d.toDateString() == startDate.$d.toDateString()) {
+        endDate = null;
+      }
+      setRange({ start: startDate, end: endDate });
 
       //set default values in the form
       reset({
@@ -143,14 +141,16 @@ export default function EditEvent() {
       ? true
       : "Date is required.";
   };
-  
+
   //send an edit request to the server
   const onSubmit = (data) => {
     data["deleted_images"] = deletedImages;
     data["new_images"] = Array.from(newImages);
     const { start, end } = range;
-    data["start_date"] = start.format("YYYY-MM-DD HH:mm:ss");
-    data["end_date"] = end == null ? null : end.format("YYYY-MM-DD HH:mm:ss");
+
+    data["event_start"] = start.format("YYYY-MM-DD HH:mm:ss");
+    //backend needs an end_date even if the event is only one day. 
+    data["event_end"] = end == null ? start.format("YYYY-MM-DD HH:mm:ss") : end.format("YYYY-MM-DD HH:mm:ss");
     console.log(
       "send edit post request to the server... using this data:",
       data
