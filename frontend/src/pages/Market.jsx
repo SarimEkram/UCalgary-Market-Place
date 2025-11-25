@@ -5,25 +5,24 @@ import {
   Stack,
   Typography,
   TextField,
-  IconButton,
   Divider,
-  Chip,
   InputAdornment,
 } from "@mui/material";
-
+import { useState } from "react";
+import dayjs from "dayjs";
 import SearchIcon from "@mui/icons-material/Search";
-import FilterListIcon from "@mui/icons-material/FilterList";
-
+import Filters from "../components/Filters";
 import Header from "../components/Header";
 import Navigation from "../components/Navigation";
 
-// ===== SAMPLE DATA =====
+// TODO: Replace with real data from backend
 const RECENT_POSTS = [
   {
     id: 1,
     title: "psych 203 textbook",
     date: "jan 23 2025",
     price: "$30",
+    condition: "new",
     imageUrl: "/images/psych-203.jpg",
   },
   {
@@ -31,6 +30,7 @@ const RECENT_POSTS = [
     title: "textbook: linear algebra",
     date: "jan 23 2025",
     price: "$30",
+    condition: "good",
     imageUrl: "/images/linear-algebra.jpg",
   },
   {
@@ -38,6 +38,7 @@ const RECENT_POSTS = [
     title: "cpsc 345 textbook",
     date: "jan 25 2025",
     price: "$20",
+    condition: "fair",
     imageUrl: "/images/algorithm-design.jpg",
   },
   {
@@ -45,74 +46,89 @@ const RECENT_POSTS = [
     title: "algorithm and design pearson textbook",
     date: "jan 21 2025",
     price: "$20",
+    condition: "good",
     imageUrl: "/images/algorithm-design-2.jpg",
   },
 ];
 
 export default function Market() {
+
+  const [activeFilters, setActiveFilters] = useState(null);
+
+  const applyFilters = (filters) => {
+    console.log("Applied filters:", filters);
+    setActiveFilters(filters);
+  };
+
+  const postFilterResults = activeFilters
+    ? RECENT_POSTS.filter((post) => {
+      const { dateRange, minCost, maxCost, condition } = activeFilters;
+
+      // Price filter
+      const cost = parseFloat(post.price.replace(/[^0-9.]/g, "")) || 0;
+      if (cost < minCost || cost > maxCost) return false;
+
+      // Condition filter
+      if (condition && post.condition !== condition) return false;
+
+      // Date filter
+      if (dateRange && (dateRange.start || dateRange.end)) {
+        const postDate = dayjs(post.date);
+
+        if (dateRange.start && postDate.isBefore(dateRange.start, "day"))
+          return false;
+        if (dateRange.end && postDate.isAfter(dateRange.end, "day"))
+          return false;
+      }
+
+      return true;
+    })
+    : RECENT_POSTS;
+
   return (
     <Stack
-      id="market"
-      direction="column"
-      sx={(theme) => ({
-        bgcolor: theme.palette.background.default,
+      id="market-initial-page"                        //id for testing
+      direction="column"                              // vertical layout
+      sx={(theme) => ({                              // full height, bg color from theme 
         minHeight: "100vh",
+        bgcolor: theme.palette.background.default,
         justifyContent: "space-between",
       })}
     >
-      {/* Top app bar */}
       <Header />
 
-      {/* MAIN CONTENT */}
       <Container
-        maxWidth="lg"
         sx={{
           flexGrow: 1,
-          py: { xs: 2, md: 4 },
-          px: { xs: 2, md: 8 }, // wider padding on desktop like your mock
-          display: "flex",
-          flexDirection: "column",
+          py: { xs: 2, md: 4 },                   //padding top/bottom on mobile,desktop
+          px: { xs: 2, md: 8 },                   //padding left/right on mobile,desktop   
+          display: "flex",                        // main content area inside container as flexbox
+          flexDirection: "column",                // vertical layout
         }}
+        maxWidth="lg"                           // large breakpoint for desktop   
       >
-        {/* SEARCH BAR */}
-        <TextField
-          fullWidth
-          size="small"
-          placeholder="Search..."
-          variant="standard"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon fontSize="small" />
-              </InputAdornment>
-            ),
+        {/* Search Bar*/}
+        <TextField      
+          size="medium"                         // medium size input field       
+          placeholder="Search..."                // placeholder text
+          variant="standard"                    // no border, only underlined
+          slotProps={{
+            input: {
+              endAdornment: (                     //Insert search icon at the end in the search bar
+                <InputAdornment position="end">
+                  <SearchIcon fontSize="medium" />   {/*search icon size*/}
+                </InputAdornment>
+              ),
+            },
           }}
         />
+        <Filters onApply={applyFilters} />
+        <Divider sx={{ mb: 1 }} />
 
-        {/* FILTERS ROW */}
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={1}
-          sx={{ mt: 2, mb: 1 }}
-        >
-          <IconButton size="small" sx={{ p: 0.5 }}>
-            <FilterListIcon fontSize="small" />
-          </IconButton>
-          <Typography
-            variant="body2"
-            sx={{ fontWeight: 500, fontSize: "0.85rem" }}
-          >
-            Filters
-          </Typography>
-        </Stack>
-
-        <Divider sx={{ mb: 1.5 }} />
-
-        {/* POSSIBLE KEYWORDS */}
+        {/* Possible Keywords */}
         <Typography
-          variant="caption"
-          sx={{ color: "text.secondary", mb: 1 }}
+          variant="caption"                           // small caption text                 
+          sx={{ color: "text.primary", mb: 1 }}    // text style with bottom margin
         >
           Possible Keywords
         </Typography>
@@ -124,48 +140,47 @@ export default function Market() {
           sx={{ mb: 1.5 }}
         >
           {["textbook", "tutor", "desk", "equipment"].map((kw) => (
-            <Chip
+            <Typography
               key={kw}
-              label={`"${kw}"`}
-              size="small"
-              variant="outlined"
+              variant="caption"
               sx={{
-                fontSize: "0.7rem",
-                height: 22,
-                borderRadius: 12,
+                color: "text.secondary",
+                textDecoration: "underline",
+                cursor: "pointer",
               }}
-            />
+            >
+              “{kw}”
+            </Typography>
           ))}
         </Stack>
 
-        <Divider sx={{ mb: 2 }} />
+        <Divider sx={{ mb: 2 }} />                              
 
-        {/* RECENT POSTS TITLE */}
+        {/* Recent Posts */}
         <Typography
-          variant="subtitle2"
+          variant="caption"
           sx={{
-            fontWeight: 600,
             mb: 1.5,
-            fontSize: "0.88rem",
+            color: "text.primary",
           }}
         >
           Recent Posts
         </Typography>
 
-        {/* POSTS LIST / GRID  */}
+        {/* Posts list */}
         <Box
           sx={{
             display: "grid",
             gridTemplateColumns: {
-              xs: "1fr", // phones: single column list
-              sm: "1fr",
-              md: "repeat(3, minmax(0, 220px))", // desktop: 3 columns like mock
+              xs: "1fr",                // 1 column: mobile
+              sm: "1fr",                // 1 column: small tablets   
+              md: "repeat(4, minmax(0, 220px))",  //4 Columns: desktop
             },
-            columnGap: { xs: 0, md: 6 },
-            rowGap: { xs: 3, md: 4 }, // more vertical spacing between posts
+            rowGap: { xs: 3, md: 4 }, // Space between rows
+            columnGap: { xs: 0, md: 6 }, //space between columns
           }}
         >
-          {RECENT_POSTS.map((post) => (
+          {postFilterResults.map((post) => (
             <PostCard key={post.id} {...post} />
           ))}
         </Box>
@@ -177,38 +192,34 @@ export default function Market() {
   );
 }
 
-/* ===== SINGLE POST CARD (responsive layout) ===== */
+/* Post Card*/
 function PostCard({ title, date, price, imageUrl }) {
   return (
     <Stack
       direction={{ xs: "row", md: "column" }} // row on mobile, column on desktop
-      spacing={{ xs: 2, md: 1.5 }}
       alignItems="flex-start"
+      spacing={{ xs: 2, md: 1.5 }}
       sx={{ minWidth: 0 }}
     >
-      {/* IMAGE / THUMBNAIL */}
+      {/* Image*/}
       <Box
         component="img"
         src={imageUrl}
         alt={title}
         sx={{
-          width: { xs: 90, md: 120 },   // bigger box on desktop
-          height: { xs: 120, md: 150 },
-          borderRadius: 1.5,
+          width: { xs: 90, md: 120 },  //responsive width
+          height: { xs: 120, md: 150 }, //responsive height
+          borderRadius: 1,
           objectFit: "cover",
-          flexShrink: 0,
-          bgcolor: "#eee",
-          boxShadow: "0px 2px 4px rgba(0,0,0,0.12)", // matches card feel in mock
+          boxShadow: "0px 2px 4px rgba(0,0,0,0.14)",
         }}
       />
 
-      {/* TEXT */}
+      {/* Text */}
       <Stack sx={{ minWidth: 0 }}>
         <Typography
           sx={{
-            fontWeight: 600,
-            fontSize: { xs: "0.9rem", md: "0.85rem" },
-            lineHeight: 1.3,
+            fontSize: { xs: "0.9rem", md: "0.8rem" },
           }}
         >
           {title}
@@ -217,8 +228,8 @@ function PostCard({ title, date, price, imageUrl }) {
         <Typography
           sx={{
             color: "text.secondary",
-            fontSize: "0.75rem",
-            mt: 0.3,
+            fontSize: "0.90rem",
+            mt: 0.5,
           }}
         >
           {date}
@@ -226,13 +237,13 @@ function PostCard({ title, date, price, imageUrl }) {
 
         <Typography
           sx={{
-            fontWeight: 600,
+            fontWeight: 500,
             fontSize: { xs: "0.9rem", md: "0.85rem" },
             mt: 0.8,
           }}
         >
           {price}
-        </Typography> 
+        </Typography>
       </Stack>
     </Stack>
   );
