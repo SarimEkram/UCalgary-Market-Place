@@ -12,7 +12,10 @@ import EditPost from "./pages/EditPost";
 import EditEvent from "./pages/EditEvent";
 import CreateEvent from "./pages/CreateEvent";
 import MySettings from "./pages/MySettings";
-
+import MyPosts from "./pages/MyPosts";
+import MyContacted from "./pages/MyContacted";
+import MySaved from "./pages/MySaved";
+import  MyEvents from "./pages/MyEvents";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -103,7 +106,7 @@ createRoot(document.getElementById("root")).render(
             <Route path="posts">
               <Route
               index
-              element={<div>My Posts page - Not finished.</div>}
+              element={<MyPosts></MyPosts>}
             ></Route>
              <Route
               path="new"
@@ -118,7 +121,7 @@ createRoot(document.getElementById("root")).render(
              <Route path="events">
               <Route
               index
-              element={<div>My Events page - Not finished.</div>}
+              element={<MyEvents></MyEvents>}
             ></Route>
               <Route
               path="new"
@@ -128,7 +131,10 @@ createRoot(document.getElementById("root")).render(
               path=":id"
               element={<EditEvent></EditEvent>}
             ></Route>
-        
+             <Route path="saved" element={<MySaved></MySaved>}
+            ></Route>
+             <Route path="contacted" element={<MyContacted></MyContacted>}
+            ></Route>
             </Route>
           </Route>
           {/* @ Deep, feel free to customize as needed. i made this for testing. */}
