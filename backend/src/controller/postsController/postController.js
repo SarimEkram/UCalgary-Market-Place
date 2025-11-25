@@ -15,6 +15,8 @@ export function getPosts(req, res) {
         p.postal_code   AS postal_code,
         p.posted_date   AS posted_date,
         e.organization_name AS organization_name,
+        e.event_start   AS event_start,
+        e.event_end     AS event_end,
         i.image_id,
         i.image_text_data AS thumbnail_data
         FROM posts p
@@ -23,10 +25,10 @@ export function getPosts(req, res) {
         LEFT JOIN images i
         ON i.post_id = p.post_id
         AND i.image_id = (
-            SELECT MIN(i2.image_id)
-            FROM images i2
-            WHERE i2.post_id = p.post_id
-            )
+        SELECT MIN(i2.image_id)
+        FROM images i2
+        WHERE i2.post_id = p.post_id
+        )
         ${type ? "WHERE p.post_type = ?" : ""}
         ORDER BY p.posted_date DESC
         LIMIT ?
@@ -43,23 +45,24 @@ export function getPosts(req, res) {
         }
 
         const mapped = rows.map((row) => ({
-        id: row.id,
-        title: row.title,
-        price: row.price,
-        post_type: row.post_type,
-        postal_code: row.postal_code,
-        posted_date: row.posted_date,
-        organization_name: row.organization_name,
-        // returns thumbnail as { image_id, data } where `data` is base64
-        thumbnail: row.image_id
-            ? {
-                image_id: row.image_id,
-                data:
-                row.thumbnail_data && Buffer.isBuffer(row.thumbnail_data)
-                    ? row.thumbnail_data.toString("base64")
-                    : null,
-            }
-            : null,
+            id: row.id,
+            title: row.title,
+            price: row.price,
+            post_type: row.post_type,
+            postal_code: row.postal_code,
+            posted_date: row.posted_date,
+            organization_name: row.organization_name,
+            event_start: row.event_start,   // null for market posts can remove if not needed
+            event_end: row.event_end,       // null for market posts can remove if not needed
+            thumbnail: row.image_id
+                ? {
+                    image_id: row.image_id,
+                    data:
+                    row.thumbnail_data && Buffer.isBuffer(row.thumbnail_data)
+                        ? row.thumbnail_data.toString("base64")
+                        : null,
+                }
+                : null,
         }));
 
         res.json(mapped);
@@ -230,15 +233,17 @@ export function getEventResults(req, res) {
     // Only event posts
     where.push("p.post_type = 'event'");
 
-    // Date range on event date
+    // Date range on event period (overlap with [startDate, endDate])
     if (startDate !== undefined && startDate !== "") {
-        where.push("e.event_date >= ?");
-        params.push(startDate);
+    // event ends on/after the filter start
+    where.push("e.event_end >= ?");
+    params.push(startDate);
     }
 
     if (endDate !== undefined && endDate !== "") {
-        where.push("e.event_date <= ?");
-        params.push(endDate);
+    // event starts on/before the filter end
+    where.push("e.event_start <= ?");
+    params.push(endDate);
     }
 
     // Price range on ticket/entry price
@@ -276,34 +281,34 @@ export function getEventResults(req, res) {
         }
     }
 
-
-  const sql = `
+    const sql = `
     SELECT
-      p.post_id           AS id,
-      p.name              AS title,
-      p.description       AS description,
-      p.price             AS price,
-      p.posted_date       AS posted_date,
-      p.postal_code       AS postal_code,
-      p.user_id           AS organizer_id,
-      e.organization_name AS organization_name,
-      e.event_date        AS event_date,
-      i.image_id,
-      i.image_text_data   AS thumbnail_data
+        p.post_id           AS id,
+        p.name              AS title,
+        p.description       AS description,
+        p.price             AS price,
+        p.posted_date       AS posted_date,
+        p.postal_code       AS postal_code,
+        p.user_id           AS organizer_id,
+        e.organization_name AS organization_name,
+        e.event_start       AS event_start,
+        e.event_end         AS event_end,
+        i.image_id,
+        i.image_text_data   AS thumbnail_data
     FROM posts p
     JOIN event_posts e
-      ON e.event_id = p.post_id
+        ON e.event_id = p.post_id
     LEFT JOIN images i
-      ON i.post_id = p.post_id
-     AND i.image_id = (
-       SELECT MIN(i2.image_id)
-       FROM images i2
-       WHERE i2.post_id = p.post_id
-     )
+        ON i.post_id = p.post_id
+    AND i.image_id = (
+        SELECT MIN(i2.image_id)
+        FROM images i2
+        WHERE i2.post_id = p.post_id
+    )
     ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
-    ORDER BY e.event_date ASC
+    ORDER BY e.event_start ASC
     LIMIT ?
-  `;
+    `;
 
   params.push(lim);
 
@@ -314,25 +319,27 @@ export function getEventResults(req, res) {
     }
 
     const normalized = rows.map((r) => ({
-      id: r.id,
-      title: r.title,
-      description: r.description,
-      price: r.price,
-      posted_date: r.posted_date,
-      postal_code: r.postal_code,
-      organizer_id: r.organizer_id,
-      organization_name: r.organization_name,
-      event_date: r.event_date,
-      thumbnail: r.image_id
-        ? {
-            image_id: r.image_id,
-            data:
-              r.thumbnail_data && Buffer.isBuffer(r.thumbnail_data)
-                ? r.thumbnail_data.toString("base64")
-                : r.thumbnail_data || null,
-          }
-        : null,
+        id: r.id,
+        title: r.title,
+        description: r.description,
+        price: r.price,
+        posted_date: r.posted_date,
+        postal_code: r.postal_code,
+        organizer_id: r.organizer_id,
+        organization_name: r.organization_name,
+        event_start: r.event_start,
+        event_end: r.event_end,
+        thumbnail: r.image_id
+            ? {
+                image_id: r.image_id,
+                data:
+                r.thumbnail_data && Buffer.isBuffer(r.thumbnail_data)
+                    ? r.thumbnail_data.toString("base64")
+                    : r.thumbnail_data || null,
+            }
+            : null,
     }));
+
 
     res.json(normalized);
   });
@@ -344,15 +351,15 @@ export function getEventResults(req, res) {
 // Get full details for a single event listing
 // --------------------------------------------
 export function getEventById(req, res) {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const eventId = Number(id);
-    if (!Number.isInteger(eventId) || eventId <= 0) {
-        return res.status(400).json({ error: "Invalid event id" });
-    }
+  const eventId = Number(id);
+  if (!Number.isInteger(eventId) || eventId <= 0) {
+    return res.status(400).json({ error: "Invalid event id" });
+  }
 
     const sql = `
-        SELECT
+    SELECT
         p.post_id           AS id,
         p.name              AS title,
         p.description       AS description,
@@ -365,65 +372,60 @@ export function getEventById(req, res) {
         u.lname             AS organizer_lname,
         u.email             AS organizer_email,
         e.organization_name AS organization_name,
-        e.event_date        AS event_date,
-        JSON_ARRAYAGG(
-            JSON_OBJECT(
-            'image_id', i.image_id,
-            'data', TO_BASE64(i.image_text_data)
-            )
-        ) AS images
-        FROM posts p
-        JOIN event_posts e ON e.event_id = p.post_id
-        JOIN users u       ON u.user_id = p.user_id
-        LEFT JOIN images i ON i.post_id = p.post_id
-        WHERE p.post_id = ? AND p.post_type = 'event'
-        GROUP BY p.post_id, u.user_id, e.event_id
-        LIMIT 1
+        e.event_start       AS event_start,
+        e.event_end         AS event_end,
+        i.image_id,
+        i.image_text_data   AS image_data
+    FROM posts p
+    JOIN event_posts e ON e.event_id = p.post_id
+    JOIN users u       ON u.user_id = p.user_id
+    LEFT JOIN images i ON i.post_id = p.post_id
+    WHERE p.post_id = ? AND p.post_type = 'event'
     `;
 
-    db.query(sql, [eventId], (err, rows) => {
-        if (err) {
-        console.error("getEventById sql error:", err);
-        return res.status(500).json({ error: "Failed to fetch event" });
-        }
 
-        if (!rows.length) {
-        return res.status(404).json({ error: "Event not found" });
-        }
+  db.query(sql, [eventId], (err, rows) => {
+    if (err) {
+      console.error("getEventById sql error:", err);
+      return res.status(500).json({ error: "Failed to fetch event" });
+    }
 
-        const row = rows[0];
+    if (!rows.length) {
+      return res.status(404).json({ error: "Event not found" });
+    }
 
-        // Normalize images to array of { image_id, data }
-        let imgs = [];
-        try {
-        if (!row.images) {
-            imgs = [];
-        } else if (typeof row.images === "string") {
-            const parsed = JSON.parse(row.images);
-            imgs = Array.isArray(parsed) ? parsed : [];
-        } else if (Array.isArray(row.images)) {
-            imgs = row.images;
-        } else {
-            imgs = [];
-        }
+    const first = rows[0];
 
-        imgs = imgs
-            .filter(Boolean)
-            .filter((im) => im.image_id != null && im.data != null)
-            .map((im) => ({
-            image_id: im.image_id,
-            data: im.data, // already base64 from TO_BASE64
-            }));
-        } catch (e) {
-        console.error("Error parsing event images JSON:", e);
-        imgs = [];
-        }
+    // Base event data (all non-image fields)
+    const base = {
+        id: first.id,
+        title: first.title,
+        description: first.description,
+        price: first.price,
+        type: first.type,
+        postal_code: first.postal_code,
+        posted_date: first.posted_date,
+        organizer_id: first.organizer_id,
+        organizer_fname: first.organizer_fname,
+        organizer_lname: first.organizer_lname,
+        organizer_email: first.organizer_email,
+        organization_name: first.organization_name,
+        event_start: first.event_start,
+        event_end: first.event_end,
+    };
 
-        res.json({
-        ...row,
-        images: imgs,
-        });
-    });
+    // Collect & normalize images into base64
+    const images = rows
+      .filter((r) => r.image_id != null && r.image_data != null)
+      .map((r) => ({
+        image_id: r.image_id,
+        data: Buffer.isBuffer(r.image_data)
+          ? r.image_data.toString("base64")
+          : String(r.image_data), // just in case driver gives a string
+      }));
+
+    res.json({ ...base, images });
+  });
 }
 
 
@@ -433,84 +435,72 @@ export function getEventById(req, res) {
 // -----------------------------------------------
 
 export function getMarketItemById(req, res) {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const postId = Number(id);
-    if (!Number.isInteger(postId) || postId <= 0) {
-        return res.status(400).json({ error: "Invalid market item id" });
-    }
+  const postId = Number(id);
+  if (!Number.isInteger(postId) || postId <= 0) {
+    return res.status(400).json({ error: "Invalid market item id" });
+  }
 
-const sql = `
+  const sql = `
     SELECT
-        p.post_id        AS id,
-        p.name           AS title,
-        p.description    AS description,
-        p.price          AS price,
-        p.post_type      AS type,
-        p.postal_code    AS postal_code,
-        p.posted_date    AS posted_date,
-        p.user_id        AS seller_id,
-        u.fname          AS seller_fname,
-        u.lname          AS seller_lname,
-        u.email          AS seller_email,
-        mp.item_condition AS item_condition,
-        JSON_ARRAYAGG(
-            JSON_OBJECT(
-                'image_id', i.image_id,
-                'data', TO_BASE64(i.image_text_data)
-            )
-        ) AS images
+      p.post_id        AS id,
+      p.name           AS title,
+      p.description    AS description,
+      p.price          AS price,
+      p.post_type      AS type,
+      p.postal_code    AS postal_code,
+      p.posted_date    AS posted_date,
+      p.user_id        AS seller_id,
+      u.fname          AS seller_fname,
+      u.lname          AS seller_lname,
+      u.email          AS seller_email,
+      mp.item_condition AS item_condition,
+      i.image_id,
+      i.image_text_data AS image_data
     FROM posts p
     JOIN market_posts mp ON mp.market_id = p.post_id
-    JOIN users u         ON u.user_id = p.user_id
+    JOIN users u ON u.user_id = p.user_id
     LEFT JOIN images i   ON i.post_id = p.post_id
     WHERE p.post_id = ? AND p.post_type = 'market'
-    GROUP BY p.post_id, u.user_id, mp.market_id
-    LIMIT 1
-`;
+  `;
 
-    db.query(sql, [postId], (err, rows) => {
-        if (err) {
-        console.error("getMarketItemById sql error:", err);
-        return res.status(500).json({ error: "Failed to fetch market item" });
-        }
+  db.query(sql, [postId], (err, rows) => {
+    if (err) {
+      console.error("getMarketItemById sql error:", err);
+      return res.status(500).json({ error: "Failed to fetch market item" });
+    }
 
-        if (!rows.length) {
-        return res.status(404).json({ error: "Market item not found" });
-        }
+    if (!rows.length) {
+      return res.status(404).json({ error: "Market item not found" });
+    }
 
-        const row = rows[0];
+    const first = rows[0];
 
-        // Normalize images to array of { image_id, data }
-        let imgs = [];
-        try {
-        if (!row.images) {
-            imgs = [];
-        } else if (typeof row.images === "string") {
-            const parsed = JSON.parse(row.images);
-            imgs = Array.isArray(parsed) ? parsed : [];
-        } else if (Array.isArray(row.images)) {
-            imgs = row.images;
-        } else {
-            imgs = [];
-        }
+    const base = {
+      id: first.id,
+      title: first.title,
+      description: first.description,
+      price: first.price,
+      type: first.type,
+      postal_code: first.postal_code,
+      posted_date: first.posted_date,
+      seller_id: first.seller_id,
+      seller_fname: first.seller_fname,
+      seller_lname: first.seller_lname,
+      seller_email: first.seller_email,
+      item_condition: first.item_condition,
+    };
 
-        // Remove nulls / bad entries and normalize shape
-        imgs = imgs
-            .filter(Boolean)
-            .filter((im) => im.image_id != null && im.data != null)
-            .map((im) => ({
-            image_id: im.image_id,
-            data: im.data, // already base64 from TO_BASE64
-            }));
-        } catch (e) {
-        console.error("Error parsing images JSON:", e);
-        imgs = [];
-        }
+    const images = rows
+      .filter((r) => r.image_id != null && r.image_data != null)
+      .map((r) => ({
+        image_id: r.image_id,
+        data: Buffer.isBuffer(r.image_data)
+          ? r.image_data.toString("base64")
+          : String(r.image_data),
+      }));
 
-        res.json({
-        ...row,
-        images: imgs,
-        });
-    });
+    res.json({ ...base, images });
+  });
 }
