@@ -143,9 +143,7 @@ export default function EditEvent() {
       ? true
       : "Date is required.";
   };
-
-  // TODO: find  a way to handle deleted images
-
+  
   //send an edit request to the server
   const onSubmit = (data) => {
     data["deleted_images"] = deletedImages;
