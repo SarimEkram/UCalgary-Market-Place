@@ -1,8 +1,8 @@
 import { Router } from "express";
 import {
     getUserMarketPosts,
-    createMarketPost,
-    updateMarketPost,
+    // createMarketPost,
+    // updateMarketPost,
     deleteMarketPost,
 } from "../../controller/userSettingsController/myPostsController.js";
 
