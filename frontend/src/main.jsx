@@ -18,6 +18,7 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import UserProfile from "./pages/UserProfile";
 
 const black = "#221F1F";
 const  inputBorderColor= "#757575"; 
@@ -91,6 +92,9 @@ const theme = createTheme({
   
 });
 
+
+
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
@@ -134,14 +138,6 @@ createRoot(document.getElementById("root")).render(
           {/* @ Deep, feel free to customize as needed. i made this for testing. */}
           <Route path="home" element={<Home></Home>}></Route>
           <Route path="market" element={<Market></Market>}></Route>
-
-
-
-
-
-
-
-
           <Route path="reports">
              <Route path="events" element={<Market></Market>}>
                   <Route index element={<div>Not done Reported events</div>}></Route>
@@ -151,6 +147,10 @@ createRoot(document.getElementById("root")).render(
                   <Route index element={<div>Not done Reported market posts</div>}></Route>
                   <Route path=":id" element={<div>Not done view reported market post.</div>}></Route>
              </Route>
+          </Route>
+          {/* @ Deep, feel free to customize as needed. you're in charge of the list users/admin pages*/}
+          <Route path="profile" element={<UserProfile></UserProfile>}>
+
           </Route>
         </Routes>
       </BrowserRouter>
