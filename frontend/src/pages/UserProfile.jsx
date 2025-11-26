@@ -15,7 +15,7 @@ import ProfileIcon from "../assets/ProfileIconSVG";
 
 export default function UserProfile() {
   const [items, setItems] = useState([]);
-  const [userData, setUserData] = useState({fname: "", lname: "", email: ""})
+  const [userData, setUserData] = useState({ fname: "", lname: "", email: "" });
 
   useEffect(() => {
     let isMounted = true;
@@ -46,7 +46,8 @@ export default function UserProfile() {
           price: 65,
           post_type: "market",
           postal_code: "T2L2M3",
-          posted_date: "2025-11-01T00:00:00.000Z",
+          report_date: "2025-11-01T00:00:00.000Z",
+          report_count: 3, 
           organization_name: null,
           event_start: null,
           event_end: null,
@@ -61,7 +62,8 @@ export default function UserProfile() {
           price: 120,
           post_type: "market",
           postal_code: "T3P2A6",
-          posted_date: "2025-10-25T00:00:00.000Z",
+          report_date: "2025-10-25T00:00:00.000Z",
+          report_count: 3,
           organization_name: null,
           event_start: null,
           event_end: null,
@@ -73,24 +75,20 @@ export default function UserProfile() {
       ];
 
       data = data.map((item) => {
-        const image = item.thumbnail;
-        const blob = image.data.replace(/\s/g, "");
+        const blob = item.thumbnail.data.replace(/\s/g, "");
         const src = `data:image/jpeg;base64,${blob}`;
-        item.image = src;
+        item["image"] = src;
         return item;
       });
 
       setItems(data);
-      setUserData({fname: "Jone", lname: "Carter", "email": "jw@ucalgary.ca"})
+      setUserData({ fname: "Jone", lname: "Carter", email: "jw@ucalgary.ca" });
     }
     fetchData();
     return () => {
       isMounted = false;
     };
   }, []);
-
-  const image =
-    "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";
 
   const CustomDivider = (props) => (
     <Box>
@@ -141,14 +139,15 @@ export default function UserProfile() {
           <Typography variant="h4">User Profile</Typography>
           <CustomDivider></CustomDivider>
         </Box>
-        <Stack direction="row" spacing={2} sx={{alignItems: "center",  }}>
-        
-        <ProfileIcon></ProfileIcon>
-         
-         <Box>
-          <Typography variant="h4">{userData.fname} {userData.lname}</Typography>
-          <Typography variant="h6">{userData.email}</Typography>
-         </Box>
+        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+          <ProfileIcon></ProfileIcon>
+
+          <Box>
+            <Typography variant="h4">
+              {userData.fname} {userData.lname}
+            </Typography>
+            <Typography variant="h6">{userData.email}</Typography>
+          </Box>
         </Stack>
         <Box
           sx={{
@@ -174,23 +173,17 @@ export default function UserProfile() {
                 mt: 0.5,
               }}
             >
-              {/*  key,
-  image,
-  primaryText,
-  secondaryText,
-  tertiaryText,
-  TopLeftAction, */}
               <PostCard
                 key={"post-card-" + 1}
                 primaryText={"this is my post"}
                 reportDate={"2025-11-01"}
                 numReports={3}
-                image={image}
+                image={items[0].image}
               ></PostCard>
               <PostCard
                 key={"post-card-" + 2}
                 primaryText={"this is my post"}
-                image={image}
+                image={items[0].image}
               ></PostCard>
             </Box>
           </Stack>
@@ -206,25 +199,13 @@ export default function UserProfile() {
                 mt: 0.5,
               }}
             >
-              {/*  key,
-  image,
-  primaryText,
-  secondaryText,
-  tertiaryText,
-  TopLeftAction, */}
               <PostCard
                 key={"post-card-" + 1}
                 primaryText={"this is my post"}
-                secondaryText={"jonh farley"}
-                tertiaryText={"$0"}
-                TopLeftAction={GetIcon}
               ></PostCard>
               <PostCard
                 key={"post-card-" + 2}
                 primaryText={"this is my post"}
-                secondaryText={"jonh farley"}
-                tertiaryText={"$0"}
-                TopLeftAction={GetIcon}
               ></PostCard>
             </Box>
           </Stack>
