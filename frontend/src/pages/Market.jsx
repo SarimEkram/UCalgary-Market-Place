@@ -8,82 +8,89 @@ import {
   Divider,
   InputAdornment,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";                 
 import dayjs from "dayjs";
 import SearchIcon from "@mui/icons-material/Search";
 import Filters from "../components/Filters";
 import Header from "../components/Header";
 import Navigation from "../components/Navigation";
+import { useNavigate } from "react-router-dom";             
 
-// TODO: Replace with real data from backend
-const RECENT_POSTS = [
-  {
-    id: 1,
-    title: "psych 203 textbook",
-    date: "jan 23 2025",
-    price: "$30",
-    condition: "new",
-    imageUrl: "/images/psych-203.jpg",
-  },
-  {
-    id: 2,
-    title: "textbook: linear algebra",
-    date: "jan 23 2025",
-    price: "$30",
-    condition: "good",
-    imageUrl: "/images/linear-algebra.jpg",
-  },
-  {
-    id: 3,
-    title: "cpsc 345 textbook",
-    date: "jan 25 2025",
-    price: "$20",
-    condition: "fair",
-    imageUrl: "/images/algorithm-design.jpg",
-  },
-  {
-    id: 4,
-    title: "algorithm and design pearson textbook",
-    date: "jan 21 2025",
-    price: "$20",
-    condition: "good",
-    imageUrl: "/images/algorithm-design-2.jpg",
-  },
-];
+const API_BASE = "http://localhost:8080";                    
 
 export default function Market() {
 
-  const [activeFilters, setActiveFilters] = useState(null);
+  const [postFilters, setPostFilters] = useState(null);
+  const [posts, setPosts] = useState([]);                   
+  const [loading, setLoading] = useState(true);              
+  const [error, setError] = useState(null);                  
+  const [searchKeyword, setSearchKeyword] = useState("");       
 
-  const applyFilters = (filters) => {
-    console.log("Applied filters:", filters);
-    setActiveFilters(filters);
+  //const navigate = useNavigate();                           
+
+  /* create query parameters from filters and searchKey term */
+  const buildQueryParameters = (filters, searchKey) => {
+    const parameters = new URLSearchParams();
+    console.log("Build Query Parameters called with:", {
+    filters,
+    searchKey,
+  });
+
+    if (searchKey && searchKey.trim()){
+      console.log("Adding Search Terms:", searchKey.trim()); 
+      parameters.append("searchTerms", searchKey.trim());
+    }
+    if (!filters){
+      console.log(" No filters applied", parameters.toString());
+    return parameters.toString();
+    }
+
+    const { dateRange, minCost, maxCost, condition } = filters;
+    console.log(" Filters for the market marketPost:", filters);
+
+    if (typeof minCost === "number") parameters.append("minPrice", minCost);
+    if (typeof maxCost === "number") parameters.append("maxPrice", maxCost);
+    if (dateRange?.start)
+      parameters.append("startDate", dayjs(dateRange.start).format("YYYY-MM-DD"));
+    if (dateRange?.end)
+      parameters.append("endDate", dayjs(dateRange.end).format("YYYY-MM-DD"));
+    if (condition) parameters.append("condition", condition);
+
+    return parameters.toString();
   };
 
-  const postFilterResults = activeFilters
-    ? RECENT_POSTS.filter((post) => {
-      const { dateRange, minCost, maxCost, condition } = activeFilters;
+  /*Fetching market posts from backend */
+  const fetchMarketPosts = async (filters = postFilters, searchKey = searchKeyword) => {
+    try {
+      setLoading(true);
+      setError(null);
 
-      // Price filter
-      const cost = parseFloat(post.price.replace(/[^0-9.]/g, "")) || 0;
-      if (cost < minCost || cost > maxCost) return false;
+      const queryString = buildQueryParameters(filters, searchKey);
+      const url = queryString
+        ? `${API_BASE}/api/posts/marketres?${queryString}`
+        : `${API_BASE}/api/posts/marketres`;
 
-      // Condition filter
-      if (condition && post.condition !== condition) return false;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch posts");
 
-      // Date filter
-      if (dateRange && (dateRange.start || dateRange.end)) {
-        const postDate = dayjs(post.date);
+      const data = await res.json();
+      setPosts(data);
+    } catch (err) {
+      setError(err.message || "Error fetching posts");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        if (dateRange.start && postDate.isBefore(dateRange.start, "day"))
-          return false;
-        if (dateRange.end && postDate.isAfter(dateRange.end, "day"))
-          return false;
-      }
+  useEffect(() => {
+    fetchMarketPosts();
+  }, []);
 
-      return true;
-    })
-    : RECENT_POSTS;
+  
+  const handleApplyFilters = (filters) => {
+    setPostFilters(filters);
+    fetchMarketPosts(filters, searchKeyword);
+  };
 
   return (
     <Stack
@@ -105,69 +112,61 @@ export default function Market() {
           display: "flex",                        // main content area inside container as flexbox
           flexDirection: "column",                // vertical layout
         }}
-        maxWidth="lg"                           // large breakpoint for desktop   
+        maxWidth="lg"
       >
-        {/* Search Bar*/}
-        <TextField      
-          size="medium"                         // medium size input field       
-          placeholder="Search..."                // placeholder text
-          variant="standard"                    // no border, only underlined
+        {/* Search Bar */}
+        <TextField
+          size="medium"
+          placeholder="Search"
+          variant="standard"
+          value={searchKeyword}                                  
+          onChange={(e) => setSearchKeyword(e.target.value)}   
+          onKeyDown={(e) => { if (e.key === "Enter") fetchMarketPosts(postFilters, e.target.value); }}  
           slotProps={{
             input: {
-              endAdornment: (                     //Insert search icon at the end in the search bar
+              endAdornment: (                  //Insert searchKey icon at the end in the searchKey bar 
                 <InputAdornment position="end">
-                  <SearchIcon fontSize="medium" />   {/*search icon size*/}
+                  <SearchIcon fontSize="medium" />
                 </InputAdornment>
               ),
             },
           }}
         />
-        <Filters onApply={applyFilters} />
+
+        <Filters onApply={handleApplyFilters} />
         <Divider sx={{ mb: 1 }} />
 
         {/* Possible Keywords */}
-        <Typography
-          variant="caption"                           // small caption text                 
-          sx={{ color: "text.primary", mb: 1 }}    // text style with bottom margin
-        >
+        <Typography variant="caption" sx={{ color: "text.primary", mb: 1 }}>
           Possible Keywords
         </Typography>
 
-        <Stack
-          direction="row"
-          flexWrap="wrap"
-          spacing={1}
-          sx={{ mb: 1.5 }}
-        >
-          {["textbook", "tutor", "desk", "equipment"].map((kw) => (
+        <Stack direction="row"  spacing={1} sx={{ mb: 1.5 }}>
+          {["textbook", "tutor", "desk", "equipment"].map((keyword) => (
             <Typography
-              key={kw}
+              key={keyword}
               variant="caption"
               sx={{
                 color: "text.secondary",
                 textDecoration: "underline",
                 cursor: "pointer",
               }}
+              onClick={() => {
+                setSearchKeyword(keyword);               
+                fetchMarketPosts(postFilters, keyword);    
+              }}
             >
-              “{kw}”
+              “{keyword}”
             </Typography>
           ))}
         </Stack>
 
-        <Divider sx={{ mb: 2 }} />                              
+        <Divider sx={{ mb: 2 }} />
 
-        {/* Recent Posts */}
-        <Typography
-          variant="caption"
-          sx={{
-            mb: 1.5,
-            color: "text.primary",
-          }}
-        >
+        <Typography variant="caption" sx={{ mb: 1.5, color: "text.primary" }}>
           Recent Posts
         </Typography>
 
-        {/* Posts list */}
         <Box
           sx={{
             display: "grid",
@@ -180,48 +179,59 @@ export default function Market() {
             columnGap: { xs: 0, md: 6 }, //space between columns
           }}
         >
-          {postFilterResults.map((post) => (
-            <PostCard key={post.id} {...post} />
+          {loading && <Typography>Loading market posts</Typography>}
+          {error && !loading && <Typography color="error">{error}</Typography>}
+          {!loading && !error && posts.map((marketPost) => (
+            <PostCard key={marketPost.id} marketPost={marketPost} />    
           ))}
         </Box>
       </Container>
 
-      {/* Bottom navigation */}
       <Navigation />
     </Stack>
   );
 }
 
-/* Post Card*/
-function PostCard({ title, date, price, imageUrl }) {
+function PostCard({ marketPost }) {
+  const navigate = useNavigate();    
+
+  const {
+    id,
+    title,
+    posted_date,
+    price,
+    item_condition,
+    thumbnail,
+  } = marketPost;
+
+  const imageUrl =
+    thumbnail?.data
+      ? `data:image/jpeg;base64,${thumbnail.data}`
+      : "/images/placeholder.jpg"; 
+
   return (
     <Stack
-      direction={{ xs: "row", md: "column" }} // row on mobile, column on desktop
+      direction={{ xs: "row", md: "column" }}
       alignItems="flex-start"
       spacing={{ xs: 2, md: 1.5 }}
-      sx={{ minWidth: 0 }}
+      sx={{ minWidth: 0, cursor: "pointer" }}
+      onClick={() => navigate(`/market/${id}`)}      
     >
-      {/* Image*/}
       <Box
         component="img"
         src={imageUrl}
         alt={title}
         sx={{
-          width: { xs: 90, md: 120 },  //responsive width
-          height: { xs: 120, md: 150 }, //responsive height
+          width: { xs: 90, md: 120 },
+          height: { xs: 120, md: 150 },
           borderRadius: 1,
           objectFit: "cover",
           boxShadow: "0px 2px 4px rgba(0,0,0,0.14)",
         }}
       />
 
-      {/* Text */}
       <Stack sx={{ minWidth: 0 }}>
-        <Typography
-          sx={{
-            fontSize: { xs: "0.9rem", md: "0.8rem" },
-          }}
-        >
+        <Typography sx={{ fontSize: { xs: "0.9rem", md: "0.8rem" } }}>
           {title}
         </Typography>
 
@@ -232,18 +242,31 @@ function PostCard({ title, date, price, imageUrl }) {
             mt: 0.5,
           }}
         >
-          {date}
+          {posted_date ? dayjs(posted_date).format("MMM D YYYY") : "Unknown"}
         </Typography>
 
         <Typography
           sx={{
             fontWeight: 500,
-            fontSize: { xs: "0.9rem", md: "0.85rem" },
+            fontSize: { xs: "0.90rem", md: "0.80rem" },
             mt: 0.8,
           }}
         >
-          {price}
+          {price != null ? `$${price}` : "Free"}
         </Typography>
+
+        {item_condition && (
+          <Typography
+            sx={{
+              fontSize: "0.80rem",
+              mt: 0.3,
+              textTransform: "capitalize",
+              color: "text.secondary",
+            }}
+          >
+            {item_condition}
+          </Typography>
+        )}
       </Stack>
     </Stack>
   );
