@@ -47,7 +47,7 @@ export default function UserProfile() {
           post_type: "market",
           postal_code: "T2L2M3",
           report_date: "2025-11-01T00:00:00.000Z",
-          report_count: 3, 
+          report_count: 3,
           organization_name: null,
           event_start: null,
           event_end: null,
@@ -82,6 +82,8 @@ export default function UserProfile() {
       });
 
       setItems(data);
+      console.log(data);
+
       setUserData({ fname: "Jone", lname: "Carter", email: "jw@ucalgary.ca" });
     }
     fetchData();
@@ -156,7 +158,7 @@ export default function UserProfile() {
               xs: "repeat(1, minmax(0, 1fr))", // 1 rows on mobile
               sm: "repeat(2, minmax(0, 1fr))", // 2 rows on small tablets
             },
-            columnGap: 10,
+            columnGap: 5,
             rowGap: 2,
             mt: 0.5,
           }}
@@ -167,24 +169,23 @@ export default function UserProfile() {
               sx={{
                 display: "grid",
                 gridAutoFlow: "row",
-                gridTemplateColumns: "repeat(1, minmax(0, 1fr))",
+                gridTemplateRows: "repeat(2, minmax(0, 1fr))",
                 columnGap: 2,
                 rowGap: 2,
                 mt: 0.5,
               }}
             >
-              <PostCard
-                key={"post-card-" + 1}
-                primaryText={"this is my post"}
-                reportDate={"2025-11-01"}
-                numReports={3}
-                image={items[0].image}
-              ></PostCard>
-              <PostCard
-                key={"post-card-" + 2}
-                primaryText={"this is my post"}
-                image={items[0].image}
-              ></PostCard>
+              {items.map((post, index) => {
+                return (
+                  <PostCard
+                    key={"post-card-" + index}
+                    primaryText={post.title}
+                    reportDate={post.report_date}
+                    numReports={post.report_count}
+                    image={post.image}
+                  ></PostCard>
+                );
+              })}
             </Box>
           </Stack>
           <Stack direction={"column"} spacing={2}>
@@ -193,20 +194,23 @@ export default function UserProfile() {
               sx={{
                 display: "grid",
                 gridAutoFlow: "row",
-                gridTemplateColumns: "repeat(1, minmax(0, 1fr))",
+                gridTemplateRows: "repeat(2, minmax(0, 1fr))",
                 columnGap: 2,
                 rowGap: 2,
                 mt: 0.5,
               }}
             >
-              <PostCard
-                key={"post-card-" + 1}
-                primaryText={"this is my post"}
-              ></PostCard>
-              <PostCard
-                key={"post-card-" + 2}
-                primaryText={"this is my post"}
-              ></PostCard>
+              {items.map((post, index) => {
+                return (
+                  <PostCard
+                    key={"post-card-" + index}
+                    primaryText={post.title}
+                    reportDate={post.report_date}
+                    numReports={post.report_count}
+                    image={post.image}
+                  ></PostCard>
+                );
+              })}
             </Box>
           </Stack>
         </Box>
