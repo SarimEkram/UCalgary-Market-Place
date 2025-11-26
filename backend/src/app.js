@@ -7,6 +7,7 @@ import passwordRoutes from "./routes/authRoutes/passwordRoutes.js";
 import savedPostRoutes from "./routes/userSettingsRoute/savedPostRoute.js";
 import mySettingsRoutes from "./routes/userSettingsRoute/mySettingsRoute.js";
 import myContactedRoutes from "./routes/userSettingsRoute/myContactedRoute.js";
+import myPostsRoutes from "./routes/userSettingsRoute/myPostsRoute.js";
 
 const app = express();
 
@@ -39,5 +40,8 @@ app.use("/api/settings", mySettingsRoutes);
 
 // Contacted posts list
 app.use("/api/getContactedPosts", myContactedRoutes);
+
+// My posts route
+app.use("/api/my-posts", myPostsRoutes);
 
 export default app;
