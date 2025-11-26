@@ -33,18 +33,18 @@ export default function PostCard({
       elevation={1}
       key={key}
       sx={(theme) => ({
-        boxSizing: "border-box",
+        // boxSizing: "border-box",
         p: 4,
+        py: 2,
         overflow: "hidden",
         fontWeight: 0,
         boxShadow: "0px 1px 3px rgba(0,0,0,0.2)",
         display: "flex",
         flexDirection: "column",
-        gap: 5,
-        justifyContent: "space-between",
+        gap: 2,
       })}
     >
-      <Stack spacing={2} direction="row">
+      <Stack spacing={5} direction="row">
         {/* IMAGE */}
         <Box sx={{ flexGrow: 1 }} position="relative">
           <CardMedia
