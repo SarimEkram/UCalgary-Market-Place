@@ -34,7 +34,7 @@ export default function PostCard({
       key={key}
       sx={(theme) => ({
         boxSizing: "border-box",
-        p: 5,
+        p: 4,
         overflow: "hidden",
         fontWeight: 0,
         boxShadow: "0px 1px 3px rgba(0,0,0,0.2)",
@@ -46,7 +46,7 @@ export default function PostCard({
     >
       <Stack spacing={2} direction="row">
         {/* IMAGE */}
-        <Box position="relative">
+        <Box sx={{ flexGrow: 1 }} position="relative">
           <CardMedia
             sx={(theme) => ({
               width: "100%",
@@ -57,12 +57,14 @@ export default function PostCard({
             component="img"
             image={image} //image src
           />
-         {reportDate && <Icon
-            fontSize={"large"}
-            sx={{ position: "absolute", bottom: 0, right: 0, p: 5 }}
-          >
-            <Reported></Reported>
-          </Icon>}
+          {reportDate && (
+            <Icon
+            fontSize="large"
+              sx={{ position: "absolute", bottom: -3, right: -3 }}
+            >
+              <Reported ></Reported>
+            </Icon>
+          )}
         </Box>
         <CardContent
           sx={{
