@@ -8,6 +8,7 @@ import savedPostRoutes from "./routes/userSettingsRoute/savedPostRoute.js";
 import mySettingsRoutes from "./routes/userSettingsRoute/mySettingsRoute.js";
 import myContactedRoutes from "./routes/userSettingsRoute/myContactedRoute.js";
 import myPostsRoutes from "./routes/userSettingsRoute/myPostsRoute.js";
+import myEventsRoute from "./routes/userSettingsRoute/myEventsRoute.js";
 
 const app = express();
 
