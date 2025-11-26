@@ -1,34 +1,25 @@
 // src/controller/userPostsController/myPostsController.js
 import db from "../../config/db.js";
 
-/**
- * Helper: basic sanity check for base64 image strings
- */
 function validateBase64Image(str) {
     if (typeof str !== "string") return false;
     const trimmed = str.trim();
     if (!trimmed) return false;
 
-    // Optional light check – don't over-validate
     const base64Regex = /^[0-9A-Za-z+/=]+$/;
     if (!base64Regex.test(trimmed)) return false;
 
     return true;
 }
 
-/**
- * Helper: insert up to 7 images for a given post_id
- *  - images: array of base64 strings
- *  - callback(err) called when done
- */
 function insertImagesForPost(postId, images, callback) {
     if (!images || !Array.isArray(images) || images.length === 0) {
-        return callback(null); // nothing to insert
+        return callback(null);
     }
 
     const validImages = images
         .filter((img) => validateBase64Image(img))
-        .slice(0, 7); // hard cap at 7
+        .slice(0, 7);
 
     if (!validImages.length) {
         return callback(null);
@@ -50,11 +41,6 @@ function insertImagesForPost(postId, images, callback) {
     });
 }
 
-/**
- * 1) Get all MARKET posts created by this user (for "My Posts" page)
- * POST /api/my-posts/list
- * Body: { userId }
- */
 export const getUserMarketPosts = (req, res) => {
     const { userId } = req.body;
 
@@ -110,20 +96,6 @@ export const getUserMarketPosts = (req, res) => {
     });
 };
 
-/**
- * 2) Create a new MARKET post (My Posts – Create Post)
- * POST /api/my-posts/create
- * Body: {
- *   userId,
- *   name,
- *   description,
- *   postal_code,
- *   price,
- *   item_condition,
- *   images?: [base64String]  // max 7
- * }
- *  - All fields except images are required and cannot be empty/null.
- */
 export const createMarketPost = (req, res) => {
     const {
         userId,
@@ -135,19 +107,19 @@ export const createMarketPost = (req, res) => {
         images,
     } = req.body;
 
-    // 1) Validate required fields
     const trimmedName = typeof name === "string" ? name.trim() : "";
     const trimmedDesc = typeof description === "string" ? description.trim() : "";
     const trimmedPostal =
         typeof postal_code === "string" ? postal_code.trim() : "";
+    const trimmedCondition =
+        typeof item_condition === "string" ? item_condition.trim() : "";
 
     if (
         !userId ||
         !trimmedName ||
         !trimmedDesc ||
         !trimmedPostal ||
-        item_condition === undefined ||
-        item_condition === null ||
+        !trimmedCondition ||
         price === undefined ||
         price === null ||
         String(price).trim() === ""
@@ -165,14 +137,18 @@ export const createMarketPost = (req, res) => {
             .json({ error: "price must be a valid non-negative number" });
     }
 
-    // 2) Enforce max 7 images
-    if (images && Array.isArray(images) && images.length > 7) {
+    if (!images || !Array.isArray(images) || images.length === 0) {
+        return res.status(400).json({
+            error: "You must upload at least one image for your post",
+        });
+    }
+
+    if (images.length > 7) {
         return res
             .status(400)
             .json({ error: "You can upload a maximum of 7 images per post" });
     }
 
-    //  3) Insert into posts
     const insertPostSql = `
         INSERT INTO posts (user_id, post_type, postal_code, price, name, description)
         VALUES (?, 'market', ?, ?, ?, ?)
@@ -191,13 +167,12 @@ export const createMarketPost = (req, res) => {
 
             const postId = result.insertId;
 
-            // ---- 4) Insert into market_posts ----
             const insertMarketSql = `
                 INSERT INTO market_posts (market_id, item_condition)
                 VALUES (?, ?)
             `;
 
-            db.query(insertMarketSql, [postId, item_condition], (err2) => {
+            db.query(insertMarketSql, [postId, trimmedCondition], (err2) => {
                 if (err2) {
                     console.error(
                         "DB error (createMarketPost/insert market_posts):",
@@ -208,10 +183,8 @@ export const createMarketPost = (req, res) => {
                         .json({ error: "Failed to create market post (market_posts)" });
                 }
 
-                // ---- 5) Insert images if any ----
                 insertImagesForPost(postId, images, (imgErr) => {
                     if (imgErr) {
-                        // We already have the post; just warn
                         console.error(
                             "Warning: post created but failed to insert some images",
                             imgErr
@@ -228,21 +201,6 @@ export const createMarketPost = (req, res) => {
     );
 };
 
-/**
- * 3) Update an existing MARKET post (My Posts – Edit Post)
- * PUT /api/my-posts/update
- * Body: {
- *   userId,
- *   postId,
- *   name,
- *   description,
- *   postal_code,
- *   price,
- *   item_condition,
- *   images?: [base64String]  // replaces previous images, max 7
- * }
- *  - We expect all editable fields to be sent and non-empty (except images).
- */
 export const updateMarketPost = (req, res) => {
     const {
         userId,
@@ -259,6 +217,8 @@ export const updateMarketPost = (req, res) => {
     const trimmedDesc = typeof description === "string" ? description.trim() : "";
     const trimmedPostal =
         typeof postal_code === "string" ? postal_code.trim() : "";
+    const trimmedCondition =
+        typeof item_condition === "string" ? item_condition.trim() : "";
 
     if (
         !userId ||
@@ -266,11 +226,10 @@ export const updateMarketPost = (req, res) => {
         !trimmedName ||
         !trimmedDesc ||
         !trimmedPostal ||
+        !trimmedCondition ||
         price === undefined ||
         price === null ||
-        String(price).trim() === "" ||
-        item_condition === undefined ||
-        item_condition === null
+        String(price).trim() === ""
     ) {
         return res.status(400).json({
             error:
@@ -285,14 +244,18 @@ export const updateMarketPost = (req, res) => {
             .json({ error: "price must be a valid non-negative number" });
     }
 
-    // enforce max 7 images
-    if (images && Array.isArray(images) && images.length > 7) {
+    if (!images || !Array.isArray(images) || images.length === 0) {
+        return res.status(400).json({
+            error: "You must upload at least one image for your post",
+        });
+    }
+
+    if (images.length > 7) {
         return res
             .status(400)
             .json({ error: "You can upload a maximum of 7 images per post" });
     }
 
-    // ---- 1) Update posts row (ensuring this user owns it & it's a market post) ----
     const updatePostSql = `
         UPDATE posts
         SET name = ?, description = ?, postal_code = ?, price = ?
@@ -316,14 +279,13 @@ export const updateMarketPost = (req, res) => {
                 });
             }
 
-            // ---- 2) Update market_posts condition ----
             const updateMarketSql = `
                 UPDATE market_posts
                 SET item_condition = ?
                 WHERE market_id = ?
             `;
 
-            db.query(updateMarketSql, [item_condition, postId], (err2) => {
+            db.query(updateMarketSql, [trimmedCondition, postId], (err2) => {
                 if (err2) {
                     console.error(
                         "DB error (updateMarketPost/update market_posts):",
@@ -334,7 +296,6 @@ export const updateMarketPost = (req, res) => {
                     });
                 }
 
-                // ---- 3) Replace images: delete old, insert new ----
                 const deleteImagesSql = "DELETE FROM images WHERE post_id = ?";
                 db.query(deleteImagesSql, [postId], (err3) => {
                     if (err3) {
@@ -366,11 +327,6 @@ export const updateMarketPost = (req, res) => {
     );
 };
 
-/**
- * 4) Delete a MARKET post created by this user
- * DELETE /api/my-posts/delete
- * Body: { userId, postId }
- */
 export const deleteMarketPost = (req, res) => {
     const { userId, postId } = req.body;
 
@@ -386,9 +342,9 @@ export const deleteMarketPost = (req, res) => {
     }
 
     const deletePostSql = `
-    DELETE FROM posts
-    WHERE post_id = ? AND user_id = ? AND post_type = 'market'
-  `;
+        DELETE FROM posts
+        WHERE post_id = ? AND user_id = ? AND post_type = 'market'
+    `;
 
     db.query(deletePostSql, [pid, userId], (err, result) => {
         if (err) {
