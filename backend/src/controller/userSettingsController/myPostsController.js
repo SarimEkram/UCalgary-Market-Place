@@ -370,10 +370,6 @@ export const updateMarketPost = (req, res) => {
  * 4) Delete a MARKET post created by this user
  * DELETE /api/my-posts/delete
  * Body: { userId, postId }
- *
- * With ON DELETE CASCADE in the database:
- *  - deleting from posts will automatically delete related rows in
- *    market_posts, images, saved_posts, contacted_seller, post_report
  */
 export const deleteMarketPost = (req, res) => {
     const { userId, postId } = req.body;
