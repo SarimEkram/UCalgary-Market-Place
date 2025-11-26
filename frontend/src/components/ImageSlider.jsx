@@ -30,9 +30,14 @@ import CustomButton from "../components/CustomButton";
 export default function ImageSlider({ images, setDeletedImages, showDelete = false }) {
   const [internalImages, setInternalImages] = useState([]);
   const [currStep, setCurrStep] = useState(0); //Current step index of image
-  const numberOfSteps = internalImages.length; //Total number of images
+  const [numberOfSteps, setNumberOfSteps]= useState(0); //Total number of images
 
-  useEffect(()=>{setInternalImages(images);}, [images]);
+  useEffect(()=>{ 
+      if( images) {
+        setInternalImages(images); setNumberOfSteps(images.length)
+      }
+    }
+    ,[images]);
 
   //handle deleted images
   function handleDeletedImage() {
