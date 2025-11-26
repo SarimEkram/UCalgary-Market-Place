@@ -134,6 +134,24 @@ createRoot(document.getElementById("root")).render(
           {/* @ Deep, feel free to customize as needed. i made this for testing. */}
           <Route path="home" element={<Home></Home>}></Route>
           <Route path="market" element={<Market></Market>}></Route>
+
+
+
+
+
+
+
+
+          <Route path="reports">
+             <Route path="events" element={<Market></Market>}>
+                  <Route index element={<div>Not done Reported events</div>}></Route>
+                  <Route path=":id" element={<div>Not done view reported event.</div>}></Route>
+             </Route>
+              <Route path="posts" element={<Market></Market>}>
+                  <Route index element={<div>Not done Reported market posts</div>}></Route>
+                  <Route path=":id" element={<div>Not done view reported market post.</div>}></Route>
+             </Route>
+          </Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
