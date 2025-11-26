@@ -135,7 +135,7 @@ export const createMarketPost = (req, res) => {
         images,
     } = req.body;
 
-    // ---- 1) Validate required fields ----
+    // 1) Validate required fields
     const trimmedName = typeof name === "string" ? name.trim() : "";
     const trimmedDesc = typeof description === "string" ? description.trim() : "";
     const trimmedPostal =
@@ -165,14 +165,14 @@ export const createMarketPost = (req, res) => {
             .json({ error: "price must be a valid non-negative number" });
     }
 
-    // ---- 2) Enforce max 7 images ----
+    // 2) Enforce max 7 images
     if (images && Array.isArray(images) && images.length > 7) {
         return res
             .status(400)
             .json({ error: "You can upload a maximum of 7 images per post" });
     }
 
-    // ---- 3) Insert into posts ----
+    //  3) Insert into posts
     const insertPostSql = `
         INSERT INTO posts (user_id, post_type, postal_code, price, name, description)
         VALUES (?, 'market', ?, ?, ?, ?)
