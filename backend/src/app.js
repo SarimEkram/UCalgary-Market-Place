@@ -45,4 +45,7 @@ app.use("/api/getContactedPosts", myContactedRoutes);
 // My posts route
 app.use("/api/my-posts", myPostsRoutes);
 
+// My events post route
+app.use("/api/my-events", myEventsRoute);
+
 export default app;
