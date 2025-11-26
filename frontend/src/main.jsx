@@ -151,7 +151,7 @@ createRoot(document.getElementById("root")).render(
              </Route>
           </Route>
           {/* @ Deep, feel free to customize as needed. you're in charge of the list users/admin pages*/}
-          <Route path="profile" element={<UserProfile></UserProfile>}>
+          <Route path="profile/:id" element={<UserProfile></UserProfile>}>
 
           </Route>
         </Routes>

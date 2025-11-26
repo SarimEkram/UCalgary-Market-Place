@@ -12,10 +12,13 @@ import Header from "../components/Header";
 import UserMenu from "../components/UserMenu";
 import PostCard from "../components/ReportedPostCard";
 import ProfileIcon from "../assets/ProfileIconSVG";
+import { useParams } from "react-router";
 
 export default function UserProfile() {
   const [items, setItems] = useState([]);
   const [userData, setUserData] = useState({ fname: "", lname: "", email: "" });
+  //userID 
+  const { id } = useParams();
 
   useEffect(() => {
     let isMounted = true;
