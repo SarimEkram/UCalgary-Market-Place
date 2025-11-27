@@ -50,7 +50,7 @@ export default function Login() {
       } else {
         // Handle case where username/password doesn't match
          setLoginFailed(data.error);
-         console.log(data);
+         
       }
     } catch (error) {
       console.error("Error logging in:", error);
