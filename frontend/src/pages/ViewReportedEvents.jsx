@@ -15,10 +15,11 @@ export default function ViewReportedEvents() {
   useEffect(() => {
     let isMounted = true;
     async function fetchData() { 
-      /**
-       * TODO: BTASK 
-       * 
-       */
+      /* TODO:  BTASK 
+       * Fetch all reported events. 
+        
+       *
+       * /
       /* const response = await fetch(
          `http://localhost:8080/api/posts/eventdetails/${id}`,
          {
