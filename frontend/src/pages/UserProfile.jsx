@@ -24,7 +24,7 @@ export default function UserProfile() {
     let isMounted = true;
     async function fetchData() {
       // TODO: BTASK 
-      // add fetch request to get user info, events, and market posts: 
+      // add fetch request to get user info (fname, lname, email),all events, and all market posts: 
       // body of request: 
       // {  
       // id: id
