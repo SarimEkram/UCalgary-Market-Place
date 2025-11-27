@@ -1,5 +1,5 @@
 import { BottomNavigation, BottomNavigationAction } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import Calendar from "../assets/CalendarSVG.jsx";
 import Home from "../assets/HomeSVG.jsx";
@@ -7,7 +7,19 @@ import Shoppingbag from "../assets/ShoppingbagSVG.jsx";
 import User from "../assets/UserSVG.jsx";
 
 export default function Navigation() {
-  //get the value of root path which is home, market, e.t.c
+  // set the options based on the role of the user 
+   const [options, setOptions] = useState( () => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    let options = [];
+    if (userData.isAdmin){
+      options = ["Home", "Admin", "Market", "Events"];
+    }else{
+      options = ["Home", "User", "Market", "Events"]
+    }
+    return options;
+  });
+
+  //get the current path
   const location = useLocation();
 
   //the currently selected page in the navigation bar
@@ -52,7 +64,7 @@ export default function Navigation() {
         padding: 2,
       })}
     >
-      {["Home", "User", "Market", "Events"].map((title) => (
+      {options.map((title) => (
         <BottomNavigationAction
          key={"nav-" + title.toLowerCase()}
           sx={(theme) => ({
