@@ -149,6 +149,8 @@ export default function ViewReportedEvents() {
                     reportDate={post.report_date}
                     numReports={post.report_count}
                     image={post.image}
+                    type="event"
+                    id={post.id}
                   ></PostCard>
                 );
               })}
@@ -160,6 +162,8 @@ export default function ViewReportedEvents() {
                     reportDate={post.report_date}
                     numReports={post.report_count}
                     image={post.image}
+                    type="event"
+                    id={post.id}
                   ></PostCard>
                 );
               })}

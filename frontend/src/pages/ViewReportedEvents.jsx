@@ -144,11 +144,13 @@ export default function ViewReportedEvents() {
               {items.map((post, index) => {
                 return (
                   <PostCard
-                    key={"postt-card-" + index}
+                    key={"post-card-" + index}
                     primaryText={post.title}
                     reportDate={post.report_date}
                     numReports={post.report_count}
                     image={post.image}
+                    type="market"
+                    id={post.id}
                   ></PostCard>
                 );
               })}
@@ -160,6 +162,8 @@ export default function ViewReportedEvents() {
                     reportDate={post.report_date}
                     numReports={post.report_count}
                     image={post.image}
+                    type="market"
+                    id={post.id}
                   ></PostCard>
                 );
               })}

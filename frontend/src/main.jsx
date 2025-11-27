@@ -141,7 +141,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="home" element={<Home></Home>}></Route>
           <Route path="market" element={<Market></Market>}></Route>
           <Route path="reports">
-             <Route path="events">
+             <Route path="event">
                   <Route index element={<ViewReportedEvents></ViewReportedEvents>}></Route>
                   <Route path=":id" element={<div>Not done view reported event.</div>}></Route>
              </Route>
