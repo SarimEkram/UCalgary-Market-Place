@@ -9,139 +9,134 @@ SET GLOBAL event_scheduler = ON;
 /** TABLES **/
 -- USERS
 CREATE TABLE users (
-    user_id         INT AUTO_INCREMENT PRIMARY KEY,
-    email           VARCHAR(255) NOT NULL UNIQUE,
-    fname           VARCHAR(100) NOT NULL,
-    lname           VARCHAR(100) NOT NULL,
-    hashed_password VARCHAR(255) NOT NULL
+               user_id         INT AUTO_INCREMENT PRIMARY KEY,
+               email           VARCHAR(255) NOT NULL UNIQUE,
+               fname           VARCHAR(100) NOT NULL,
+               lname           VARCHAR(100) NOT NULL,
+               hashed_password VARCHAR(255) NOT NULL
 );
 
 -- ADMINS
 CREATE TABLE admins (
-    admin_id        INT AUTO_INCREMENT PRIMARY KEY,
-    email           VARCHAR(255) NOT NULL UNIQUE,
-    fname           VARCHAR(100) NOT NULL,
-    lname           VARCHAR(100) NOT NULL,
-    hashed_password VARCHAR(255) NOT NULL
+                admin_id        INT AUTO_INCREMENT PRIMARY KEY,
+                email           VARCHAR(255) NOT NULL UNIQUE,
+                fname           VARCHAR(100) NOT NULL,
+                lname           VARCHAR(100) NOT NULL,
+                hashed_password VARCHAR(255) NOT NULL
 );
 
 -- POSTS (parent of events + market_posts)
 -- post_type: 'event' or 'market'
 CREATE TABLE posts (
-    post_id     INT AUTO_INCREMENT PRIMARY KEY,
-    user_id     INT NOT NULL,
-    post_type   ENUM('event','market') NOT NULL,
-    postal_code VARCHAR(20),
-    price       DECIMAL(10,2),
-    posted_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    name        VARCHAR(255) NOT NULL,
-    description TEXT,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+               post_id     INT AUTO_INCREMENT PRIMARY KEY,
+               user_id     INT NOT NULL,
+               post_type   ENUM('event','market') NOT NULL,
+               postal_code VARCHAR(20),
+               price       DECIMAL(10,2),
+               posted_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+               name        VARCHAR(255) NOT NULL,
+               description TEXT,
+               FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 -- EVENTS (event_id = post_id)
 CREATE TABLE event_posts (
-    event_id          INT PRIMARY KEY,
-    organization_name VARCHAR(255),
-    event_start       DATETIME NOT NULL,
-    event_end         DATETIME NOT NULL,
-    FOREIGN KEY (event_id) REFERENCES posts(post_id)
+                 event_id          INT PRIMARY KEY,
+                 organization_name VARCHAR(255),
+                 event_start       DATETIME NOT NULL,
+                 event_end         DATETIME NOT NULL,
+                 FOREIGN KEY (event_id) REFERENCES posts(post_id) ON DELETE CASCADE
 );
-
 
 -- MARKET POSTS (market_id = post_id)
 CREATE TABLE market_posts (
-    market_id      INT PRIMARY KEY,
-    item_condition VARCHAR(100),
-    FOREIGN KEY (market_id) REFERENCES posts(post_id)
+                  market_id      INT PRIMARY KEY,
+                  item_condition VARCHAR(100),
+                  FOREIGN KEY (market_id) REFERENCES posts(post_id) ON DELETE CASCADE
 );
 
 -- SAVED POSTS (bookmark)
 CREATE TABLE saved_posts (
-    user_id INT NOT NULL,
-    post_id INT NOT NULL,
-    PRIMARY KEY (user_id, post_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (post_id) REFERENCES posts(post_id)
+                 user_id INT NOT NULL,
+                 post_id INT NOT NULL,
+                 PRIMARY KEY (user_id, post_id),
+                 FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+                 FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
 );
 
 -- CONTACTED SELLER
 CREATE TABLE contacted_seller (
-    user_id INT NOT NULL,
-    post_id INT NOT NULL,
-    PRIMARY KEY (user_id, post_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (post_id) REFERENCES posts(post_id)
+                  user_id INT NOT NULL,
+                  post_id INT NOT NULL,
+                  PRIMARY KEY (user_id, post_id),
+                  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+                  FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
 );
 
 -- REPORTS BASE
 -- report_type: 'user' or 'post'
 CREATE TABLE reports (
-    report_id   INT AUTO_INCREMENT PRIMARY KEY,
-    reporter_id INT NOT NULL,
-    report_type ENUM('user','post') NOT NULL,
-    reason      TEXT NOT NULL,
-    FOREIGN KEY (reporter_id) REFERENCES users(user_id)
+                 report_id   INT AUTO_INCREMENT PRIMARY KEY,
+                 reporter_id INT NOT NULL,
+                 report_type ENUM('user','post') NOT NULL,
+                 reason      TEXT NOT NULL,
+                 FOREIGN KEY (reporter_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 -- REPORT ABOUT A POST
 CREATE TABLE post_report (
-    report_id INT PRIMARY KEY,
-    post_id   INT NOT NULL,
-    FOREIGN KEY (report_id) REFERENCES reports(report_id),
-    FOREIGN KEY (post_id) REFERENCES posts(post_id)
+                 report_id INT PRIMARY KEY,
+                 post_id   INT NOT NULL,
+                 FOREIGN KEY (report_id) REFERENCES reports(report_id) ON DELETE CASCADE,
+                 FOREIGN KEY (post_id)   REFERENCES posts(post_id) ON DELETE CASCADE
 );
 
 -- REPORT ABOUT A USER
 CREATE TABLE user_report (
-    report_id        INT PRIMARY KEY,
-    reported_user_id INT NOT NULL,
-    FOREIGN KEY (report_id) REFERENCES reports(report_id),
-    FOREIGN KEY (reported_user_id) REFERENCES users(user_id)
+                 report_id  INT PRIMARY KEY,
+                 reported_user_id INT NOT NULL,
+                 FOREIGN KEY (report_id)  REFERENCES reports(report_id) ON DELETE CASCADE,
+                 FOREIGN KEY (reported_user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 -- ADMIN ACTION LOG
 CREATE TABLE admin_actions (
-    action_id INT AUTO_INCREMENT PRIMARY KEY,
-    admin_id  INT NOT NULL,
-    action    VARCHAR(255) NOT NULL,
-    action_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (admin_id) REFERENCES admins(admin_id)
+                   action_id INT AUTO_INCREMENT PRIMARY KEY,
+                   admin_id  INT NOT NULL,
+                   action    VARCHAR(255) NOT NULL,
+                   action_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                   FOREIGN KEY (admin_id) REFERENCES admins(admin_id) ON DELETE CASCADE
 );
 
 -- BANNED USERS (linked to an admin action)
 CREATE TABLE banned_users (
-    action_id  INT NOT NULL,
-    user_email VARCHAR(255) NOT NULL,
-    PRIMARY KEY (action_id, user_email),
-    FOREIGN KEY (action_id) REFERENCES admin_actions(action_id)
+                  action_id  INT NOT NULL,
+                  user_email VARCHAR(255) NOT NULL,
+                  PRIMARY KEY (action_id, user_email),
+                  FOREIGN KEY (action_id) REFERENCES admin_actions(action_id) ON DELETE CASCADE
 );
 
 -- IMAGES
 CREATE TABLE images (
-    image_id        INT AUTO_INCREMENT PRIMARY KEY,
-    post_id         INT NOT NULL,
-    image_text_data LONGBLOB,
-    FOREIGN KEY (post_id) REFERENCES posts(post_id)
+                    image_id        INT AUTO_INCREMENT PRIMARY KEY,
+                    post_id         INT NOT NULL,
+                    image_text_data LONGBLOB,
+                    FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
 );
 
-
--- CREATE AN EVENT HANDLER which deletes expired verifcication codes every 4 minutes 
-CREATE EVENT IF NOT EXISTS expire_codes_event
-ON SCHEDULE EVERY 4 MINUTE 
-DO
-  DELETE FROM verification_codes
-  WHERE expiration_date < CURTIME();
-  
 -- VERIFICATION CODES
 CREATE TABLE IF NOT EXISTS verification_codes (
-    randomCode VARCHAR(8) PRIMARY KEY,
-    expiration_date TIME
-);
+                    randomCode VARCHAR(8) PRIMARY KEY,
+                    expiration_date TIME,
+                    INDEX idx_expiration_date (expiration_date)
+    );
 
--- Add index to make checking the expiration_date faster
-ALTER TABLE verification_codes 
-ADD INDEX (expiration_date);
+-- CREATE AN EVENT HANDLER which deletes expired verification codes every 4 minutes
+CREATE EVENT IF NOT EXISTS expire_codes_event
+ON SCHEDULE EVERY 5 MINUTE
+DO
+    DELETE FROM verification_codes
+    WHERE expiration_date < CURTIME();
 
 /** SEED DATA **/
 
