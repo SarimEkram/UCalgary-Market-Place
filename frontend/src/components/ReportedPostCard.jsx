@@ -42,15 +42,17 @@ export default function PostCard({
         display: "flex",
         flexDirection: "column",
         gap: 2,
+        minHeight: 'min-content',
+        // my: 2,
       })}
     >
-      <Stack spacing={5} direction="row">
+      <Stack spacing={5} direction="row" sx={{ height: "100%" }}>
         {/* IMAGE */}
         <Box sx={{ flexGrow: 1 }} position="relative">
           <CardMedia
             sx={(theme) => ({
               width: "100%",
-              height: { xs: 100, sm: 150, md: 200 },
+              height: "90%",
               objectFit: "cover",
               borderRadius: theme.shape.borderRadius,
             })}
@@ -59,10 +61,10 @@ export default function PostCard({
           />
           {reportDate && (
             <Icon
-            fontSize="large"
+              fontSize="large"
               sx={{ position: "absolute", bottom: -3, right: -3 }}
             >
-              <Reported ></Reported>
+              <Reported></Reported>
             </Icon>
           )}
         </Box>
@@ -76,7 +78,7 @@ export default function PostCard({
         >
           <Stack
             direction={"column"}
-            sx={{ justifyContent: "space-between", height: "100%" }}
+            sx={{ gap: 10, height: "100%" }}
           >
             <Box>
               <Typography

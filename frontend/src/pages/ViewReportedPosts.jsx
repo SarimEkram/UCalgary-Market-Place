@@ -129,15 +129,16 @@ export default function ViewReportedEvents() {
           <CustomDivider></CustomDivider>
         </Box>
         <Box
-          sx={{
+           sx={{
             display: "grid",
-            gridTemplateColumns: {
-              xs: "repeat(1, minmax(0, 1fr))", // 1 rows on mobile
-              sm: "repeat(2, minmax(0, 1fr))", // 2 rows on small tablets
-            },
+            gridAutoRows: "0.6fr",
             columnGap: 5,
-            rowGap: 5,
+            rowGap: 10,
             mt: 0.5,
+            gridTemplateColumns: {
+              xs: "repeat(1, 1fr)", // 1 rows on mobile
+              sm: "repeat(2, 1fr)", // 2 rows on small tablets     
+            },
           }}
         >
               {items.map((post, index) => {
