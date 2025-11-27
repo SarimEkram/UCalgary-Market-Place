@@ -22,6 +22,7 @@ import UserProfile from "./pages/UserProfile";
 import ViewReportedEvents from "./pages/ViewReportedEvents";
 import ViewReportedPosts from "./pages/ViewReportedPosts";
 import AdminSettings from "./pages/AdminSettings";
+import AdminProfile from "./pages/AdminProfile";
 
 const black = "#221F1F";
 const  inputBorderColor= "#757575"; 
@@ -155,7 +156,11 @@ createRoot(document.getElementById("root")).render(
           </Route>
           {/* @ Deep, feel free to customize as needed. you're in charge of the list users/admin pages*/}
           <Route path="profile/:id" element={<UserProfile></UserProfile>}></Route>
-          <Route path="admin/settings" element={<AdminSettings></AdminSettings>}></Route>
+          <Route path="admin">
+            {/* Settings page the currently logged in admin. */}
+            <Route path="settings" element={<AdminSettings></AdminSettings>}></Route>
+             <Route path="profile/:id" element={<AdminProfile></AdminProfile>}></Route>
+          </Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
