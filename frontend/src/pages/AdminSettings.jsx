@@ -166,6 +166,7 @@ export default function MySettings() {
               placeholder={"New Password"}
               label={"Password"}
               inputProps={{ type: "password" }}
+              autoComplete={"new-password"}
               helpText={<PassHelpText></PassHelpText>}
               errorMsg={errors["password"] ? errors["password"].message : null}
               {...register("password", {
@@ -189,6 +190,7 @@ export default function MySettings() {
               placeholder={"New Password"}
               label={"Re-enter Your Password"}
               inputProps={{ type: "password" }}
+              autoComplete={"new-password"}
               errorMsg={
                 errors["newPassword"] ? errors["newPassword"].message : null
               }
@@ -200,6 +202,7 @@ export default function MySettings() {
             <InputField
               placeholder={"John"}
               label={"First Name"}
+              autoComplete={"name"}
               inputProps={{ type: "text" }}
               errorMsg={
                 errors["firstName"] ? errors["firstName"].message : null
@@ -216,6 +219,7 @@ export default function MySettings() {
               placeholder={"Doe"}
               label={"Last Name"}
               inputProps={{ type: "text" }}
+              autoComplete={"family-name"}
               errorMsg={errors["lastName"] ? errors["lastName"].message : null}
               {...register("lastName", {
                 required: "Last name is required.",

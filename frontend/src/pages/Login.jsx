@@ -75,6 +75,7 @@ export default function Login() {
             <InputField
               placeholder={"joe.doe@ucalgary.ca"}
               label={"Email"}
+              autoComplete={"email"}
               errorMsg={errors["email"] ? errors["email"].message : null}
               {...register("email", {
                 required: "Email is required.",
@@ -91,6 +92,7 @@ export default function Login() {
             <InputField
               placeholder={"Password"}
               label={"Password"}
+              autoComplete={"password"}
               inputProps={{ type: "password" }}
               errorMsg={errors["password"] ? errors["password"].message : null}
               {...register("password", {

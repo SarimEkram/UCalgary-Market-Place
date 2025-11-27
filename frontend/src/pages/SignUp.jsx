@@ -126,6 +126,7 @@ export default function SignUp() {
             <InputField
               placeholder={"joe.doe@ucalgary.ca"}
               label={"Email"}
+              autoComplete={"email"}
               errorMsg={errors["email"] ? errors["email"].message : null}
               {...register("email", {
                 required: "Email is required.",
@@ -142,6 +143,7 @@ export default function SignUp() {
             <InputField
               placeholder={"New Password"}
               label={"Password"}
+              autoComplete={"new-password"}
               inputProps={{ type: "password" }}
               helpText={<PassHelpText></PassHelpText>}
               errorMsg={errors["password"] ? errors["password"].message : null}
@@ -166,6 +168,7 @@ export default function SignUp() {
               placeholder={"New Password"}
               label={"Re-enter Your Password"}
               inputProps={{ type: "password" }}
+              autoComplete={"new-password"}
               errorMsg={
                 errors["newPassword"] ? errors["newPassword"].message : null
               }
@@ -177,6 +180,7 @@ export default function SignUp() {
             <InputField
               placeholder={"John"}
               label={"First Name"}
+              autoComplete={"name"}
               inputProps={{ type: "text" }}
               errorMsg={
                 errors["firstName"] ? errors["firstName"].message : null
@@ -192,6 +196,7 @@ export default function SignUp() {
             <InputField
               placeholder={"Doe"}
               label={"Last Name"}
+              autoComplete={"family-name"}
               inputProps={{ type: "text" }}
               errorMsg={errors["lastName"] ? errors["lastName"].message : null}
               {...register("lastName", {
