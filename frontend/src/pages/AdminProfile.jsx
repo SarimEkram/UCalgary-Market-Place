@@ -42,7 +42,7 @@ export default function AdminProfile() {
       ];
       actionData = actionData.map((item) => {
         let dateObject = dayjs(item.date);
-        
+
         item["dateTime"] = dayjs(item.date).format("YYYY/MM/DD, h:mma");
         return item;
       });
@@ -133,7 +133,6 @@ export default function AdminProfile() {
                 {userData.fname} {userData.lname}
               </Typography>
               <Typography variant="h6">{userData.email}</Typography>
-              <CustomButton style={{ my: 2 }}>Delete</CustomButton>
             </Box>
           </Stack>
         </Box>
@@ -149,10 +148,10 @@ export default function AdminProfile() {
           <Typography variant="h4" sx={{ paddingBottom: 3 }}>
             Recent Actions:
           </Typography>
-          {items.map((item, index ) => (
+          {items.map((item, index) => (
             <ActionItem
-              key={"action" + index }
-              index={index }
+              key={"action" + index}
+              index={index}
               dateTime={item.dateTime}
               action={item.action}
             ></ActionItem>
