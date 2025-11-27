@@ -9,7 +9,7 @@ import dayjs from "dayjs";
 export default function AdminProfile() {
   const [items, setItems] = useState([]);
   const [userData, setUserData] = useState({ fname: "", lname: "", email: "" });
-  //userID
+  //admin ID
   const { id } = useParams();
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function AdminProfile() {
       // }
 
       /* const response = await fetch(
-         `http://localhost:8080/api/posts/eventdetails/${id}`,
+         `http://localhost:8080/api/something/${id}`,
          {
            method: "GET",
            headers: {
