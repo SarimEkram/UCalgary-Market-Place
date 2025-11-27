@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import Reported from "../assets/Reported";
+import Reported from "../assets/ReportedSVG";
 import CustomButton from "./CustomButton";
 
 export default function PostCard({

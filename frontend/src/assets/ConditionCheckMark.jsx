@@ -1,7 +1,19 @@
 export default function ConditionCheckmark(props) {
-  return (       
-<svg width="13" height="9" viewBox="0 0 13 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M11.4667 0.799805L4.13332 8.13314L0.799988 4.7998" stroke="#F5F5F5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+  return (
+    <svg
+      width="13"
+      height="9"
+      viewBox="0 0 13 9"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M11.4667 0.799805L4.13332 8.13314L0.799988 4.7998"
+        stroke="#F5F5F5"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
