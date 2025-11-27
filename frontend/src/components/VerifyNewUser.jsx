@@ -46,7 +46,7 @@ const FirstPage = ({ handleClose, setVerified }) => {
   const onSubmit = async (formData) => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/password/verify",
+        "http://localhost:8080/api/registration/verify-code",
         {
           method: "POST",
           headers: {
@@ -60,7 +60,7 @@ const FirstPage = ({ handleClose, setVerified }) => {
 
       // handle successful case
       if (response.ok) {
-        setVerified(true);
+        setVerified({status: true, code: formData["code"]});
         handleClose();
       } else {
         // Handle failures
