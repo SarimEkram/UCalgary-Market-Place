@@ -23,24 +23,31 @@ export default function UserProfile() {
   useEffect(() => {
     let isMounted = true;
     async function fetchData() {
-      //  const response = await fetch(
-      //    `http://localhost:8080/api/posts/eventdetails/${id}`,
-      //    {
-      //      method: "GET",
-      //      headers: {
-      //        "Content-Type": "application/json",
-      //      },
-      //    }
-      //  );
+      // TODO: BTASK 
+      // add fetch request to get user info, events, and market posts: 
+      // body of request: 
+      // {  
+      // id: id
+      // }
 
-      //  const data = await response.json();
-      //  data = data.map((item) => {
-      //    const image = item.image;
-      //    const blob = image.data.replace(/\s/g, "");
-      //    const src = `data:image/jpeg;base64,${blob}`;
-      //    item.image = src;
-      //    return item;
-      //  });
+      /* const response = await fetch(
+         `http://localhost:8080/api/posts/eventdetails/${id}`,
+         {
+           method: "GET",
+           headers: {
+             "Content-Type": "application/json",
+           },
+         }
+       );
+
+       const data = await response.json();
+       data = data.map((item) => {
+         const image = item.image;
+         const blob = image.data.replace(/\s/g, "");
+         const src = `data:image/jpeg;base64,${blob}`;
+         item.image = src;
+         return item;
+       });*/
 
       let data = [
         {

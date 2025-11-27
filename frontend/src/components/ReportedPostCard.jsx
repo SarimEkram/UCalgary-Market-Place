@@ -38,6 +38,8 @@ export default function PostCard({
   const onDelete = async () => {
     // TODO: BTASK
     // add delete post api
+    // body of requestL 
+    // {id: id} 
     try {
       const response = await fetch("http://localhost:8080/api/[]", {
         method: "POST",

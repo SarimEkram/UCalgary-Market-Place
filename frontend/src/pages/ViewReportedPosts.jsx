@@ -9,30 +9,33 @@ import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import PostCard from "../components/ReportedPostCard";
 
-export default function ViewReportedEvents() {
+export default function ViewReportedPosts() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
     async function fetchData() { 
-      //  const response = await fetch(
-      //    `http://localhost:8080/api/posts/eventdetails/${id}`,
-      //    {
-      //      method: "GET",
-      //      headers: {
-      //        "Content-Type": "application/json",
-      //      },
-      //    }
-      //  );
+      /* TODO: BTASK
+      fetch all reported market posts 
+      */
+      /* const response = await fetch(
+         `http://localhost:8080/api/posts/eventdetails/${id}`,
+         {
+           method: "GET",
+           headers: {
+             "Content-Type": "application/json",
+           },
+         }
+       );
 
-      //  const data = await response.json();
-      //  data = data.map((item) => {
-      //    const image = item.image;
-      //    const blob = image.data.replace(/\s/g, "");
-      //    const src = `data:image/jpeg;base64,${blob}`;
-      //    item.image = src;
-      //    return item;
-      //  });
+       const data = await response.json();
+       data = data.map((item) => {
+         const image = item.image;
+         const blob = image.data.replace(/\s/g, "");
+         const src = `data:image/jpeg;base64,${blob}`;
+         item.image = src;
+         return item;
+       });*/
 
       let data = [
         {
