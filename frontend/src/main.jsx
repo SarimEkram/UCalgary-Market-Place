@@ -13,7 +13,7 @@ import EditEvent from "./pages/EditEvent";
 import CreateEvent from "./pages/CreateEvent";
 import MySettings from "./pages/MySettings";
 import MarketItemPage from "./pages/MarketItemPage";
-import Event from "./pages/Event";
+// import Event from "./pages/Event";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
@@ -141,7 +141,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="home" element={<Home></Home>}></Route>
           <Route path="market" element={<Market></Market>}></Route>
           <Route path="/market/:id" element={<MarketItemPage />} />
-          <Route path="event" element={<Event></Event>}></Route>
+          <Route path="event" element={<div>Event page - Not finished.</div>}></Route>
           <Route path="reports">
              <Route path="event">
                   <Route index element={<ViewReportedEvents></ViewReportedEvents>}></Route>
