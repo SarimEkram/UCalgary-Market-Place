@@ -66,6 +66,7 @@ const FirstPage = ({ handleClose, setVerified }) => {
         // Handle failures
         const status = { ...submitStatus };
         status.success = false;
+        // TODO: make sure data.error works. =/
         status.msg = data.error;
         setSubmitStatus(status);
       }
