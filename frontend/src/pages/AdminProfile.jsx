@@ -42,7 +42,7 @@ export default function AdminProfile() {
       ];
       actionData = actionData.map((item) => {
         let dateObject = dayjs(item.date);
-        console.log(dateObject);
+        
         item["dateTime"] = dayjs(item.date).format("YYYY/MM/DD, h:mma");
         return item;
       });
@@ -149,8 +149,10 @@ export default function AdminProfile() {
           <Typography variant="h4" sx={{ paddingBottom: 3 }}>
             Recent Actions:
           </Typography>
-          {items.map((item) => (
+          {items.map((item, index ) => (
             <ActionItem
+              key={"action" + index }
+              index={index }
               dateTime={item.dateTime}
               action={item.action}
             ></ActionItem>
