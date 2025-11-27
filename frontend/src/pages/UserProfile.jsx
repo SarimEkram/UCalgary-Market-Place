@@ -108,7 +108,6 @@ export default function UserProfile() {
       });
 
       setItems(data);
-      console.log(data);
 
       setUserData({ fname: "Jone", lname: "Carter", email: "jw@ucalgary.ca" });
     }
@@ -205,7 +204,7 @@ export default function UserProfile() {
               {items.map((post, index) => {
                 return (
                   <PostCard
-                    key={"post-card-" + index}
+                    key={"card-" + index}
                     primaryText={post.title}
                     reportDate={post.report_date}
                     numReports={post.report_count}
@@ -231,7 +230,7 @@ export default function UserProfile() {
               {items.map((post, index) => {
                 return (
                   <PostCard
-                    key={"post-card-" + index}
+                    key={"card-" + index}
                     primaryText={post.title}
                     reportDate={post.report_date}
                     numReports={post.report_count}

@@ -20,7 +20,7 @@ import Reported from "../assets/ReportedSVG";
 import CustomButton from "./CustomButton";
 
 export default function PostCard({
-  key,
+ 
   image,
   primaryText,
   reportDate,
@@ -74,7 +74,6 @@ export default function PostCard({
     <Card
       variant="elevation"
       elevation={1}
-      key={key}
       sx={(theme) => ({
         p: 4,
         position: "relative",

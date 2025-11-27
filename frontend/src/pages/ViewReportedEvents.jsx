@@ -82,7 +82,7 @@ export default function ViewReportedEvents() {
       });
 
       setItems(data);
-      console.log(data);
+     
 
      
     }
@@ -149,7 +149,7 @@ export default function ViewReportedEvents() {
               {items.map((post, index) => {
                 return (
                   <PostCard
-                    key={"post-card-" + index}
+                    key={"card-" + index}
                     primaryText={post.title}
                     reportDate={post.report_date}
                     numReports={post.report_count}
@@ -162,7 +162,7 @@ export default function ViewReportedEvents() {
                {items.map((post, index) => {
                 return (
                   <PostCard
-                    key={"post-card-" + (index + 2)}
+                    key={"card-" + (index + 2)}
                     primaryText={post.title}
                     reportDate={post.report_date}
                     numReports={post.report_count}

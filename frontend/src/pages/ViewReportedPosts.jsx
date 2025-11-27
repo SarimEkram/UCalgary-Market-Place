@@ -80,8 +80,6 @@ export default function ViewReportedPosts() {
       });
 
       setItems(data);
-      console.log(data);
-
      
     }
     fetchData();
@@ -147,7 +145,7 @@ export default function ViewReportedPosts() {
               {items.map((post, index) => {
                 return (
                   <PostCard
-                    key={"postt-card-" + index}
+                    key={"card-" + index}
                     primaryText={post.title}
                     reportDate={post.report_date}
                     numReports={post.report_count}
@@ -160,7 +158,7 @@ export default function ViewReportedPosts() {
                {items.map((post, index) => {
                 return (
                   <PostCard
-                    key={"post-card-" + (index + 2)}
+                    key={"card-" + (index + 2)}
                     primaryText={post.title}
                     reportDate={post.report_date}
                     numReports={post.report_count}
