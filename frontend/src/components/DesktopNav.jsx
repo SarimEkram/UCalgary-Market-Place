@@ -7,7 +7,7 @@ import User from "../assets/UserSVG.jsx";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 
-import { Icon as MUIIcon } from "@mui/material";
+import { Icon as MUIIcon, useMediaQuery, useTheme } from "@mui/material";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -15,44 +15,43 @@ import ListItemText from "@mui/material/ListItemText";
 import { useLocation, useNavigate } from "react-router";
 
 export default function DesktopNav() {
-  // set the options based on the role of the user 
-  const [options, setOptions] = useState( () => {
+  // set the options based on the role of the user
+  const [options, setOptions] = useState(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
     let options = [];
-    if (userData.isAdmin){
+    if (userData.isAdmin) {
       options = ["Home", "Admin", "Market", "Events"];
-    }else{
-      options = ["Home", "User", "Market", "Events"]
+    } else {
+      options = ["Home", "User", "Market", "Events"];
     }
     return options;
   });
 
-  //get the current path 
+  //get the current path
   const location = useLocation();
 
   //the currently selected page in the navigation bar
   //which is initialized to the root path on the current page
-  const [value, setValue] = useState((location.pathname.split("/"))[1]);
+  const [value, setValue] = useState(location.pathname.split("/")[1]);
 
   //constant width of the navigation bar
   const drawerWidth = 180;
 
-  //hook which handles navigating urls 
+  //hook which handles navigating urls
   const navigate = useNavigate();
 
-    //render icon assocaited with a given value. ex: render Home icon
-   const Icon = function ({ value }) {
-     if (value == "home") {
-       return <Home></Home>;
-     } else if (value == "user" || value=="admin") {
-       return <User></User>;
-     } else if (value == "events") {
-       return <Shoppingbag></Shoppingbag>;
-     } else {
-       return <Calendar></Calendar>;
-     }
-   };
-
+  //render icon assocaited with a given value. ex: render Home icon
+  const Icon = function ({ value }) {
+    if (value == "home") {
+      return <Home></Home>;
+    } else if (value == "user" || value == "admin") {
+      return <User></User>;
+    } else if (value == "events") {
+      return <Shoppingbag></Shoppingbag>;
+    } else {
+      return <Calendar></Calendar>;
+    }
+  };
 
   // navigate urls, and change the current selected page, when a user clicks on an item in the nav bar
   function handleChange(newValue) {
@@ -62,13 +61,18 @@ export default function DesktopNav() {
     });
   }
 
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up("md"));
+
   return (
+    
     <Drawer
-      id="desktop-nav"
+      id="desktop-nav"  
+      slotProps={{ transition: { unmountOnExit: true, } }}
       sx={(theme) => ({
         width: drawerWidth,
-        flexShrink: 0,
-
+        // flexShrink: 0,
+        display: matches ?  "block" : "none", 
         "& .MuiDrawer-paper": {
           width: drawerWidth,
           boxSizing: "border-box",
@@ -79,46 +83,46 @@ export default function DesktopNav() {
           color: theme.palette.primary,
         },
       })}
-      variant="permanent"
+      variant="persistent"
       anchor="left"
+      open={matches}
+      
     >
       <List id="list" sx={{ paddingTop: 10 }}>
         {options.map((title) => (
-          <>
-            <ListItem key={"nav-" + title.toLowerCase()} disablePadding>
-              <ListItemButton onClick={() => handleChange(title.toLowerCase())}>
-                <ListItemIcon
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <MUIIcon
-                    fontSize="medium"
-                    sx={(theme) => ({
-                      padding: 0,
-                      color:
-                        (value ==  title.toLowerCase() )
-                          ? theme.palette.primary.main
-                          : theme.palette.secondary.main,
-                    })}
-                  >
-                    <Icon value={title.toLowerCase()}></Icon>
-                  </MUIIcon>
-                </ListItemIcon>
-                <ListItemText
+          <ListItem key={"nav-" + title.toLowerCase()} disablePadding>
+            <ListItemButton onClick={() => handleChange(title.toLowerCase())}>
+              <ListItemIcon
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <MUIIcon
+                  fontSize="medium"
                   sx={(theme) => ({
+                    padding: 0,
                     color:
-                     (value ==  title.toLowerCase() )
+                      value == title.toLowerCase()
                         ? theme.palette.primary.main
                         : theme.palette.secondary.main,
                   })}
-                  primary={title}
-                />
-              </ListItemButton>
-            </ListItem>
-          </>
+                >
+                  <Icon value={title.toLowerCase()}></Icon>
+                </MUIIcon>
+              </ListItemIcon>
+              <ListItemText
+                sx={(theme) => ({
+                  color:
+                    value == title.toLowerCase()
+                      ? theme.palette.primary.main
+                      : theme.palette.secondary.main,
+                })}
+                primary={title}
+              />
+            </ListItemButton>
+          </ListItem>
         ))}
       </List>
     </Drawer>
