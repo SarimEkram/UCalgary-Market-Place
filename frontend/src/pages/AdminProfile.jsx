@@ -1,10 +1,11 @@
 import { Box, Container, Divider, Stack, Typography } from "@mui/material";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import ProfileIcon from "../assets/ProfileIconSVG";
-import CustomButton from "../components/CustomButton";
+import DesktopNav from "../components/DesktopNav";
 import Header from "../components/Header";
-import dayjs from "dayjs";
+import MobileNav from "../components/Navigation";
 
 export default function AdminProfile() {
   const [items, setItems] = useState([]);
@@ -74,8 +75,8 @@ export default function AdminProfile() {
   const ActionItem = ({ dateTime, action }) => (
     <Box>
       <Stack direction="row" spacing={2}>
-        <Typography variant="h6">{dateTime}:</Typography>
-        <Typography variant="h6">{action}</Typography>
+        <Typography variant="body1">{dateTime}:</Typography>
+        <Typography variant="body1">{action}</Typography>
       </Stack>
       <Box>
         <Divider
@@ -97,10 +98,15 @@ export default function AdminProfile() {
       sx={(theme) => ({
         bgcolor: theme.palette.background.default,
         minHeight: "100vh",
+        // Root  container must have this property
         justifyContent: "space-between",
       })}
     >
       <Header />
+      {/* Add the Stack and the Desktop Nav */}
+      <Stack direction="row">
+      <DesktopNav></DesktopNav>
+      {/* The stach encloses the desktop nav and the original page content */}
       <Container
         maxWidth="lg"
         sx={{
@@ -158,6 +164,9 @@ export default function AdminProfile() {
           ))}
         </Box>
       </Container>
+      {/*Add the Mobile Nav below the stack*/}
+      </Stack>
+     <MobileNav></MobileNav>
     </Stack>
   );
 }
