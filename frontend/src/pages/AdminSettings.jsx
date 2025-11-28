@@ -82,11 +82,26 @@ export default function MySettings() {
     );
   };
 
-  //makes sure that both passwords entered match
-  const validatePasswords = () => {
+  //makes sure that new password meets password requirements 
+  const validateNewPassword = () => {
+    const passwords = getValues(["password"]);
+
+    if (passwords[0] === "") {
+      return true;
+    } else if (passwords[0].length < 8) {
+      return "Miniumum length of 8 characters.";
+    } else if (passwords[0].length > 20) {
+      return "Maxiumum length of 20 characters.";
+    } else if ( !passwords[0].match(/^(?=.*\d)(?=.*[!@#$%^&*(),.?:{}|<>]).*$/) ) {
+      return "Must have at least one number and one special character (!@#$%^&*(),.?:{}|<></>).";
+    }
+    return true;
+  };
+
+  //make sure that password fields match 
+  const validateConfirmPassword = () => {
     const passwords = getValues(["newPassword", "password"]);
-    const ans = passwords[0] == passwords[1] ? true : "Passwords do not match.";
-    return ans;
+    return passwords[0] === passwords[1] ? true : "Passwords do not match.";
   };
 
   //a styled divider for easy re-use
@@ -170,20 +185,7 @@ export default function MySettings() {
                     errors["password"] ? errors["password"].message : null
                   }
                   {...register("password", {
-                    required: "Password is required.",
-                    minLength: {
-                      value: 8,
-                      message: "Miniumum length of 8 characters.",
-                    },
-                    maxLength: {
-                      value: 20,
-                      message: "Maxiumum length of 20 characters.",
-                    },
-                    pattern: {
-                      value: /^(?=.*\d)(?=.*[!@#$%^&*(),.?:{}|<>]).*$/,
-                      message:
-                        "Must have at least one number and one special character (!@#$%^&*(),.?:{}|<></>).",
-                    },
+                    validate: validateNewPassword,
                   })}
                 ></InputField>
                 <InputField
@@ -195,8 +197,7 @@ export default function MySettings() {
                     errors["newPassword"] ? errors["newPassword"].message : null
                   }
                   {...register("newPassword", {
-                    required: "Confirming password is required.",
-                    validate: validatePasswords,
+                    validate: validateConfirmPassword,
                   })}
                 ></InputField>
                 <InputField
