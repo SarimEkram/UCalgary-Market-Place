@@ -12,7 +12,7 @@ import Home from "../assets/HomeSVG.jsx";
 import Shoppingbag from "../assets/ShoppingbagSVG.jsx";
 import User from "../assets/UserSVG.jsx";
 
-export default function MobileNav() {
+export default function Navigation() {
   // set the options based on the role of the user
   const [options, setOptions] = useState(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
@@ -76,9 +76,9 @@ export default function MobileNav() {
           borderTop: theme.palette.dividerWidth,
           borderColor: theme.palette.divider,
           padding: 2,
-          position: "relative", 
-          // bottom: 15, 
-          // width: "100%",
+          position: "fixed", 
+          bottom: 0, 
+          width: "100%",
         })}
       >
         {options.map((title) => (
