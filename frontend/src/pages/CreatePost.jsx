@@ -20,6 +20,7 @@ import InputField from "../components/InputField";
 import { Link as RouterLink } from "react-router";
 import MobileNav from "../components/MobileNav";
 import DesktopNav from "../components/DesktopNav";
+import ImageSlider from "../components/ImageSlider";
 
 // backend tasks, can be found using ctrl+f "TODO".
 export default function CreatePost() {
@@ -32,8 +33,6 @@ export default function CreatePost() {
   const [createFailed, setCreateFailed] = useState(false);
   const [newImages, setNewImages] = useState([]);
 
-  //set the current image in image slider
-  const [currentImage, setCurrentImage] = useState(null);
 
   const fileInputRef = useRef(null);
 
@@ -79,11 +78,7 @@ export default function CreatePost() {
       setCondition(value);
     }
   };
-
-  function handleDeletedImage() {
-    //tldr xD
-  }
-
+  
   const handleImagesChange = (event) => {
     const newFiles = event.target.files;
     if (newFiles.length != 0) {
@@ -99,6 +94,20 @@ export default function CreatePost() {
     }
 
     return result;
+  };
+
+  const getImages = () => {
+    if (newImages) {
+      let tempImages = Array.from(newImages);
+      return tempImages.map((img) => {
+        let imgObject = {};
+        imgObject["src"] = URL.createObjectURL(img);
+        imgObject["label"] = img.name;
+        return imgObject;
+      });
+    } else {
+      return [];
+    }
   };
 
   return (
@@ -231,27 +240,7 @@ export default function CreatePost() {
                   Fair
                 </ToggleButton>
               </ToggleButtonGroup>
-              <Box id="edit-images" sx={{ position: "relative" }}>
-                {/* temporary placeholder until the image slider is done */}
-                <div style={{ backgroundColor: "grey" }}>
-                  <div style={{ visibility: "hidden" }}>
-                    <ProfileIcon></ProfileIcon>
-                  </div>
-                </div>
-                <CustomButton
-                  style={{
-                    width: "fit-content",
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                    margin: 2,
-                  }}
-                  color={"red"}
-                  onClick={handleDeletedImage}
-                >
-                  {"Delete"}
-                </CustomButton>
-              </Box>
+              <ImageSlider images={getImages()}></ImageSlider>
               <Stack spacing={3}>
                 <CustomButton
                   color="black"
