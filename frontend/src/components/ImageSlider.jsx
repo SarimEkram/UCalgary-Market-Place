@@ -34,7 +34,8 @@ export default function ImageSlider({ images, setDeletedImages, showDelete = fal
 
   useEffect(()=>{ 
       if( images) {
-        setInternalImages(images); setNumberOfSteps(images.length)
+        setInternalImages(images); 
+        setNumberOfSteps(images.length);
       }
     }
     ,[images]);
@@ -61,7 +62,7 @@ export default function ImageSlider({ images, setDeletedImages, showDelete = fal
     {
       setCurrStep((prev) => {
         const newStep = (prev + 1) % numberOfSteps;
-
+        console.log("prev,", prev, "new", newStep, "numberofsteops",  numberOfSteps );
         return newStep;
       });
     };
@@ -71,6 +72,7 @@ export default function ImageSlider({ images, setDeletedImages, showDelete = fal
     {
       setCurrStep((prev) => {
         const newStep = (prev - 1 + numberOfSteps) % numberOfSteps;
+        console.log("prev,", prev, "new", newStep, "numberofsteops", numberOfSteps );
         return newStep;
       });
     };
