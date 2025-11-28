@@ -12,9 +12,8 @@ import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import SearchIcon from "@mui/icons-material/Search";
 import Filters from "../components/Filters";
-import DesktopNav from "../components/DesktopNav";
 import Header from "../components/Header";
-import Navigation from "../components/Navigation";
+import MobileNav from "../components/MobileNav";
 import { useNavigate } from "react-router-dom";
 
 const API_BASE = "http://localhost:8080";
@@ -191,7 +190,7 @@ export default function Market() {
         </Box>
       </Container>
 
-      <Navigation />
+     <MobileNav/>
     </Stack>
   );
 }

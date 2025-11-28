@@ -20,7 +20,6 @@ import Reported from "../assets/ReportedSVG";
 import CustomButton from "./CustomButton";
 
 export default function PostCard({
- 
   image,
   primaryText,
   reportDate,
@@ -38,8 +37,8 @@ export default function PostCard({
   const onDelete = async () => {
     // TODO: BTASK
     // add delete post api
-    // body of request 
-    // {id: id} 
+    // body of request
+    // {id: id}
     try {
       const response = await fetch("http://localhost:8080/api/[]", {
         method: "POST",
@@ -85,6 +84,7 @@ export default function PostCard({
         flexDirection: "column",
         gap: 2,
         minHeight: "min-content",
+        minWidth: "min-content",
       })}
     >
       <Collapse
@@ -119,6 +119,8 @@ export default function PostCard({
               width: "100%",
               height: "90%",
               objectFit: "cover",
+              minHeight: "155px",
+              minWidth: "155px",
               borderRadius: theme.shape.borderRadius,
             })}
             component="img"
@@ -141,46 +143,61 @@ export default function PostCard({
             paddingBottom: 15,
           }}
         >
-          <Stack direction={"column"} sx={{ gap: 10, height: "100%" }}>
+          <Stack
+            direction={"column"}
+            sx={{ height: "100%", justifyContent: "space-between" }}
+          >
             <Box>
               <Typography
                 variant="body1"
                 sx={{
                   mt: 0,
-                  // fontSize: { xs: "0.8rem", md: "0.9rem" },
                 }}
               >
                 {primaryText}
               </Typography>
             </Box>
-            <CardActions
-              sx={{
+            <Stack
+              sx={(theme)=>({
                 p: 0,
                 display: "flex",
-                flexDirection: "row",
+                [theme.breakpoints.down("sm",)]: {
+                  flexDirection: "row",
+                },
+                 [theme.breakpoints.between("980", "1300")]: {
+                  flexDirection: "column",
+                },
+               
+                [theme.breakpoints.up("1300")]: {
+                  flexDirection: "row",
+                },
                 gap: 2,
                 justifyContent: "center",
                 alignItems: "stretch",
-              }}
+                alignContent: "center",
+              })}
             >
               <CustomButton
                 onClick={onView}
-                style={{ width: "100%" }}
+                // style={{ width: "100%" }}
                 color="black"
               >
                 View
               </CustomButton>
-              <CustomButton onClick={onDelete} style={{ width: "100%" }}>
+              <CustomButton
+                onClick={onDelete}
+                style={{ "& .MuiCardActions-root": { margin: 0 } }}
+              >
                 Delete
               </CustomButton>
-            </CardActions>
+            </Stack>
           </Stack>
         </CardContent>
       </Stack>
 
       <Typography
         component="div"
-        sx={{ textAlign: "center" }}
+        sx={{ textAlign: "center", pt: 2 }}
         variant="body1"
         color="textSecondary"
         visibility={reportDate ? "visible" : "hidden"}

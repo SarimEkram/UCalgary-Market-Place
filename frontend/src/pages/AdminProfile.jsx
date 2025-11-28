@@ -5,7 +5,7 @@ import { useParams } from "react-router";
 import ProfileIcon from "../assets/ProfileIconSVG";
 import DesktopNav from "../components/DesktopNav";
 import Header from "../components/Header";
-import MobileNav from "../components/Navigation";
+import MobileNav from "../components/MobileNav";
 
 export default function AdminProfile() {
   const [items, setItems] = useState([]);
@@ -39,6 +39,10 @@ export default function AdminProfile() {
       setUserData({ fname: "Jone", lname: "Carter", email: "jw@ucalgary.ca" });
       let actionData = [
         { date: "2025-11-01T00:00:00.000Z", action: "Delete a user" },
+        { date: "2025-11-01T00:00:00.000Z", action: "Delete a user" },
+         { date: "2025-11-01T00:00:00.000Z", action: "Delete a user" },
+        { date: "2025-11-01T00:00:00.000Z", action: "Delete a user" },
+         { date: "2025-11-01T00:00:00.000Z", action: "Delete a user" },
         { date: "2025-11-01T00:00:00.000Z", action: "Delete a user" },
       ];
       actionData = actionData.map((item) => {
@@ -93,20 +97,19 @@ export default function AdminProfile() {
   );
 
   return (
-    <Stack
-      direction="column"
-      sx={(theme) => ({
-        bgcolor: theme.palette.background.default,
-        minHeight: "100vh",
-        // Root  container must have this property
-        justifyContent: "space-between",
-      })}
+   
+    
+    //1. Root container must look like this 
+  <Stack
+      direction="row"
+      sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
     >
-      <Header />
-      {/* Add the Stack and the Desktop Nav */}
-      <Stack direction="row">
+      {/* 2: Add Nav bar */}
       <DesktopNav></DesktopNav>
-      {/* The stach encloses the desktop nav and the original page content */}
+      {/*3. Enclouse Header, and MAIN PAGECONTENT  with this box */}
+      <Box sx={{ flex: "1", m: 0 }}>
+      <Header></Header>
+      
       <Container
         maxWidth="lg"
         sx={{
@@ -116,6 +119,11 @@ export default function AdminProfile() {
           display: "flex",
           flexDirection: "column",
           gap: { xs: 3, md: 4 },
+          /* 
+          4: To prevent the bottom content from being covered by the mobile nav
+          you may need to adjust the margin forr the Container for your main page content
+          */
+          mb: 10,
         }}
       >
         <Box sx={{ borderWidth: 0 }}>
@@ -164,8 +172,8 @@ export default function AdminProfile() {
           ))}
         </Box>
       </Container>
-      {/*Add the Mobile Nav below the stack*/}
-      </Stack>
+      </Box>
+      {/* 5: Place the mobile nav after the box  */}
      <MobileNav></MobileNav>
     </Stack>
   );

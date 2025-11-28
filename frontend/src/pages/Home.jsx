@@ -2,97 +2,96 @@
 import { Box, Container, Stack, Typography, Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
-import Navigation from "../components/Navigation";
+import MobileNav from "../components/MobileNav";
+import DesktopNav from "../components/DesktopNav";
 
 export default function Home() {
+  //id = home
   return (
     <Stack
-      id="home"
-      direction="column"
-      sx={(theme) => ({
-        bgcolor: theme.palette.background.default,
-        minHeight: "100vh",
-        justifyContent: "space-between",
-      })}
+      direction="row"
+      sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
     >
-      <Header />
-
-      <Container
-        maxWidth="lg"
-        sx={{
-          flexGrow: 1,
-          py: { xs: 2, md: 4 },          
-          px: { xs: 2, sm: 3, md: 6 },   
-          display: "flex",
-          flexDirection: "column",
-          gap: { xs: 3, md: 4 },
-        }}
-      >
-        {/* HERO CARD */}
-        <Box
+      <DesktopNav></DesktopNav>
+      <Box sx={{ flex: "1", m: 0 }}>
+        <Header></Header>
+        <Container
+          maxWidth="lg"
           sx={{
-            bgcolor: "background.paper",
-            borderRadius: 3,
-            boxShadow: "0px 8px 24px rgba(0,0,0,0.08)",
-            p: { xs: 2, sm: 3, md: 4 },    
+            flexGrow: 1,
+            py: { xs: 2, md: 4 },
+            px: { xs: 2, sm: 3, md: 6 },
+            display: "flex",
+            flexDirection: "column",
+            gap: { xs: 3, md: 4 },
+            mb: 20,
           }}
         >
-          <Stack
-            direction={{ xs: "column", md: "row" }} // column on mobile, row on desktop
-            spacing={{ xs: 2, md: 3 }}
-            alignItems="center"
-            justifyContent="space-between"
+          {/* HERO CARD */}
+          <Box
+            sx={{
+              bgcolor: "background.paper",
+              borderRadius: 3,
+              boxShadow: "0px 8px 24px rgba(0,0,0,0.08)",
+              p: { xs: 2, sm: 3, md: 4 },
+            }}
           >
-            {/* TEXT */}
-            <Box sx={{ flex: 1, pr: { md: 3 } }}>
-              <Typography
-                variant="h5"
-                component="h1"
+            <Stack
+              direction={{ xs: "column", md: "row" }} // column on mobile, row on desktop
+              spacing={{ xs: 2, md: 3 }}
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              {/* TEXT */}
+              <Box sx={{ flex: 1, pr: { md: 3 } }}>
+                <Typography
+                  variant="h5"
+                  component="h1"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: { xs: "1.3rem", sm: "1.5rem", md: "2rem" },
+                    lineHeight: 1.25,
+                  }}
+                >
+                  Student marketplace – your place for everything you need.
+                </Typography>
+
+                <Typography
+                  variant="body2"
+                  sx={{
+                    mt: 1,
+                    color: "text.secondary",
+                    maxWidth: 420,
+                    fontSize: { xs: "0.8rem", sm: "0.9rem" },
+                  }}
+                >
+                  Buy and sell textbooks, find tutors, and discover upcoming
+                  events on campus — all in one place.
+                </Typography>
+              </Box>
+
+              {/*  IMAGE PLACEHOLDER */}
+              <Box
                 sx={{
-                  fontWeight: 700,
-                  fontSize: { xs: "1.3rem", sm: "1.5rem", md: "2rem" },
-                  lineHeight: 1.25,
+                  flexShrink: 0,
+                  mt: { xs: 2, md: 0 },
+                  width: { xs: 140, sm: 180, md: 260 },
+                  height: { xs: 140, sm: 180, md: 260 },
+                  borderRadius: 3,
+                  bgcolor: "#FFE6E0",
                 }}
-              >
-                Student marketplace – your place for everything you need.
-              </Typography>
+              />
+            </Stack>
+          </Box>
 
-              <Typography
-                variant="body2"
-                sx={{
-                  mt: 1,
-                  color: "text.secondary",
-                  maxWidth: 420,
-                  fontSize: { xs: "0.8rem", sm: "0.9rem" },
-                }}
-              >
-                Buy and sell textbooks, find tutors, and discover upcoming events
-                on campus — all in one place.
-              </Typography>
-            </Box>
+          {/* MARKET SECTION (populated from API) */}
+          <DynamicSection title="Market" typeFilter="market" />
 
-            {/*  IMAGE PLACEHOLDER */}
-            <Box
-              sx={{
-                flexShrink: 0,
-                mt: { xs: 2, md: 0 }, 
-                width: { xs: 140, sm: 180, md: 260 },
-                height: { xs: 140, sm: 180, md: 260 },
-                borderRadius: 3,
-                bgcolor: "#FFE6E0",
-              }}
-            />
-          </Stack>
-        </Box>
-
-        {/* MARKET SECTION (populated from API) */}
-        <DynamicSection title="Market" typeFilter="market" />
-
-        {/* EVENTS SECTION (populated from API) */}
-        <DynamicSection title="Events" typeFilter="event" />
-      </Container>
-
-      <Navigation />
+          {/* EVENTS SECTION (populated from API) */}
+          <DynamicSection title="Events" typeFilter="event" />
+        </Container>
+      </Box>
+      <MobileNav />
     </Stack>
   );
 }
@@ -105,7 +104,9 @@ function DynamicSection({ title, typeFilter }) {
     let mounted = true;
 
     // typeFilter is "market" | "event"
-    const url = `http://localhost:8080/api/posts/postfetch?type=${encodeURIComponent(typeFilter)}&limit=8`;
+    const url = `http://localhost:8080/api/posts/postfetch?type=${encodeURIComponent(
+      typeFilter
+    )}&limit=8`;
 
     fetch(url)
       .then((res) => {
@@ -123,8 +124,7 @@ function DynamicSection({ title, typeFilter }) {
               ? p.organization_name || ""
               : p.postal_code || "";
 
-          const price =
-            p.price != null ? `$${Number(p.price)}` : "$0";
+          const price = p.price != null ? `$${Number(p.price)}` : "$0";
 
           return {
             id: p.id,
@@ -179,7 +179,6 @@ function Section({ title, items }) {
         </Button>
       </Stack>
 
-      
       <Box
         sx={{
           display: "grid",
@@ -200,7 +199,6 @@ function Section({ title, items }) {
     </Stack>
   );
 }
-
 
 /* ===== SINGLE CARD ===== */
 function ItemCard({ title, subtitle, price, thumbnailBase64 }) {

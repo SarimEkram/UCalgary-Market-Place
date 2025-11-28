@@ -12,7 +12,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 
 import Header from "../components/Header";
-import Navigation from "../components/Navigation";
+import MobileNav from "../components/MobileNav";
 import ImageSlider from "../components/ImageSlider";
 import ReportIssueDialog from "../components/ReportIssueDialog";
 
@@ -100,7 +100,7 @@ export default function EventItemPage() {
         <Box sx={styles.center}>
           <Typography>Loading event...</Typography>
         </Box>
-        <Navigation />
+        <MobileNav />
       </Stack>
     );
   }
@@ -112,7 +112,7 @@ export default function EventItemPage() {
         <Box sx={styles.center}>
           <Typography color="error">Event not found.</Typography>
         </Box>
-        <Navigation />
+        <MobileNav />
       </Stack>
     );
   }
@@ -241,7 +241,7 @@ export default function EventItemPage() {
         onClose={() => setIsReportOpen(false)}
       />
 
-      <Navigation />
+      <MobileNav />
     </Stack>
   );
 }

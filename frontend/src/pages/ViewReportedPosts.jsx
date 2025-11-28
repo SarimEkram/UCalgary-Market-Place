@@ -1,20 +1,16 @@
-import {
-  Box,
-  Container,
-  Divider,
-  Stack,
-  Typography
-} from "@mui/material";
+import { Box, Container, Divider, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import PostCard from "../components/ReportedPostCard";
+import DesktopNav from "../components/DesktopNav";
+import MobileNav from "../components/MobileNav";
 
 export default function ViewReportedPosts() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
-    async function fetchData() { 
+    async function fetchData() {
       /* TODO: BTASK
       fetch all reported market posts 
       */
@@ -80,7 +76,6 @@ export default function ViewReportedPosts() {
       });
 
       setItems(data);
-     
     }
     fetchData();
     return () => {
@@ -106,70 +101,76 @@ export default function ViewReportedPosts() {
 
   return (
     <Stack
-      direction="column"
-      sx={(theme) => ({
-        bgcolor: theme.palette.background.default,
-        minHeight: "100vh",
-        justifyContent: "space-between",
-      })}
+      direction="row"
+      sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
     >
-      <Header />
-      <Container
-        maxWidth="lg"
-        sx={{
-          flexGrow: 1,
-          py: { xs: 2, md: 4 },
-          px: { xs: 2, sm: 3, md: 6 },
-          display: "flex",
-          flexDirection: "column",
-          gap: { xs: 3, md: 4 },
-        }}
-      >
-        <Box>
-          <Typography variant="h4">View Reported Market Posts</Typography>
-          <CustomDivider></CustomDivider>
-        </Box>
-        <Box
-           sx={{
-            display: "grid",
-            gridAutoRows: "0.6fr",
-            columnGap: 5,
-            rowGap: 10,
-            mt: 0.5,
-            gridTemplateColumns: {
-              xs: "repeat(1, 1fr)", // 1 rows on mobile
-              sm: "repeat(2, 1fr)", // 2 rows on small tablets     
-            },
+      <DesktopNav></DesktopNav>
+      <Box sx={{ flex: "1", m: 0 }}>
+        <Header></Header>
+        <Container
+          maxWidth="lg"
+          sx={{
+           flexGrow: 1,
+            py: { xs: 4, md: 8 },
+            px: { xs: 4, sm: 6, md: 10 },
+            display: "flex",
+            flexDirection: "column",
+            gap: { xs: 3, md: 4 },
+            mb: 30,
           }}
         >
-              {items.map((post, index) => {
-                return (
-                  <PostCard
-                    key={"card-" + index}
-                    primaryText={post.title}
-                    reportDate={post.report_date}
-                    numReports={post.report_count}
-                    image={post.image}
-                    type="event"
-                    id={post.id}
-                  ></PostCard>
-                );
-              })}
-               {items.map((post, index) => {
-                return (
-                  <PostCard
-                    key={"card-" + (index + 2)}
-                    primaryText={post.title}
-                    reportDate={post.report_date}
-                    numReports={post.report_count}
-                    image={post.image}
-                    type="event"
-                    id={post.id}
-                  ></PostCard>
-                );
-              })}
-        </Box>
-      </Container>
+          <Box>
+            <Typography variant="h4">View Reported Market Posts</Typography>
+            <CustomDivider></CustomDivider>
+          </Box>
+          <Box
+            sx={(theme)=>({
+              display: "grid",
+              gridAutoRows: "0.6fr",
+              columnGap: 5,
+              rowGap: 10,
+              mt: 0.5,
+              [theme.breakpoints.down("sm")]: {
+                gridTemplateColumns: "repeat(1, minmax(0, 1fr))",
+              },
+              [theme.breakpoints.between("sm", "1000")]: {
+                gridTemplateColumns: "repeat(1, 0.6fr)",
+              },
+              [theme.breakpoints.up("1000")]: {
+                gridTemplateColumns: "repeat(2, minmax(0, 0.6fr))",
+              },
+            })}
+          >
+            {items.map((post, index) => {
+              return (
+                <PostCard
+                  key={"card-" + index}
+                  primaryText={post.title}
+                  reportDate={post.report_date}
+                  numReports={post.report_count}
+                  image={post.image}
+                  type="event"
+                  id={post.id}
+                ></PostCard>
+              );
+            })}
+            {items.map((post, index) => {
+              return (
+                <PostCard
+                  key={"card-" + (index + 2)}
+                  primaryText={post.title}
+                  reportDate={post.report_date}
+                  numReports={post.report_count}
+                  image={post.image}
+                  type="event"
+                  id={post.id}
+                ></PostCard>
+              );
+            })}
+          </Box>
+        </Container>
+      </Box>
+      <MobileNav></MobileNav>
     </Stack>
   );
 }

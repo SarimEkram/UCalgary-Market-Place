@@ -3,7 +3,6 @@ import {
   Container,
   Divider,
   FormHelperText,
-  Link,
   Stack,
   Typography
 } from "@mui/material";
@@ -11,25 +10,31 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import ProfileIcon from "../assets/ProfileIconSVG";
 import CustomButton from "../components/CustomButton";
+import DesktopNav from "../components/DesktopNav";
 import Header from "../components/Header";
 import InputField from "../components/InputField";
+import MobileNav from "../components/MobileNav";
 import UserMenu from "../components/UserMenu";
 
 // 1 Backend Task(s) (Ctrl+F "TODO")
 export default function MySettings() {
   //get user data from local storage
-  const [userData, setUserData] = useState(JSON.parse(localStorage.getItem("user")));
+  const [userData, setUserData] = useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
 
   const {
     register,
     handleSubmit,
     getValues,
     formState: { errors },
-  } = useForm({ defaultValues: {
+  } = useForm({
+    defaultValues: {
       email: userData.email,
       firstName: userData.fname,
-      lastName: userData.lname, 
-    },});
+      lastName: userData.lname,
+    },
+  });
 
   const [submitStatus, setSubmitStatus] = useState({
     success: null,
@@ -96,142 +101,147 @@ export default function MySettings() {
           borderBottom: thin ? 0.75 : theme.palette.dividerWidth,
           borderColor: theme.palette.divider,
           boxSizing: "border-box",
-          marginTop: marginThin ? 0: 3,
+          marginTop: marginThin ? 0 : 3,
           marginBottom: marginThin ? 0 : 3,
         })}
       ></Divider>
     </Box>
   );
 
-
   return (
-    <Stack direction="column" spacing={2} sx={styles.page}>
-      <Header></Header>
-      <Container maxWidth={"sm"} sx={styles.main}>
-        <Stack direction={"row"} spacing={1}>
-         <UserMenu></UserMenu>          
-         <Typography variant="h4">My Settings</Typography>
-        </Stack>
-        <CustomDivider thin></CustomDivider>
-        <Box sx={styles.icon}>
-          <ProfileIcon></ProfileIcon>
-        </Box>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Stack direction="column" component={"div"} spacing={4}>
-           
-            <InputField
-              placeholder={"joe.doe@ucalgary.ca"}
-              label={"Email"}
-              disabled
-              disableUnderline={true}
-              sx={(theme) => ({
+    <Stack
+      direction="row"
+      sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
+    >
+      <DesktopNav></DesktopNav>
+      <Box sx={{ flex: "1", m: 0 }}>
+        <Header></Header>
+        <Container maxWidth={"sm"} sx={styles.main}>
+          <Stack direction={"row"} spacing={1}>
+            <UserMenu></UserMenu>
+            <Typography variant="h4">My Settings</Typography>
+          </Stack>
+          <CustomDivider thin></CustomDivider>
+          <Box sx={styles.icon}>
+            <ProfileIcon></ProfileIcon>
+          </Box>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <Stack direction="column" component={"div"} spacing={4}>
+              <InputField
+                placeholder={"joe.doe@ucalgary.ca"}
+                label={"Email"}
+                disabled
+                disableUnderline={true}
+                sx={(theme) => ({
                   "& .Mui-disabled": {
                     color: theme.palette.text.primary,
                     WebkitTextFillColor: "unset",
                   },
                 })}
-              errorMsg={errors["email"] ? errors["email"].message : null}
-              {...register("email", {
-                required: "Email is required.",
-                maxLength: {
-                  value: 255,
-                  message: "Maximum length of 255 characters.",
+                errorMsg={errors["email"] ? errors["email"].message : null}
+                {...register("email", {
+                  required: "Email is required.",
+                  maxLength: {
+                    value: 255,
+                    message: "Maximum length of 255 characters.",
+                  },
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: "Please enter a valid email. Ex: xxx@gmail.com",
+                  },
+                })}
+              ></InputField>
+              <InputField
+                placeholder={"New Password"}
+                label={"Password"}
+                autoComplete={"new-password"}
+                inputProps={{ type: "password" }}
+                helpText={<PassHelpText></PassHelpText>}
+                errorMsg={
+                  errors["password"] ? errors["password"].message : null
+                }
+                {...register("password", {
+                  required: "Password is required.",
+                  minLength: {
+                    value: 8,
+                    message: "Miniumum length of 8 characters.",
+                  },
+                  maxLength: {
+                    value: 20,
+                    message: "Maxiumum length of 20 characters.",
+                  },
+                  pattern: {
+                    value: /^(?=.*\d)(?=.*[!@#$%^&*(),.?:{}|<>]).*$/,
+                    message:
+                      "Must have at least one number and one special character (!@#$%^&*(),.?:{}|<></>).",
+                  },
+                })}
+              ></InputField>
+              <InputField
+                placeholder={"New Password"}
+                autoComplete={"new-password"}
+                label={"Re-enter Your Password"}
+                inputProps={{ type: "password" }}
+                errorMsg={
+                  errors["newPassword"] ? errors["newPassword"].message : null
+                }
+                {...register("newPassword", {
+                  required: "Confirming password is required.",
+                  validate: validatePasswords,
+                })}
+              ></InputField>
+              <InputField
+                placeholder={"John"}
+                label={"First Name"}
+                autoComplete={"name"}
+                inputProps={{ type: "text" }}
+                errorMsg={
+                  errors["firstName"] ? errors["firstName"].message : null
+                }
+                {...register("firstName", {
+                  required: "First name is required.",
+                  pattern: {
+                    value: /^[A-Za-z]+$/,
+                    message: "Must only contain letters.",
+                  },
+                })}
+              ></InputField>
+              <InputField
+                placeholder={"Doe"}
+                label={"Last Name"}
+                autoComplete={"family-name"}
+                inputProps={{ type: "text" }}
+                errorMsg={
+                  errors["lastName"] ? errors["lastName"].message : null
+                }
+                {...register("lastName", {
+                  required: "Last name is required.",
+                  pattern: {
+                    value: /^[A-Za-z]+$/,
+                    message: "Must only contain letters.",
+                  },
+                })}
+              ></InputField>
+              <CustomButton type="submit">Save Changes</CustomButton>
+            </Stack>
+          </form>
+          <Stack spacing={2} sx={styles.bottomContent}>
+            <FormHelperText
+              error={true}
+              sx={[
+                { textAlign: "center", fontSize: "1rem" },
+                {
+                  visibility:
+                    submitStatus.success != null ? "visible" : "hidden",
                 },
-                pattern: {
-                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                  message: "Please enter a valid email. Ex: xxx@gmail.com",
-                },
-              })}
-            ></InputField>
-            <InputField
-              placeholder={"New Password"}
-              label={"Password"}
-              autoComplete={"new-password"}
-              inputProps={{ type: "password" }}
-              helpText={<PassHelpText></PassHelpText>}
-              errorMsg={errors["password"] ? errors["password"].message : null}
-              {...register("password", {
-                required: "Password is required.",
-                minLength: {
-                  value: 8,
-                  message: "Miniumum length of 8 characters.",
-                },
-                maxLength: {
-                  value: 20,
-                  message: "Maxiumum length of 20 characters.",
-                },
-                pattern: {
-                  value: /^(?=.*\d)(?=.*[!@#$%^&*(),.?:{}|<>]).*$/,
-                  message:
-                    "Must have at least one number and one special character (!@#$%^&*(),.?:{}|<></>).",
-                },
-              })}
-            ></InputField>
-            <InputField
-              placeholder={"New Password"}
-              autoComplete={"new-password"}
-              label={"Re-enter Your Password"}
-              inputProps={{ type: "password" }}
-              errorMsg={
-                errors["newPassword"] ? errors["newPassword"].message : null
-              }
-              {...register("newPassword", {
-                required: "Confirming password is required.",
-                validate: validatePasswords,
-              })}
-            ></InputField>
-            <InputField
-              placeholder={"John"}
-              label={"First Name"}
-              autoComplete={"name"}
-              inputProps={{ type: "text" }}
-              errorMsg={
-                errors["firstName"] ? errors["firstName"].message : null
-              }
-              {...register("firstName", {
-                required: "First name is required.",
-                pattern: {
-                  value: /^[A-Za-z]+$/,
-                  message: "Must only contain letters.",
-                },
-              })}
-            ></InputField>
-            <InputField
-              placeholder={"Doe"}
-              label={"Last Name"}
-              autoComplete={"family-name"}
-              inputProps={{ type: "text" }}
-              errorMsg={errors["lastName"] ? errors["lastName"].message : null}
-              {...register("lastName", {
-                required: "Last name is required.",
-                pattern: {
-                  value: /^[A-Za-z]+$/,
-                  message: "Must only contain letters.",
-                },
-              })}
-            ></InputField>
-            <CustomButton type="submit">Register</CustomButton>
+              ]}
+            >
+              {submitStatus.msg}.<br></br>Please try again.
+            </FormHelperText>
           </Stack>
-        </form>
-        <Stack spacing={2} sx={styles.bottomContent}>
-          <FormHelperText
-            error={true}
-            sx={[
-              { textAlign: "center", fontSize: "1rem" },
-              {
-                visibility: submitStatus.success != null ? "visible" : "hidden",
-              },
-            ]}
-          >
-            {submitStatus.msg}.<br></br>Please try again.
-          </FormHelperText>
-          <Stack direction="row" spacing={2} sx={styles.stackRow}>
-            <Link color="primary">
-              <Typography>Save Changes</Typography>
-            </Link>
-          </Stack>
-        </Stack>
-      </Container>
+        </Container>
+      </Box>
+      <MobileNav></MobileNav>
     </Stack>
   );
 }
@@ -252,7 +262,8 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center",
     alignContent: "space-between",
-    paddingTop: 3,
+    p: 5,
+    mb: 10,
   },
 
   bottomContent: {
