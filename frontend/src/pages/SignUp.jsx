@@ -13,7 +13,7 @@ import InputField from "../components/InputField";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import VerifyNewUser from "../components/VerifyNewUser";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink, useNavigate } from "react-router";
 
 // 2 Backend Task(s) (Ctrl+F "TODO")
 export default function SignUp() {
@@ -24,54 +24,62 @@ export default function SignUp() {
     formState: { errors },
   } = useForm();
 
-  const [signUpFailed, setSignUpFailed] = useState(false);
+   const [submitStatus, setSubmitStatus] = useState({
+      success: null,
+      msg: "No message.",
+    });
 
-  const onSubmit = (data) => {
-    delete data["newPassword"];
+  const navigate = useNavigate();
 
-    if (verified) {
-      console.log("send create user request to the backend...", data);
+  const onSubmit = async (formData) => {
+    delete formData["newPassword"];
+    formData["code"] = verified.code; 
 
-      /**
-     * 
-      TODO: BTASK
-      ------- 
-      Creating a new user account using `data` object. 
+    if (verified.status) {
+      try {
+      const response = await fetch("http://localhost:8080/api/registration/create-account", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        //re-direct to login
+        navigate("/");
+      } else{
+        //set status of 
+        setSubmitStatus({success: false, msg: data.error})
+      }
+    } catch (error){
+      alert("An error occurred. Please try again later.");
+    }  
       
-      Example data
-      ------------
-      {
-      "email": "enibalo2@gmail.com",
-      "password": "butter123#",
-      "firstName": "eni",
-      "lastName": "balogun"
-      }
-
-     */
-      const createAccountFailed = false;
-      if (createAccountFailed) {
-        setSignUpFailed(true);
-      }
     } else {
-      //TODO: BTASK
-      /***
-       * -------
-       * Send a verification code to an email address using `sendEmailData`.
-       *
-       * Example data
-       * ------
-       * 
-        {
-        "email": "enibalo2@gmail.com"
-        }
+      try {
+      const emailData = { email: formData["email"] };
+      const response = await fetch("http://localhost:8080/api/registration/send-verification", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(emailData),
+      });
 
-       */
-      const sendEmailData = { email: data["email"] };
-      console.log(
-        "sending a: pls send verification email to a user, request to the backend...",
-        sendEmailData
-      );
-      setOpen(true);
+      const data = await response.json();
+      if (response.ok) {
+        //open the verification code popup 
+        setOpen(true);
+      } else{
+        //set status of 
+        setSubmitStatus({success: false, msg: data.error})
+      }
+    } catch (error){
+      alert("An error occurred. Please try again later.");
+    }  
+      
     }
   };
 
@@ -104,7 +112,7 @@ export default function SignUp() {
     setOpen(false);
   };
 
-  const [verified, setVerified] = useState(false);
+  const [verified, setVerified] = useState({status: false, code: null});
 
   return (
     <Stack id="login" direction="column" spacing={2} sx={styles.page}>
@@ -118,6 +126,7 @@ export default function SignUp() {
             <InputField
               placeholder={"joe.doe@ucalgary.ca"}
               label={"Email"}
+              autoComplete={"email"}
               errorMsg={errors["email"] ? errors["email"].message : null}
               {...register("email", {
                 required: "Email is required.",
@@ -134,6 +143,7 @@ export default function SignUp() {
             <InputField
               placeholder={"New Password"}
               label={"Password"}
+              autoComplete={"new-password"}
               inputProps={{ type: "password" }}
               helpText={<PassHelpText></PassHelpText>}
               errorMsg={errors["password"] ? errors["password"].message : null}
@@ -158,6 +168,7 @@ export default function SignUp() {
               placeholder={"New Password"}
               label={"Re-enter Your Password"}
               inputProps={{ type: "password" }}
+              autoComplete={"new-password"}
               errorMsg={
                 errors["newPassword"] ? errors["newPassword"].message : null
               }
@@ -169,6 +180,7 @@ export default function SignUp() {
             <InputField
               placeholder={"John"}
               label={"First Name"}
+              autoComplete={"name"}
               inputProps={{ type: "text" }}
               errorMsg={
                 errors["firstName"] ? errors["firstName"].message : null
@@ -184,6 +196,7 @@ export default function SignUp() {
             <InputField
               placeholder={"Doe"}
               label={"Last Name"}
+              autoComplete={"family-name"}
               inputProps={{ type: "text" }}
               errorMsg={errors["lastName"] ? errors["lastName"].message : null}
               {...register("lastName", {
@@ -202,10 +215,10 @@ export default function SignUp() {
             error={true}
             sx={[
               { textAlign: "center", fontSize: "1rem" },
-              { visibility: signUpFailed ? "visible" : "hidden" },
+              { visibility: submitStatus.success != null ? "visible" : "hidden" },
             ]}
           >
-            Sign up failed.<br></br>Please try again.
+            {submitStatus.msg}<br></br>Please try again.
           </FormHelperText>
           <Stack direction="row" spacing={2} sx={styles.stackRow}>
             <Typography>Existing User ? </Typography>

@@ -18,6 +18,8 @@ import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
 import ImageSlider from "../components/ImageSlider";
 import InputField from "../components/InputField";
+import DesktopNav from "../components/DesktopNav";
+import MobileNav from "../components/MobileNav";
 
 // incomplete backend tasks, can be found using ctrl+f "TODO".
 export default function EditPost() {
@@ -158,175 +160,184 @@ export default function EditPost() {
   };
 
   return (
-    <Stack direction="column" spacing={2} sx={styles.page}>
-      <Header></Header>
-      <Container maxWidth={"sm"} sx={styles.main}>
-        <RouterLink to=".." style={{ textDecoration: "none" }}>
-          <Link
-            component="div"
-            color="secondary"
-            sx={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              textDecoration: "none",
-            }}
-            variant="text"
-          >
-            <ChevronLeftIcon></ChevronLeftIcon>
-            <Typography variant="h6" sx={{ fontWeight: "400" }}>
-              Back to My Posts
-            </Typography>
-          </Link>
-        </RouterLink>
-        <Divider
-          variant="fullWidth"
-          sx={(theme) => ({
-            boxSizing: "border-box",
-            borderBottom: theme.palette.dividerWidth,
-            borderColor: theme.palette.divider,
-            marginTop: 3,
-            marginBottom: 3,
-          })}
-        ></Divider>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Stack direction="column" component={"div"} spacing={4}>
-            <InputField
-              placeholder={"Title"}
-              label={"Title"}
-              errorMsg={errors["title"] ? errors["title"].message : null}
-              {...register("title", {
-                required: "Title is required.",
-                maxLength: {
-                  value: 255,
-                  message: "Maximum length of 255 characters.",
-                },
-              })}
-            ></InputField>
-            <InputField
-              multiline
-              disableUnderline
-              addPadding
-              sx={(theme) => ({
-                boxSizing: "border-box",
-                padding: 1,
-                border: 2,
-                borderColor: theme.palette.inputBorderColor,
-                borderRadius: 2,
-              })}
-              minRows={5}
-              placeholder={"Description"}
-              label={"Description"}
-              inputProps={{ type: "description" }}
-              errorMsg={
-                errors["description"] ? errors["description"].message : null
-              }
-              {...register("description", {
-                required: "Description is required.",
-              })}
-            ></InputField>
-            <InputField
-              placeholder={"T1B 2C3"}
-              label={"Location (Your Postal Code)"}
-              errorMsg={errors["location"] ? errors["location"].message : null}
-              {...register("location", {
-                required: "Location is required.",
-                maxLength: {
-                  value: 20,
-                  message: "Maximum length of 20 characters.",
-                },
-              })}
-            ></InputField>
-            <InputField
-              placeholder={"15.00"}
-              label={"Price"}
-              type="number"
-              errorMsg={errors["price"] ? errors["price"].message : null}
-              {...register("price", {
-                required: "Price is required.",
-                valueAsNumber: true,
-              })}
-            ></InputField>
-            <ToggleButtonGroup
-              id="condition-toggle"
-              value={condition}
-              exclusive
-              onChange={handleConditionChange}
+    <Stack
+      direction="row"
+      sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
+    >
+      <DesktopNav></DesktopNav>
+      <Box sx={{ flex: "1", m: 0 }}>
+        <Header></Header>
+        <Container maxWidth={"sm"} sx={styles.main}>
+          <RouterLink to=".." style={{ textDecoration: "none" }}>
+            <Link
+              component="div"
+              color="secondary"
               sx={{
-                "& .MuiToggleButtonGroup-root": {
-                  color: "#000509",
-                  backgroundColor: "#F0F0F3",
-                  textTransform: "none",
-                  fontWeight: "400",
-                  lineHeight: 0.7,
-                },
-
-                "& .MuiButtonBase-root": {
-                  color: "#000509",
-                  backgroundColor: "#F0F0F3",
-                  textTransform: "none",
-                  fontWeight: "400",
-                  lineHeight: 0.7,
-                },
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                textDecoration: "none",
               }}
+              variant="text"
             >
-              <ToggleButton value="new" data-selected={condition == "new"}>
-                New
-              </ToggleButton>
-              <ToggleButton value="good" data-selected={condition == "good"}>
-                Good
-              </ToggleButton>
-              <ToggleButton value="fair" data-selected={condition == "fair"}>
-                Fair
-              </ToggleButton>
-            </ToggleButtonGroup>
-            <ImageSlider
-              images={images}
-              setDeletedImages={setDeletedImages}
-              showDelete
-            ></ImageSlider>
-            <Stack spacing={3}>
-              <CustomButton
-                color="black"
-                onClick={() => {
-                  fileInputRef.current.children[0].click();
+              <ChevronLeftIcon></ChevronLeftIcon>
+              <Typography variant="h6" sx={{ fontWeight: "400" }}>
+                Back to My Posts
+              </Typography>
+            </Link>
+          </RouterLink>
+          <Divider
+            variant="fullWidth"
+            sx={(theme) => ({
+              boxSizing: "border-box",
+              borderBottom: theme.palette.dividerWidth,
+              borderColor: theme.palette.divider,
+              marginTop: 3,
+              marginBottom: 3,
+            })}
+          ></Divider>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <Stack direction="column" component={"div"} spacing={4}>
+              <InputField
+                placeholder={"Title"}
+                label={"Title"}
+                errorMsg={errors["title"] ? errors["title"].message : null}
+                {...register("title", {
+                  required: "Title is required.",
+                  maxLength: {
+                    value: 255,
+                    message: "Maximum length of 255 characters.",
+                  },
+                })}
+              ></InputField>
+              <InputField
+                multiline
+                disableUnderline
+                addPadding
+                sx={(theme) => ({
+                  boxSizing: "border-box",
+                  padding: 1,
+                  border: 2,
+                  borderColor: theme.palette.inputBorderColor,
+                  borderRadius: 2,
+                })}
+                minRows={5}
+                placeholder={"Description"}
+                label={"Description"}
+                inputProps={{ type: "description" }}
+                errorMsg={
+                  errors["description"] ? errors["description"].message : null
+                }
+                {...register("description", {
+                  required: "Description is required.",
+                })}
+              ></InputField>
+              <InputField
+                placeholder={"T1B 2C3"}
+                label={"Location (Your Postal Code)"}
+                errorMsg={
+                  errors["location"] ? errors["location"].message : null
+                }
+                {...register("location", {
+                  required: "Location is required.",
+                  maxLength: {
+                    value: 20,
+                    message: "Maximum length of 20 characters.",
+                  },
+                })}
+              ></InputField>
+              <InputField
+                placeholder={"15.00"}
+                label={"Price"}
+                type="number"
+                errorMsg={errors["price"] ? errors["price"].message : null}
+                {...register("price", {
+                  required: "Price is required.",
+                  valueAsNumber: true,
+                })}
+              ></InputField>
+              <ToggleButtonGroup
+                id="condition-toggle"
+                value={condition}
+                exclusive
+                onChange={handleConditionChange}
+                sx={{
+                  "& .MuiToggleButtonGroup-root": {
+                    color: "#000509",
+                    backgroundColor: "#F0F0F3",
+                    textTransform: "none",
+                    fontWeight: "400",
+                    lineHeight: 0.7,
+                  },
+
+                  "& .MuiButtonBase-root": {
+                    color: "#000509",
+                    backgroundColor: "#F0F0F3",
+                    textTransform: "none",
+                    fontWeight: "400",
+                    lineHeight: 0.7,
+                  },
                 }}
               >
-                Add Image
-              </CustomButton>
+                <ToggleButton value="new" data-selected={condition == "new"}>
+                  New
+                </ToggleButton>
+                <ToggleButton value="good" data-selected={condition == "good"}>
+                  Good
+                </ToggleButton>
+                <ToggleButton value="fair" data-selected={condition == "fair"}>
+                  Fair
+                </ToggleButton>
+              </ToggleButtonGroup>
+              <ImageSlider
+                images={images}
+                setDeletedImages={setDeletedImages}
+                showDelete
+              ></ImageSlider>
+              <Stack spacing={3}>
+                <CustomButton
+                  color="black"
+                  onClick={() => {
+                    fileInputRef.current.children[0].click();
+                  }}
+                >
+                  Add Image
+                </CustomButton>
 
-              <Typography
-                sx={[{ fontSize: "1rem", visibility: newImages.length != 0 }]}
-              >
-                Selected files:{" "}
-                {newImages.length != 0 && printImageNames(newImages)}
-              </Typography>
+                <Typography
+                  sx={[{ fontSize: "1rem", visibility: newImages.length != 0 }]}
+                >
+                  Selected files:{" "}
+                  {newImages.length != 0 && printImageNames(newImages)}
+                </Typography>
 
-              <CustomButton type="submit">Save Changes</CustomButton>
+                <CustomButton type="submit">Save Changes</CustomButton>
+              </Stack>
             </Stack>
+            <Input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              sx={{ display: "none" }}
+              inputProps={{ multiple: true }}
+              onChange={handleImagesChange}
+              disableUnderline
+            ></Input>
+          </form>
+          <Stack spacing={2} sx={styles.bottomContent}>
+            <FormHelperText
+              error={true}
+              sx={[
+                { textAlign: "center", fontSize: "1rem" },
+                { visibility: editFailed ? "visible" : "hidden" },
+              ]}
+            >
+              Failed to updat the post.<br></br>Please try again.
+            </FormHelperText>
           </Stack>
-          <Input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            sx={{ display: "none" }}
-            inputProps={{ multiple: true }}
-            onChange={handleImagesChange}
-            disableUnderline
-          ></Input>
-        </form>
-        <Stack spacing={2} sx={styles.bottomContent}>
-          <FormHelperText
-            error={true}
-            sx={[
-              { textAlign: "center", fontSize: "1rem" },
-              { visibility: editFailed ? "visible" : "hidden" },
-            ]}
-          >
-            Failed to updat the post.<br></br>Please try again.
-          </FormHelperText>
-        </Stack>
-      </Container>
+        </Container>
+      </Box>
+      <MobileNav></MobileNav>
     </Stack>
   );
 }
@@ -347,8 +358,8 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center",
     alignContent: "space-between",
-    padding: 10,
-    paddingTop: 3,
+    p: 5,
+    mb: 10,
   },
 
   bottomContent: {

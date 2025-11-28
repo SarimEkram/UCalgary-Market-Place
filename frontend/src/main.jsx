@@ -15,12 +15,19 @@ import MySettings from "./pages/MySettings";
 import MyPosts from "./pages/MyPosts";
 import MyContacted from "./pages/MyContacted";
 import MySaved from "./pages/MySaved";
-import  MyEvents from "./pages/MyEvents";
-
+import  MyEvents from "./pages/MyEvents";import MarketItemPage from "./pages/MarketItemPage";
+import Event from "./pages/Event";
+import EventItemPage from "./pages/EventItemPage";
+import MarketItemPage from "./pages/MarketItemPage";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import UserProfile from "./pages/UserProfile";
+import ViewReportedEvents from "./pages/ViewReportedEvents";
+import ViewReportedPosts from "./pages/ViewReportedPosts";
+import AdminSettings from "./pages/AdminSettings";
+import AdminProfile from "./pages/AdminProfile";
 
 const black = "#221F1F";
 const  inputBorderColor= "#757575"; 
@@ -94,6 +101,9 @@ const theme = createTheme({
   
 });
 
+
+
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
@@ -140,6 +150,27 @@ createRoot(document.getElementById("root")).render(
           {/* @ Deep, feel free to customize as needed. i made this for testing. */}
           <Route path="home" element={<Home></Home>}></Route>
           <Route path="market" element={<Market></Market>}></Route>
+          <Route path="/market/:id" element={<MarketItemPage />} />
+          <Route path="events" element={<Event />} />
+          <Route path="events/:id" element={<EventItemPage />} />
+
+          <Route path="reports">
+             <Route path="event">
+                  <Route index element={<ViewReportedEvents></ViewReportedEvents>}></Route>
+                  <Route path=":id" element={<div>Not done view reported event.</div>}></Route>
+             </Route>
+              <Route path="market">
+                  <Route index element={<ViewReportedPosts></ViewReportedPosts>}></Route>
+                  <Route path=":id" element={<div>Not done view reported market post.</div>}></Route>
+             </Route>
+          </Route>
+          {/* @ Deep, feel free to customize as needed. you're in charge of the list users/admin pages*/}
+          <Route path="profile/:id" element={<UserProfile></UserProfile>}></Route>
+          <Route path="admin">
+            {/* Settings page the currently logged in admin. */}
+            <Route path="settings" element={<AdminSettings></AdminSettings>}></Route>
+             <Route path="profile/:id" element={<AdminProfile></AdminProfile>}></Route>
+          </Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

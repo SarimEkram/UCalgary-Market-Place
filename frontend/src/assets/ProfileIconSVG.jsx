@@ -12,9 +12,9 @@ export default function ProfileIcon() {
       <path
         d="M118 115.25V106.083C118 101.221 115.998 96.5579 112.435 93.1197C108.872 89.6815 104.039 87.75 99 87.75H61C55.9609 87.75 51.1282 89.6815 47.565 93.1197C44.0018 96.5579 42 101.221 42 106.083V115.25M99 51.0833C99 61.2086 90.4934 69.4167 80 69.4167C69.5066 69.4167 61 61.2086 61 51.0833C61 40.9581 69.5066 32.75 80 32.75C90.4934 32.75 99 40.9581 99 51.0833Z"
         stroke="#221F1F"
-        stroke-width="4"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

@@ -18,8 +18,11 @@ import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
 import InputField from "../components/InputField";
 import DateRangeDialog from "../components/DateRangeDialog";
+import DesktopNav from "../components/DesktopNav";
+import MobileNav from "../components/MobileNav";
+import ImageSlider from "../components/ImageSlider";
 
-// backend tasks, can be found using ctrl+f "TODO". 
+// backend tasks, can be found using ctrl+f "TODO".
 export default function CreateEvent() {
   const {
     register,
@@ -31,8 +34,6 @@ export default function CreateEvent() {
   const [createFailed, setCreateFailed] = useState(false);
   // keep track of new images
   const [newImages, setNewImages] = useState([]);
-  //set the current image in image slider
-  const [currentImage, setCurrentImage] = useState(null);
 
   //ref of the input[type="file"]
   const fileInputRef = useRef(null);
@@ -54,7 +55,7 @@ export default function CreateEvent() {
   //turn the current date-range into a humand-readable string
   const getDate = () => {
     const { start, end } = range;
- 
+
     //handle a user not selecting any date
     if (!start) {
       return "No date selected.";
@@ -79,9 +80,9 @@ export default function CreateEvent() {
   const onSubmit = (data) => {
     data["images"] = Array.from(newImages);
     const { start, end } = range;
-    console.log(start,end);
+    console.log(start, end);
     data["startDate"] = start.format("YYYY-MM-DD HH:mm:ss");
-    data["endDate"] = end  == null ? null : end.format("YYYY-MM-DD HH:mm:ss");
+    data["endDate"] = end == null ? null : end.format("YYYY-MM-DD HH:mm:ss");
     console.log("sending create request to server...", data);
     /*
     *
@@ -112,11 +113,6 @@ export default function CreateEvent() {
     }
   };
 
-  //handle Deleted Images
-  function handleDeletedImage() {
-    //tldr xD
-  }
-
   // handle newly uploaded images
   const handleImagesChange = (event) => {
     const newFiles = event.target.files;
@@ -136,204 +132,211 @@ export default function CreateEvent() {
     return result;
   };
 
+  const getImages = () => {
+    if (newImages) {
+      let tempImages = Array.from(newImages);
+      return tempImages.map((img) => {
+        let imgObject = {};
+        imgObject["src"] = URL.createObjectURL(img);
+        imgObject["label"] = img.name;
+        return imgObject;
+      });
+    } else {
+      return [];
+    }
+  };
+
   return (
-    <Stack direction="column" spacing={2} sx={styles.page}>
-      <Header></Header>
-      <Container maxWidth={"sm"} sx={styles.main}>
-        <RouterLink to=".." style={{ textDecoration: "none" }}>
-          <Link
-            component={"div"}
-            color="secondary"
-            sx={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              textDecoration: "none",
-            }}
-            variant="text"
-          >
-            <ChevronLeftIcon></ChevronLeftIcon>
-            <Typography variant="h6" sx={{ fontWeight: "400" }}>
-              Back to My Events
-            </Typography>
-          </Link>
-        </RouterLink>
-        <Divider
-          variant="fullWidth"
-          sx={(theme) => ({
-            boxSizing: "border-box",
-            borderBottom: theme.palette.dividerWidth,
-            borderColor: theme.palette.divider,
-            marginTop: 3,
-            marginBottom: 3,
-          })}
-        ></Divider>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Stack direction="column" component={"div"} spacing={4}>
-            <InputField
-              placeholder={"Title"}
-              label={"Title"}
-              errorMsg={errors["title"] ? errors["title"].message : null}
-              {...register("title", {
-                required: "Title is required.",
-                maxLength: {
-                  value: 255,
-                  message: "Maximum length of 255 characters.",
-                },
-              })}
-            ></InputField>
-             <InputField
-              placeholder={"Organization Name"}
-              label={"Organization Name"}
-              errorMsg={errors["organization_name"] ? errors["organization_name"].message : null}
-              {...register("organization_name", {
-                required: "Organization name is required.",
-                maxLength: {
-                  value: 255,
-                  message: "Maximum length of 255 characters.",
-                },
-              })}
-            ></InputField>
-            <InputField
-              multiline
-              disableUnderline
-              addPadding
-              sx={(theme) => ({
-                boxSizing: "border-box",
-                padding: 1,
-                border: 2,
-                borderColor: theme.palette.inputBorderColor,
-                borderRadius: 2,
-              })}
-              minRows={5}
-              placeholder={"Description"}
-              label={"Description"}
-              inputProps={{ type: "description" }}
-              errorMsg={
-                errors["description"] ? errors["description"].message : null
-              }
-              {...register("description", {
-                required: "Description is required.",
-              })}
-            ></InputField>
-            <InputField
-              placeholder={"T1B 2C3"}
-              label={"Location (Your Postal Code)"}
-              errorMsg={errors["location"] ? errors["location"].message : null}
-              {...register("location", {
-                required: "Location is required.",
-                maxLength: {
-                  value: 20,
-                  message: "Maximum length of 20 characters.",
-                },
-              })}
-            ></InputField>
-            <InputField
-              placeholder={"15.00"}
-              label={"Price"}
-              type="number"
-              errorMsg={errors["price"] ? errors["price"].message : null}
-              {...register("price", {
-                required: "Price is required.",
-                valueAsNumber: true,
-              })}
-            ></InputField>
-            <Box>
-              <InputLabel shrink>Date</InputLabel>
-              <Input
-                sx={(theme) => ({
-                  width: "100%",
-                  "& .Mui-disabled": {
-                    color: theme.palette.text.primary,
-                    WebkitTextFillColor: "unset",
+    <Stack
+      direction="row"
+      sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
+    >
+      <DesktopNav></DesktopNav>
+      <Box sx={{ flex: "1", m: 0 }}>
+        <Header></Header>
+        <Container maxWidth={"sm"} sx={styles.main}>
+          <RouterLink to=".." style={{ textDecoration: "none" }}>
+            <Link
+              component={"div"}
+              color="secondary"
+              sx={{
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                textDecoration: "none",
+              }}
+              variant="text"
+            >
+              <ChevronLeftIcon></ChevronLeftIcon>
+              <Typography variant="h6" sx={{ fontWeight: "400" }}>
+                Back to My Events
+              </Typography>
+            </Link>
+          </RouterLink>
+          <Divider
+            variant="fullWidth"
+            sx={(theme) => ({
+              boxSizing: "border-box",
+              borderBottom: theme.palette.dividerWidth,
+              borderColor: theme.palette.divider,
+              marginTop: 3,
+              marginBottom: 3,
+            })}
+          ></Divider>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <Stack direction="column" component={"div"} spacing={4}>
+              <InputField
+                placeholder={"Title"}
+                label={"Title"}
+                errorMsg={errors["title"] ? errors["title"].message : null}
+                {...register("title", {
+                  required: "Title is required.",
+                  maxLength: {
+                    value: 255,
+                    message: "Maximum length of 255 characters.",
                   },
                 })}
-                value={getDate()}
-                disabled={true}
-                disableUnderline={true}
-                {...register("date", {
-                  validate: validateDate,
+              ></InputField>
+              <InputField
+                placeholder={"Organization Name"}
+                label={"Organization Name"}
+                errorMsg={
+                  errors["organization_name"]
+                    ? errors["organization_name"].message
+                    : null
+                }
+                {...register("organization_name", {
+                  required: "Organization name is required.",
+                  maxLength: {
+                    value: 255,
+                    message: "Maximum length of 255 characters.",
+                  },
                 })}
-              ></Input>
-              <CustomButton
-                style={{
-                  width: "fit-content",
-                }}
-                color={"black"}
-                onClick={() => setOpen(true)}
-              >
-                {"Change Date"}
-              </CustomButton>
-              <DateRangeDialog
-                open={open}
-                onClose={() => setOpen(false)}
-                onApply={handleApply}
-                initialRange={range}
-              />
-            </Box>
-            <Box id="edit-images" sx={{ position: "relative" }}>
-              {/* temporary placeholder until the image slider is done */}
-              <div style={{ backgroundColor: "grey" }}>
-                <div style={{ visibility: "hidden" }}>
-                  <ProfileIcon></ProfileIcon>
-                </div>
-              </div>
-              <CustomButton
-                style={{
-                  width: "fit-content",
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                  margin: 2,
-                }}
-                color={"red"}
-                onClick={handleDeletedImage}
-              >
-                {"Delete"}
-              </CustomButton>
-            </Box>
-            <Stack spacing={3}>
-              <CustomButton
-                color="black"
-                onClick={() => {
-                  fileInputRef.current.children[0].click();
-                }}
-              >
-                Add Image
-              </CustomButton>
+              ></InputField>
+              <InputField
+                multiline
+                disableUnderline
+                addPadding
+                sx={(theme) => ({
+                  boxSizing: "border-box",
+                  padding: 1,
+                  border: 2,
+                  borderColor: theme.palette.inputBorderColor,
+                  borderRadius: 2,
+                })}
+                minRows={5}
+                placeholder={"Description"}
+                label={"Description"}
+                inputProps={{ type: "description" }}
+                errorMsg={
+                  errors["description"] ? errors["description"].message : null
+                }
+                {...register("description", {
+                  required: "Description is required.",
+                })}
+              ></InputField>
+              <InputField
+                placeholder={"T1B 2C3"}
+                label={"Location (Your Postal Code)"}
+                errorMsg={
+                  errors["location"] ? errors["location"].message : null
+                }
+                {...register("location", {
+                  required: "Location is required.",
+                  maxLength: {
+                    value: 20,
+                    message: "Maximum length of 20 characters.",
+                  },
+                })}
+              ></InputField>
+              <InputField
+                placeholder={"15.00"}
+                label={"Price"}
+                type="number"
+                errorMsg={errors["price"] ? errors["price"].message : null}
+                {...register("price", {
+                  required: "Price is required.",
+                  valueAsNumber: true,
+                })}
+              ></InputField>
+              <Box>
+                <InputLabel shrink>Date</InputLabel>
+                <Input
+                  sx={(theme) => ({
+                    width: "100%",
+                    "& .Mui-disabled": {
+                      color: theme.palette.text.primary,
+                      WebkitTextFillColor: "unset",
+                    },
+                  })}
+                  value={getDate()}
+                  disabled={true}
+                  disableUnderline={true}
+                  {...register("date", {
+                    validate: validateDate,
+                  })}
+                ></Input>
+                <CustomButton
+                  style={{
+                    width: "fit-content",
+                  }}
+                  color={"black"}
+                  onClick={() => setOpen(true)}
+                >
+                  {"Change Date"}
+                </CustomButton>
+                <DateRangeDialog
+                  open={open}
+                  onClose={() => setOpen(false)}
+                  onApply={handleApply}
+                  initialRange={range}
+                />
+              </Box>
+              <ImageSlider images={getImages()}></ImageSlider>
+              <Stack spacing={3}>
+                <CustomButton
+                  color="black"
+                  onClick={() => {
+                    fileInputRef.current.children[0].click();
+                  }}
+                >
+                  Add Image
+                </CustomButton>
 
-              <Typography
-                sx={[{ fontSize: "1rem", visibility: newImages.length != 0 }]}
-              >
-                Selected files:{" "}
-                {newImages.length != 0 && printImageNames(newImages)}
-              </Typography>
+                <Typography
+                  sx={[{ fontSize: "1rem", visibility: newImages.length != 0 }]}
+                >
+                  Selected files:{" "}
+                  {newImages.length != 0 && printImageNames(newImages)}
+                </Typography>
 
-              <CustomButton type="submit">Create</CustomButton>
+                <CustomButton type="submit">Create</CustomButton>
+              </Stack>
             </Stack>
+            <Input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              sx={{ display: "none" }}
+              inputProps={{ multiple: true }}
+              onChange={handleImagesChange}
+              disableUnderline
+            ></Input>
+          </form>
+          <Stack spacing={2} sx={styles.bottomContent}>
+            <FormHelperText
+              error={true}
+              sx={[
+                { textAlign: "center", fontSize: "1rem" },
+                { visibility: createFailed ? "visible" : "hidden" },
+              ]}
+            >
+              Failed to create the post.<br></br>Please try again.
+            </FormHelperText>
           </Stack>
-          <Input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            sx={{ display: "none" }}
-            inputProps={{ multiple: true }}
-            onChange={handleImagesChange}
-            disableUnderline
-          ></Input>
-        </form>
-        <Stack spacing={2} sx={styles.bottomContent}>
-          <FormHelperText
-            error={true}
-            sx={[
-              { textAlign: "center", fontSize: "1rem" },
-              { visibility: createFailed ? "visible" : "hidden" },
-            ]}
-          >
-            Failed to create the post.<br></br>Please try again.
-          </FormHelperText>
-        </Stack>
-      </Container>
+        </Container>
+      </Box>
+      <MobileNav></MobileNav>
     </Stack>
   );
 }
@@ -354,8 +357,8 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center",
     alignContent: "space-between",
-    padding: 10,
-    paddingTop: 3,
+    p: 5,
+    mb: 10,
   },
 
   bottomContent: {

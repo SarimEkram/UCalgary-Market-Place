@@ -5,235 +5,339 @@ import {
   Stack,
   Typography,
   TextField,
-  IconButton,
   Divider,
-  Chip,
   InputAdornment,
 } from "@mui/material";
-
+import { useState, useEffect } from "react";
+import dayjs from "dayjs";
 import SearchIcon from "@mui/icons-material/Search";
-import FilterListIcon from "@mui/icons-material/FilterList";
-
+import Filters from "../components/Filters";
 import Header from "../components/Header";
-import Navigation from "../components/Navigation";
+import MobileNav from "../components/MobileNav";
+import { useNavigate } from "react-router-dom";
 
-// ===== SAMPLE DATA =====
-const RECENT_POSTS = [
-  {
-    id: 1,
-    title: "psych 203 textbook",
-    date: "jan 23 2025",
-    price: "$30",
-    imageUrl: "/images/psych-203.jpg",
-  },
-  {
-    id: 2,
-    title: "textbook: linear algebra",
-    date: "jan 23 2025",
-    price: "$30",
-    imageUrl: "/images/linear-algebra.jpg",
-  },
-  {
-    id: 3,
-    title: "cpsc 345 textbook",
-    date: "jan 25 2025",
-    price: "$20",
-    imageUrl: "/images/algorithm-design.jpg",
-  },
-  {
-    id: 4,
-    title: "algorithm and design pearson textbook",
-    date: "jan 21 2025",
-    price: "$20",
-    imageUrl: "/images/algorithm-design-2.jpg",
-  },
-];
+const API_BASE = "http://localhost:8080";
 
 export default function Market() {
+  const [postFilters, setPostFilters] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  const createQueryParams = (filters, searchKey) => {
+    const params = new URLSearchParams();
+
+    const trimmedSearch = searchKey && searchKey.trim();
+    if (trimmedSearch) {
+      params.append("searchTerms", trimmedSearch);
+    }
+
+    if (!filters) {
+      return params.toString();
+    }
+
+    const { dateRange, minCost, maxCost, condition } = filters;
+
+    if (typeof minCost === "number") {
+      params.append("minPrice", minCost);
+    }
+
+    if (typeof maxCost === "number") {
+      params.append("maxPrice", maxCost);
+    }
+
+    if (dateRange?.start) {
+      params.append("startDate", dayjs(dateRange.start).format("YYYY-MM-DD"));
+    }
+
+    if (dateRange?.end) {
+      params.append("endDate", dayjs(dateRange.end).format("YYYY-MM-DD"));
+    }
+
+    if (condition) {
+      params.append("condition", condition);
+    }
+
+    return params.toString();
+  };
+
+  const fetchMarketPosts = async (
+    filters = postFilters,
+    searchKey = searchKeyword
+  ) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const queryString = createQueryParams(filters, searchKey);
+      const url = queryString
+        ? `${API_BASE}/api/posts/marketres?${queryString}`
+        : `${API_BASE}/api/posts/marketres`;
+
+      const res = await fetch(url);
+
+      if (!res.ok) {
+        throw new Error(`Request failed with status ${res.status}`);
+      }
+
+      const data = await res.json();
+      setPosts(data);
+    } catch (err) {
+      console.error("Failed to fetch market posts:", err);
+      setError("Couldn’t load market posts. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMarketPosts();
+
+  }, []);
+
+  const handleApplyFilters = (filters) => {
+    setPostFilters(filters);
+    fetchMarketPosts(filters, searchKeyword);
+  };
+
+  const handleClearFilters = () => {
+    setPostFilters(null);
+    setSearchKeyword("");
+    fetchMarketPosts(null, "");
+  };
+
+  const keywordOptions = ["textbook", "tutor", "desk", "equipment"];
+
   return (
     <Stack
-      id="market"
+      id="market-initial-page"
       direction="column"
-      sx={(theme) => ({
-        bgcolor: theme.palette.background.default,
-        minHeight: "100vh",
-        justifyContent: "space-between",
-      })}
+      sx={styles.page}
     >
-      {/* Top app bar */}
       <Header />
 
-      {/* MAIN CONTENT */}
-      <Container
-        maxWidth="lg"
-        sx={{
-          flexGrow: 1,
-          py: { xs: 2, md: 4 },
-          px: { xs: 2, md: 8 }, // wider padding on desktop like your mock
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {/* SEARCH BAR */}
+      <Container sx={styles.container} maxWidth="lg">
         <TextField
-          fullWidth
-          size="small"
-          placeholder="Search..."
+          size="medium"
+          placeholder="Search"
           variant="standard"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon fontSize="small" />
-              </InputAdornment>
-            ),
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              fetchMarketPosts(postFilters, e.target.value);
+            }
+          }}
+          sx={styles.searchBoxField}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <SearchIcon fontSize="medium" />
+                </InputAdornment>
+              ),
+            },
           }}
         />
 
-        {/* FILTERS ROW */}
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={1}
-          sx={{ mt: 2, mb: 1 }}
-        >
-          <IconButton size="small" sx={{ p: 0.5 }}>
-            <FilterListIcon fontSize="small" />
-          </IconButton>
-          <Typography
-            variant="body2"
-            sx={{ fontWeight: 500, fontSize: "0.85rem" }}
-          >
-            Filters
-          </Typography>
-        </Stack>
+        <Filters onApply={handleApplyFilters} onClear={handleClearFilters} />
 
-        <Divider sx={{ mb: 1.5 }} />
+        <Divider sx={styles.secDiv} />
 
-        {/* POSSIBLE KEYWORDS */}
-        <Typography
-          variant="caption"
-          sx={{ color: "text.secondary", mb: 1 }}
-        >
-          Possible Keywords
+        <Typography variant="caption" sx={styles.secLabel}>
+          Possible keywords
         </Typography>
 
-        <Stack
-          direction="row"
-          flexWrap="wrap"
-          spacing={1}
-          sx={{ mb: 1.5 }}
-        >
-          {["textbook", "tutor", "desk", "equipment"].map((kw) => (
-            <Chip
+        <Stack direction="row" spacing={1} sx={styles.keywordRow}>
+          {keywordOptions.map((kw) => (
+            <Typography
               key={kw}
-              label={`"${kw}"`}
-              size="small"
-              variant="outlined"
-              sx={{
-                fontSize: "0.7rem",
-                height: 22,
-                borderRadius: 12,
+              variant="caption"
+              sx={styles.kw}
+              onClick={() => {
+                setSearchKeyword(kw);
+                fetchMarketPosts(postFilters, kw);
               }}
-            />
+            >
+              “{kw}”
+            </Typography>
           ))}
         </Stack>
 
-        <Divider sx={{ mb: 2 }} />
+        <Divider sx={styles.secDiv} />
 
-        {/* RECENT POSTS TITLE */}
-        <Typography
-          variant="subtitle2"
-          sx={{
-            fontWeight: 600,
-            mb: 1.5,
-            fontSize: "0.88rem",
-          }}
-        >
-          Recent Posts
+        <Typography variant="caption" sx={styles.secLabel}>
+          Recent posts
         </Typography>
 
-        {/* POSTS LIST / GRID  */}
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr", // phones: single column list
-              sm: "1fr",
-              md: "repeat(3, minmax(0, 220px))", // desktop: 3 columns like mock
-            },
-            columnGap: { xs: 0, md: 6 },
-            rowGap: { xs: 3, md: 4 }, // more vertical spacing between posts
-          }}
-        >
-          {RECENT_POSTS.map((post) => (
-            <PostCard key={post.id} {...post} />
-          ))}
+        <Box sx={styles.postGrid}>
+          {loading && (
+            <Typography sx={styles.loadingPostsText}>
+              Loading market posts...
+            </Typography>
+          )}
+
+          {error && !loading && (
+            <Typography sx={styles.noPostsText}>{error}</Typography>
+          )}
+
+          {!loading &&
+            !error &&
+            posts.map((marketPost) => (
+              <PostCard key={marketPost.id} marketPost={marketPost} />
+            ))}
         </Box>
       </Container>
 
-      {/* Bottom navigation */}
-      <Navigation />
+     <MobileNav/>
     </Stack>
   );
 }
 
-/* ===== SINGLE POST CARD (responsive layout) ===== */
-function PostCard({ title, date, price, imageUrl }) {
+function PostCard({ marketPost }) {
+  const navigate = useNavigate();
+
+  const { id, title, posted_date, price, item_condition, thumbnail } =
+    marketPost;
+
+  const imageUrl = thumbnail?.data
+    ? `data:image/jpeg;base64,${thumbnail.data}`
+    : "/images/placeholder.jpg";
+
   return (
     <Stack
-      direction={{ xs: "row", md: "column" }} // row on mobile, column on desktop
-      spacing={{ xs: 2, md: 1.5 }}
+      direction={{ xs: "row", md: "column" }}
       alignItems="flex-start"
-      sx={{ minWidth: 0 }}
+      spacing={{ xs: 2, md: 1.5 }}
+      sx={cardStyles.root}
+      onClick={() => navigate(`/market/${id}`)}
     >
-      {/* IMAGE / THUMBNAIL */}
       <Box
         component="img"
         src={imageUrl}
         alt={title}
-        sx={{
-          width: { xs: 90, md: 120 },   // bigger box on desktop
-          height: { xs: 120, md: 150 },
-          borderRadius: 1.5,
-          objectFit: "cover",
-          flexShrink: 0,
-          bgcolor: "#eee",
-          boxShadow: "0px 2px 4px rgba(0,0,0,0.12)", // matches card feel in mock
-        }}
+        sx={cardStyles.image}
       />
 
-      {/* TEXT */}
-      <Stack sx={{ minWidth: 0 }}>
-        <Typography
-          sx={{
-            fontWeight: 600,
-            fontSize: { xs: "0.9rem", md: "0.85rem" },
-            lineHeight: 1.3,
-          }}
-        >
-          {title}
+      <Stack sx={cardStyles.textCol}>
+        <Typography sx={cardStyles.title}>{title}</Typography>
+
+        <Typography sx={cardStyles.date}>
+          {posted_date ? dayjs(posted_date).format("MMM D YYYY") : "Unknown"}
         </Typography>
 
-        <Typography
-          sx={{
-            color: "text.secondary",
-            fontSize: "0.75rem",
-            mt: 0.3,
-          }}
-        >
-          {date}
+        <Typography sx={cardStyles.price}>
+          {price != null ? `$${price}` : "Free"}
         </Typography>
 
-        <Typography
-          sx={{
-            fontWeight: 600,
-            fontSize: { xs: "0.9rem", md: "0.85rem" },
-            mt: 0.8,
-          }}
-        >
-          {price}
-        </Typography> 
+        {item_condition && (
+          <Typography sx={cardStyles.condition}>
+            {item_condition}
+          </Typography>
+        )}
       </Stack>
     </Stack>
   );
 }
+
+const styles = {
+  page: (theme) => ({
+    minHeight: "100vh",
+    bgcolor: theme.palette.background.default,
+    justifyContent: "space-between",
+  }),
+
+  container: {
+    flexGrow: 1,
+    py: { xs: 2, md: 4 },
+    px: { xs: 2, md: 8 },
+    display: "flex",
+    flexDirection: "column",
+  },
+
+  searchBoxField: {
+    mb: 1,
+  },
+
+  secDiv: {
+    mb: 1,
+  },
+
+  secLabel: {
+    color: "text.primary",
+    mb: 1.5,
+  },
+
+  keywordRow: {
+    mb: 1.5,
+  },
+
+  kw: {
+    color: "text.secondary",
+    textDecoration: "underline",
+    cursor: "pointer",
+  },
+
+  postGrid: {
+    display: "grid",
+    gridTemplateColumns: {
+      xs: "1fr",
+      sm: "1fr",
+      md: "repeat(4, minmax(0, 220px))",
+    },
+    rowGap: { xs: 3, md: 4 },
+    columnGap: { xs: 0, md: 6 },
+  },
+
+  loadingPostsText: {
+    gridColumn: "1 / -1",
+  },
+
+  noPostsText: {
+    gridColumn: "1 / -1",
+    color: "error.main",
+  },
+};
+
+const cardStyles = {
+  root: {
+    minWidth: 0,
+    cursor: "pointer",
+  },
+
+  image: {
+    width: { xs: 90, md: 120 },
+    height: { xs: 120, md: 150 },
+    borderRadius: 1,
+    objectFit: "cover",
+    boxShadow: "0px 2px 4px rgba(0,0,0,0.14)",
+  },
+
+  textCol: {
+    minWidth: 0,
+  },
+
+  title: {
+    fontSize: { xs: "0.9rem", md: "0.8rem" },
+  },
+
+  date: {
+    color: "text.secondary",
+    fontSize: "0.9rem",
+    mt: 0.5,
+  },
+
+  price: {
+    fontWeight: 500,
+    fontSize: { xs: "0.9rem", md: "0.8rem" },
+    mt: 0.8,
+  },
+
+  condition: {
+    fontSize: "0.8rem",
+    mt: 0.3,
+    textTransform: "capitalize",
+    color: "text.secondary",
+  },
+};
