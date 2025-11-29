@@ -2,7 +2,6 @@ export default function CheckCircle() {
   return (
     <svg
       width="100%"
-      height="auto"
       viewBox="0 0 30 30"
       fill="none"
       stroke="currentColor"
