@@ -1,13 +1,8 @@
-import {
-  Box,
-  Container,
-  Divider,
-  Icon,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Container, Stack, Typography } from "@mui/material";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import Home from "../assets/HomeSVG";
+import { useNavigate } from "react-router";
+import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
 import UserMenu from "../components/UserMenu";
 import PostCard from "../components/UserPostCard";
@@ -15,6 +10,7 @@ import PostCard from "../components/UserPostCard";
 export default function MyPosts() {
   const [items, setItems] = useState([]);
 
+  const navigate = useNavigate();
   useEffect(() => {
     let isMounted = true;
     async function fetchData() {
@@ -37,7 +33,7 @@ export default function MyPosts() {
       //    return item;
       //  });
 
-      const data = [
+      let data = [
         {
           id: 103,
           title: "TI-84 Calculator",
@@ -69,14 +65,14 @@ export default function MyPosts() {
           },
         },
       ];
-  
-       data = data.map((item) => {
-         const image = item.thumbnail;
-         const blob = image.data.replace(/\s/g, "");
-         const src = `data:image/jpeg;base64,${blob}`;
-         item.image = src;
-         return item;
-       });
+
+      data = data.map((item) => {
+        const image = item.thumbnail;
+        const blob = image.data.replace(/\s/g, "");
+        const src = `data:image/jpeg;base64,${blob}`;
+        item.image = src;
+        return item;
+      });
 
       setItems(data);
     }
@@ -86,13 +82,6 @@ export default function MyPosts() {
     };
   }, []);
 
-  function GetIcon() {
-    return (
-      <Icon fontSize="large">
-       <Home></Home>
-      </Icon>
-    );
-  }
   return (
     <Stack
       direction="column"
@@ -131,26 +120,21 @@ export default function MyPosts() {
             mt: 0.5,
           }}
         >
-          {/*  key,
-  image,
-  primaryText,
-  secondaryText,
-  tertiaryText,
-  TopLeftAction, */}
-          <PostCard
-            key={"post-card-" + 1}
-            primaryText={"this is my post"}
-            secondaryText={"jonh farley"}
-            tertiaryText={"$0"}
-            TopLeftAction={GetIcon}
-          ></PostCard>
-          <PostCard
-            key={"post-card-" + 2}
-            primaryText={"this is my post"}
-            secondaryText={"jonh farley"}
-            tertiaryText={"$0"}
-            TopLeftAction={GetIcon}
-          ></PostCard>
+          {items.map((post, index) => (
+            <PostCard
+              key={"post-card-" + index}
+              postID={post.id}
+              primaryText={post.title}
+              image={post.image}
+              secondaryText={dayjs(post.posted_date).format("MMM DD YYYY")}
+              TopLeftAction={() => (
+                <CustomButton onClick={() => navigate(`${post.id}`)}>
+                  Edit
+                </CustomButton>
+              )}
+              disableNavigation
+            ></PostCard>
+          ))}
         </Box>
       </Container>
     </Stack>
