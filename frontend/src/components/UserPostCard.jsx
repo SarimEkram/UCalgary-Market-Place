@@ -10,7 +10,6 @@ import {
 import { useNavigate } from "react-router";
 
 export default function PostCard({
-  key,
   link,
   image,
   primaryText,
@@ -26,7 +25,6 @@ export default function PostCard({
         variant="outlined"
         raised={false}
         square
-        key={key}
         sx={(theme) => ({
           boxSizing: "border-box",
           padding: 3,
@@ -38,7 +36,7 @@ export default function PostCard({
         })}
       >
         <Stack spacing={2} direction="row">
-          <CardActionArea sx={{p: 3}} onClick={() => navigate(link)}>
+          <CardActionArea sx={{ p: 3 }} onClick={() => navigate(link)}>
             {/* IMAGE */}
             <CardContent sx={{ px: 0 }}>
               <Stack
