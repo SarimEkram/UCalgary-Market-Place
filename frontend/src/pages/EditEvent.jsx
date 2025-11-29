@@ -206,6 +206,13 @@ export default function EditEvent() {
     return result;
   };
 
+  const onDelete = ()=>{
+    /*TODO: BTASK
+    handle deleting a post
+    */
+
+  }
+
   return (
     <Stack
       direction="row"
@@ -243,6 +250,7 @@ export default function EditEvent() {
               marginBottom: 3,
             })}
           ></Divider>
+          <CustomButton style={{alignSelf: 'flex-end', pb: 2}}>Delete</CustomButton>
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <Stack direction="column" component={"div"} spacing={4}>
