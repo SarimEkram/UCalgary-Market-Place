@@ -15,7 +15,7 @@ import MySettings from "./pages/MySettings";
 import MyPosts from "./pages/MyPosts";
 import MyContacted from "./pages/MyContacted";
 import MySaved from "./pages/MySaved";
-import  MyEvents from "./pages/MyEvents";import MarketItemPage from "./pages/MarketItemPage";
+import  MyEvents from "./pages/MyEvents";
 import Event from "./pages/Event";
 import EventItemPage from "./pages/EventItemPage";
 import MarketItemPage from "./pages/MarketItemPage";
