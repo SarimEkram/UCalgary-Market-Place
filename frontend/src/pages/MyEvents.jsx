@@ -7,7 +7,7 @@ import Header from "../components/Header";
 import UserMenu from "../components/UserMenu";
 import PostCard from "../components/UserPostCard";
 
-export default function MyPosts() {
+export default function MyEvents() {
   const [items, setItems] = useState([]);
 
   const navigate = useNavigate();
