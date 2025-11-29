@@ -82,6 +82,10 @@ export default function MyPosts() {
     };
   }, []);
 
+  const onCreate = ()=>{
+    navigate("new");
+  }
+
   return (
     <Stack
       direction="column"
@@ -103,9 +107,13 @@ export default function MyPosts() {
           gap: { xs: 3, md: 4 },
         }}
       >
+        <Stack direction="row" sx={{justifyContent: "space-between",alignItems: 'center',
+        }}>
         <Stack direction={"row"} spacing={1}>
           <UserMenu></UserMenu>
           <Typography variant="h4">My Posts</Typography>
+          </Stack>
+          <CustomButton  onClick={onCreate}color="black" style={{flexGrow: 0}}>Create</CustomButton>
         </Stack>
         <Box
           sx={{
