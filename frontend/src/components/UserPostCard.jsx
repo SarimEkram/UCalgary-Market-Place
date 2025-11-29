@@ -99,7 +99,6 @@ export default function PostCard({
         variant="outlined"
         raised={false}
         square
-        key={key}
         sx={(theme) => ({
           boxSizing: "border-box",
           padding: 3,
