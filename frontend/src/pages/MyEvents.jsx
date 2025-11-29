@@ -6,6 +6,8 @@ import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
 import UserMenu from "../components/UserMenu";
 import PostCard from "../components/UserPostCard";
+import DesktopNav from "../components/DesktopNav";
+import MobileNav from "../components/MobileNav";
 
 export default function MyEvents() {
   const [items, setItems] = useState([]);
@@ -83,15 +85,13 @@ export default function MyEvents() {
   }, []);
 
   return (
-    <Stack
-      direction="column"
-      sx={(theme) => ({
-        bgcolor: theme.palette.background.default,
-        minHeight: "100vh",
-        justifyContent: "space-between",
-      })}
-    >
-      <Header />
+     <Stack
+         direction="row"
+         sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
+       >
+         <DesktopNav></DesktopNav>
+         <Box sx={{ flex: "1", m: 0 }}>
+           <Header></Header>
       <Container
         maxWidth="lg"
         sx={{
@@ -101,6 +101,7 @@ export default function MyEvents() {
           display: "flex",
           flexDirection: "column",
           gap: { xs: 3, md: 4 },
+          mb: 15,
         }}
       >
         <Stack direction="row" sx={{justifyContent: "space-between",alignItems: 'center',
@@ -141,6 +142,8 @@ export default function MyEvents() {
           ))}
         </Box>
       </Container>
+      </Box>
+      <MobileNav></MobileNav>
     </Stack>
   );
 }

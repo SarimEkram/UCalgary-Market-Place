@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import UserMenu from "../components/UserMenu";
 import PostCard from "../components/UserPostCard";
+import DesktopNav from "../components/DesktopNav";
+import MobileNav from "../components/MobileNav";
 
 export default function MySaved() {
   const [items, setItems] = useState([]);
@@ -89,15 +91,13 @@ export default function MySaved() {
     return <BookmarkIcon color="primary" fontSize="large"></BookmarkIcon>;
   }
   return (
-    <Stack
-      direction="column"
-      sx={(theme) => ({
-        bgcolor: theme.palette.background.default,
-        minHeight: "100vh",
-        justifyContent: "space-between",
-      })}
-    >
-      <Header />
+     <Stack
+         direction="row"
+         sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
+       >
+         <DesktopNav></DesktopNav>
+         <Box sx={{ flex: "1", m: 0 }}>
+           <Header></Header>
       <Container
         maxWidth="lg"
         sx={{
@@ -107,6 +107,7 @@ export default function MySaved() {
           display: "flex",
           flexDirection: "column",
           gap: { xs: 3, md: 4 },
+          mb: 15,
         }}
       >
         <Stack direction={"row"} spacing={1}>
@@ -139,6 +140,8 @@ export default function MySaved() {
           ))}
         </Box>
       </Container>
+      </Box>
+      <MobileNav></MobileNav>
     </Stack>
   );
 }

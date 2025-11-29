@@ -4,6 +4,8 @@ import Header from "../components/Header";
 import UserMenu from "../components/UserMenu";
 import PostCard from "../components/UserPostCard";
 import CheckCircle from "../assets/CheckCircle";
+import DesktopNav from "../components/DesktopNav";
+import MobileNav from "../components/MobileNav";
 
 export default function MyContacted() {
   const [items, setItems] = useState([]);
@@ -73,7 +75,7 @@ export default function MyContacted() {
         const blob = image.data.replace(/\s/g, "");
         const src = `data:image/jpeg;base64,${blob}`;
         item.image = src;
-         item.price =  item.price != null ? `$${item.price}` : "Free";
+        item.price = item.price != null ? `$${item.price}` : "Free";
         return item;
       });
 
@@ -94,55 +96,56 @@ export default function MyContacted() {
   }
   return (
     <Stack
-      direction="column"
-      sx={(theme) => ({
-        bgcolor: theme.palette.background.default,
-        minHeight: "100vh",
-        justifyContent: "space-between",
-      })}
+      direction="row"
+      sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
     >
-      <Header />
-      <Container
-        maxWidth="lg"
-        sx={{
-          flexGrow: 1,
-          py: { xs: 2, md: 4 },
-          px: { xs: 2, sm: 3, md: 6 },
-          display: "flex",
-          flexDirection: "column",
-          gap: { xs: 3, md: 4 },
-        }}
-      >
-        <Stack direction={"row"} spacing={1}>
-          <UserMenu></UserMenu>
-          <Typography variant="h4">My Contacted</Typography>
-        </Stack>
-        <Box
+      <DesktopNav></DesktopNav>
+      <Box sx={{ flex: "1", m: 0 }}>
+        <Header></Header>
+        <Container
+          maxWidth="lg"
           sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "repeat(1, minmax(0, 1fr))", // 1 rows on mobile
-              sm: "repeat(2, minmax(0, 1fr))", // 2 rows on small tablets
-              md: "repeat(2, minmax(0, 1fr))", // 2 rows on desktop
-            },
-            columnGap: 2,
-            rowGap: 2,
-            mt: 0.5,
+            flexGrow: 1,
+            py: { xs: 2, md: 4 },
+            px: { xs: 2, sm: 3, md: 6 },
+            display: "flex",
+            flexDirection: "column",
+            gap: { xs: 3, md: 4 },
+            mb: 15,
           }}
         >
-          {items.map((post, index) => (
-            <PostCard
-              key={"post-card-" + index}
-              link={`/${post.post_type}/${post.id}`}
-              primaryText={post.title}
-              image={post.image}
-              secondaryText={post.seller_fname + " " + post.seller_lname}
-              tertiaryText={post.price}
-              TopLeftAction={GetIcon}
-            ></PostCard>
-          ))}
-        </Box>
-      </Container>
+          <Stack direction={"row"} spacing={1}>
+            <UserMenu></UserMenu>
+            <Typography variant="h4">My Contacted</Typography>
+          </Stack>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "repeat(1, minmax(0, 1fr))", // 1 rows on mobile
+                sm: "repeat(2, minmax(0, 1fr))", // 2 rows on small tablets
+                md: "repeat(2, minmax(0, 1fr))", // 2 rows on desktop
+              },
+              columnGap: 2,
+              rowGap: 2,
+              mt: 0.5,
+            }}
+          >
+            {items.map((post, index) => (
+              <PostCard
+                key={"post-card-" + index}
+                link={`/${post.post_type}/${post.id}`}
+                primaryText={post.title}
+                image={post.image}
+                secondaryText={post.seller_fname + " " + post.seller_lname}
+                tertiaryText={post.price}
+                TopLeftAction={GetIcon}
+              ></PostCard>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+      <MobileNav></MobileNav>
     </Stack>
   );
 }
