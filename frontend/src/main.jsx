@@ -113,7 +113,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="signup" element={<SignUp></SignUp>}></Route>
           <Route path="user">
             <Route index element={<MySettings></MySettings>} />
-            <Route path="posts">
+            <Route path="market">
               <Route
               index
               element={<MyPosts></MyPosts>}
@@ -153,7 +153,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="events/:id" element={<EventItemPage />} />
 
           <Route path="reports">
-             <Route path="event">
+             <Route path="events">
                   <Route index element={<ViewReportedEvents></ViewReportedEvents>}></Route>
                   <Route path=":id" element={<div>Not done view reported event.</div>}></Route>
              </Route>
