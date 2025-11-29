@@ -38,7 +38,7 @@ export default function PostCard({
         })}
       >
         <Stack spacing={2} direction="row">
-          <CardActionArea onClick={() => navigate(link)}>
+          <CardActionArea sx={{p: 3}} onClick={() => navigate(link)}>
             {/* IMAGE */}
             <CardContent sx={{ px: 0 }}>
               <Stack
