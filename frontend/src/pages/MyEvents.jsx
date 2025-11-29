@@ -109,7 +109,7 @@ export default function MyEvents() {
           <UserMenu></UserMenu>
           <Typography variant="h4">My Events</Typography>
           </Stack>
-          <CustomButton color="black" style={{flexGrow: 0}}>Create</CustomButton>
+          <CustomButton color="black" style={{flexGrow: 0}} onClick={()=>{navigate("new")}}>Create</CustomButton>
         </Stack>
         <Box
           sx={{
