@@ -79,16 +79,37 @@ export default function PostCard({
                 <TopLeftAction sx={{ flexGrow: 0 }}></TopLeftAction>
               </Stack>
             </CardContent>
-            <CardMedia
-              sx={(theme) => ({
-                width: "100%",
-                height: { xs: 220, sm: 260, md: 320 },
-                objectFit: "cover",
-                borderRadius: theme.shape.borderRadius,
-              })}
-              component="img"
-              image={image} //image src
-            />
+            {image != null ? (
+              <CardMedia
+                sx={(theme) => ({
+                  width: "100%",
+                  height: { xs: 220, sm: 260, md: 320 },
+                  objectFit: "cover",
+                  borderRadius: theme.shape.borderRadius,
+                })}
+                component="img"
+                image={image} //image src
+              />
+            ) : (
+              <Box
+                sx={(theme) => ({
+                  width: "100%",
+                  height: { xs: 220, sm: 260, md: 320 },
+                  display: "flex",
+                  alignContent: "center",
+                  justifyContent: "center",
+                  backgroundColor: "grey",
+                  borderRadius: theme.shape.borderRadius,
+                })}
+              >
+                <Typography
+                  variant="h3"
+                  sx={{ color: "#b8b4b4ff", alignSelf: "center" }}
+                >
+                  No Image
+                </Typography>
+              </Box>
+            )}
           </CardActionArea>
         </Stack>
       </Card>

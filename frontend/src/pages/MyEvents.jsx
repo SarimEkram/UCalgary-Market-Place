@@ -11,6 +11,9 @@ import MobileNav from "../components/MobileNav";
 
 export default function MyEvents() {
   const [items, setItems] = useState([]);
+  const [userID, setUserID] = useState(() => {
+    return JSON.parse(localStorage.getItem("user")).id;
+  });
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -69,10 +72,13 @@ export default function MyEvents() {
       ];
 
       data = data.map((item) => {
-        const image = item.thumbnail;
-        const blob = image.data.replace(/\s/g, "");
-        const src = `data:image/jpeg;base64,${blob}`;
-        item.image = src;
+        if (item.thumbnail != null) {
+          const blob = item.thumbnail.replace(/\s/g, "");
+          const src = `data:image/jpeg;base64,${blob}`;
+          item["image"] = src;
+        } else {
+          item["image"] = null;
+        }
         return item;
       });
 
@@ -85,63 +91,73 @@ export default function MyEvents() {
   }, []);
 
   return (
-     <Stack
-         direction="row"
-         sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
-       >
-         <DesktopNav></DesktopNav>
-         <Box sx={{ flex: "1", m: 0 }}>
-           <Header></Header>
-      <Container
-        maxWidth="lg"
-        sx={{
-          flexGrow: 1,
-          py: { xs: 2, md: 4 },
-          px: { xs: 2, sm: 3, md: 6 },
-          display: "flex",
-          flexDirection: "column",
-          gap: { xs: 3, md: 4 },
-          mb: 15,
-        }}
-      >
-        <Stack direction="row" sx={{justifyContent: "space-between",alignItems: 'center',
-        }}>
-        <Stack direction={"row"} spacing={1}>
-          <UserMenu></UserMenu>
-          <Typography variant="h4">My Events</Typography>
-          </Stack>
-          <CustomButton color="black" style={{flexGrow: 0}} onClick={()=>{navigate("new")}}>Create</CustomButton>
-        </Stack>
-        <Box
+    <Stack
+      direction="row"
+      sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
+    >
+      <DesktopNav></DesktopNav>
+      <Box sx={{ flex: "1", m: 0 }}>
+        <Header></Header>
+        <Container
+          maxWidth="lg"
           sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "repeat(1, minmax(0, 1fr))", // 1 rows on mobile
-              sm: "repeat(2, minmax(0, 1fr))", // 2 rows on small tablets
-              md: "repeat(2, minmax(0, 1fr))", // 2 rows on desktop
-            },
-            columnGap: 2,
-            rowGap: 2,
-            mt: 0.5,
+            flexGrow: 1,
+            py: { xs: 2, md: 4 },
+            px: { xs: 2, sm: 3, md: 6 },
+            display: "flex",
+            flexDirection: "column",
+            gap: { xs: 3, md: 4 },
+            mb: 15,
           }}
         >
-          {items.map((post, index) => (
-            <PostCard
-              key={"post-card-" + index}
-              postID={post.id}
-              primaryText={post.title}
-              image={post.image}
-              secondaryText={dayjs(post.posted_date).format("MMM DD YYYY")}
-              TopLeftAction={() => (
-                <CustomButton onClick={() => navigate(`${post.id}`)}>
-                  Edit
-                </CustomButton>
-              )}
-              disableNavigation
-            ></PostCard>
-          ))}
-        </Box>
-      </Container>
+          <Stack
+            direction="row"
+            sx={{ justifyContent: "space-between", alignItems: "center" }}
+          >
+            <Stack direction={"row"} spacing={1}>
+              <UserMenu></UserMenu>
+              <Typography variant="h4">My Events</Typography>
+            </Stack>
+            <CustomButton
+              color="black"
+              style={{ flexGrow: 0 }}
+              onClick={() => {
+                navigate("new");
+              }}
+            >
+              Create
+            </CustomButton>
+          </Stack>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "repeat(1, minmax(0, 1fr))", // 1 rows on mobile
+                sm: "repeat(2, minmax(0, 1fr))", // 2 rows on small tablets
+                md: "repeat(2, minmax(0, 1fr))", // 2 rows on desktop
+              },
+              columnGap: 2,
+              rowGap: 2,
+              mt: 0.5,
+            }}
+          >
+            {items.map((post, index) => (
+              <PostCard
+                key={"post-card-" + index}
+                postID={post.post_id}
+                primaryText={post.title}
+                image={post.image}
+                secondaryText={dayjs(post.posted_date).format("MMM DD YYYY")}
+                TopLeftAction={() => (
+                  <CustomButton onClick={() => navigate(`${post.post_id}`)}>
+                    Edit
+                  </CustomButton>
+                )}
+                disableNavigation
+              ></PostCard>
+            ))}
+          </Box>
+        </Container>
       </Box>
       <MobileNav></MobileNav>
     </Stack>

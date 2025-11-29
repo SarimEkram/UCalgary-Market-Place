@@ -14,7 +14,7 @@ import Header from "../components/Header";
 import InputField from "../components/InputField";
 import DesktopNav from "../components/DesktopNav";
 import MobileNav from "../components/MobileNav";
-// 1 Backend Task(s) (Ctrl+F "TODO")
+
 export default function MySettings() {
   //get user data from local storage
   const [userData, setUserData] = useState(
@@ -29,8 +29,8 @@ export default function MySettings() {
   } = useForm({
     defaultValues: {
       email: userData.email,
-      firstName: userData.fname,
-      lastName: userData.lname,
+      fname: userData.fname,
+      lname: userData.lname,
     },
   });
 
@@ -39,28 +39,26 @@ export default function MySettings() {
     msg: "No message.",
   });
 
-  const onSubmit = (data) => {
-    delete data["newPassword"];
+  const onSubmit = async (formData) => {
+    delete formData["password"];
 
-    console.log("send create user request to the backend...", data);
+    const response = await fetch(`http://localhost:8080/api/settings/update`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+    const data = await response.json();
 
-    /**
-     * 
-      TODO: BTASK
-      ------- 
-      Update a user account using `data` object. 
-      Update the submitstatus ased on the status.
-      
-      Example data
-      ------------
-      {
-      "email": "enibalo2@gmail.com",
-      "password": "butter123#",
-      "firstName": "eni",
-      "lastName": "balogun"
-      }
+    if (response.ok) {
+        //re-fresh page 
+        navigate("admin/settings");
+      } else{
+        //set status of msg on failure
+        setSubmitStatus({success: false, msg: data.error})
+    }
 
-     */
   };
 
   //component that renders the password rules
@@ -205,9 +203,9 @@ export default function MySettings() {
                   autoComplete={"name"}
                   inputProps={{ type: "text" }}
                   errorMsg={
-                    errors["firstName"] ? errors["firstName"].message : null
+                    errors["fname"] ? errors["fname"].message : null
                   }
-                  {...register("firstName", {
+                  {...register("fname", {
                     required: "First name is required.",
                     pattern: {
                       value: /^[A-Za-z]+$/,
@@ -221,9 +219,9 @@ export default function MySettings() {
                   inputProps={{ type: "text" }}
                   autoComplete={"family-name"}
                   errorMsg={
-                    errors["lastName"] ? errors["lastName"].message : null
+                    errors["lname"] ? errors["lname"].message : null
                   }
-                  {...register("lastName", {
+                  {...register("lname", {
                     required: "Last name is required.",
                     pattern: {
                       value: /^[A-Za-z]+$/,

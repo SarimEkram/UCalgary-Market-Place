@@ -4,7 +4,7 @@ import {
   Divider,
   FormHelperText,
   Stack,
-  Typography
+  Typography,
 } from "@mui/material";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -31,8 +31,8 @@ export default function MySettings() {
   } = useForm({
     defaultValues: {
       email: userData.email,
-      firstName: userData.fname,
-      lastName: userData.lname,
+      fname: userData.fname,
+      lname: userData.lname,
     },
   });
 
@@ -41,28 +41,26 @@ export default function MySettings() {
     msg: "No message.",
   });
 
-  const onSubmit = (data) => {
-    delete data["newPassword"];
+  const onSubmit = async (formData) => {
+    delete formData["password"];
 
-    console.log("send create user request to the backend...", data);
+    const response = await fetch(`http://localhost:8080/api/settings/update`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+    const data = await response.json();
 
-    /**
-     * 
-      TODO: BTASK
-      ------- 
-      Update a user account using `data` object. 
-      Update the submitstatus ased on the status.
-      
-      Example data
-      ------------
-      {
-      "email": "enibalo2@gmail.com",
-      "password": "butter123#",
-      "firstName": "eni",
-      "lastName": "balogun"
+    if (response.ok) {
+        //re-fresh page 
+        navigate("user");
+      } else{
+        //set status of 
+        setSubmitStatus({success: false, msg: data.error})
       }
 
-     */
   };
 
   //component that renders the password rules
@@ -196,9 +194,9 @@ export default function MySettings() {
                 autoComplete={"name"}
                 inputProps={{ type: "text" }}
                 errorMsg={
-                  errors["firstName"] ? errors["firstName"].message : null
+                  errors["fname"] ? errors["fname"].message : null
                 }
-                {...register("firstName", {
+                {...register("fname", {
                   required: "First name is required.",
                   pattern: {
                     value: /^[A-Za-z]+$/,
@@ -212,9 +210,9 @@ export default function MySettings() {
                 autoComplete={"family-name"}
                 inputProps={{ type: "text" }}
                 errorMsg={
-                  errors["lastName"] ? errors["lastName"].message : null
+                  errors["lname"] ? errors["lname"].message : null
                 }
-                {...register("lastName", {
+                {...register("lname", {
                   required: "Last name is required.",
                   pattern: {
                     value: /^[A-Za-z]+$/,

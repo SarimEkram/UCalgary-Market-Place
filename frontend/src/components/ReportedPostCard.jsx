@@ -114,18 +114,38 @@ export default function PostCard({
       <Stack spacing={5} direction="row" sx={{ height: "100%" }}>
         {/* IMAGE */}
         <Box sx={{ flexGrow: 1 }} position="relative">
-          <CardMedia
-            sx={(theme) => ({
-              width: "100%",
-              height: "90%",
-              objectFit: "cover",
-              minHeight: "155px",
-              minWidth: "155px",
-              borderRadius: theme.shape.borderRadius,
-            })}
-            component="img"
-            image={image} //image src
-          />
+          {image != null ? (
+            <CardMedia
+              sx={(theme) => ({
+                width: "100%",
+                height: "90%",
+                objectFit: "cover",
+                minHeight: "155px",
+                minWidth: "155px",
+                borderRadius: theme.shape.borderRadius,
+              })}
+              component="img"
+              image={image} //image src
+            />
+          ) : (
+            <Box
+              sx={(theme) => ({
+                width: "100%",
+                height: "90%",
+                objectFit: "cover",
+                minHeight: "155px",
+                minWidth: "155px",
+                borderRadius: theme.shape.borderRadius,
+              })}
+            >
+              <Typography
+                variant="h3"
+                sx={{ color: "#b8b4b4ff", alignSelf: "center" }}
+              >
+                No Image
+              </Typography>
+            </Box>
+          )}
           {reportDate && (
             <Icon
               fontSize="large"
@@ -158,16 +178,16 @@ export default function PostCard({
               </Typography>
             </Box>
             <Stack
-              sx={(theme)=>({
+              sx={(theme) => ({
                 p: 0,
                 display: "flex",
-                [theme.breakpoints.down("sm",)]: {
+                [theme.breakpoints.down("sm")]: {
                   flexDirection: "row",
                 },
-                 [theme.breakpoints.between("980", "1300")]: {
+                [theme.breakpoints.between("980", "1300")]: {
                   flexDirection: "column",
                 },
-               
+
                 [theme.breakpoints.up("1300")]: {
                   flexDirection: "row",
                 },
