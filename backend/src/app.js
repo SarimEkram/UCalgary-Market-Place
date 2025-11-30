@@ -11,6 +11,7 @@ import myPostsRoutes from "./routes/userSettingsRoute/myPostsRoute.js";
 import myEventsRoute from "./routes/userSettingsRoute/myEventsRoute.js";
 import findUserRoutes from "./routes/adminRoutes/findUserRoute.js";
 import deletePostRoute from "./routes/adminRoutes/deletePostRoute.js";
+import deleteUserRoutes from "./routes/adminRoutes/deleteUserRoute.js";
 
 
 const app = express();
@@ -56,5 +57,8 @@ app.use("/api/admin/users", findUserRoutes);
 
 // Admin delete post route
 app.use("/api/admin/posts", deletePostRoute);
+
+// DELETE /api/admin/users/ban
+app.use("/api/admin/users", deleteUserRoutes);
 
 export default app;
