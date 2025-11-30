@@ -9,6 +9,7 @@ import mySettingsRoutes from "./routes/userSettingsRoute/mySettingsRoute.js";
 import myContactedRoutes from "./routes/userSettingsRoute/myContactedRoute.js";
 import myPostsRoutes from "./routes/userSettingsRoute/myPostsRoute.js";
 import myEventsRoute from "./routes/userSettingsRoute/myEventsRoute.js";
+import findUserRoutes from "./routes/adminRoutes/findUserRoute.js";
 
 const app = express();
 
@@ -47,5 +48,8 @@ app.use("/api/my-posts", myPostsRoutes);
 
 // My events post route
 app.use("/api/my-events", myEventsRoute);
+
+// Admin functionality -> find users route
+app.use("/api/admin/users", findUserRoutes);
 
 export default app;
