@@ -9,10 +9,7 @@ import mySettingsRoutes from "./routes/userSettingsRoute/mySettingsRoute.js";
 import myContactedRoutes from "./routes/userSettingsRoute/myContactedRoute.js";
 import myPostsRoutes from "./routes/userSettingsRoute/myPostsRoute.js";
 import myEventsRoute from "./routes/userSettingsRoute/myEventsRoute.js";
-import findUserRoutes from "./routes/adminRoutes/findUserRoute.js";
-import deletePostRoute from "./routes/adminRoutes/deletePostRoute.js";
-import deleteUserRoutes from "./routes/adminRoutes/deleteUserRoute.js";
-
+import reportRoutes from "./routes/reportRoutes/reportRoutes.js";
 
 const app = express();
 
@@ -46,19 +43,16 @@ app.use("/api/settings", mySettingsRoutes);
 // Contacted posts list
 app.use("/api/getContactedPosts", myContactedRoutes);
 
+// Contact seller route (for contacting sellers/organizers)
+app.use("/api/contactSeller", myContactedRoutes);
+
 // My posts route
 app.use("/api/my-posts", myPostsRoutes);
 
 // My events post route
 app.use("/api/my-events", myEventsRoute);
 
-// Admin functionality -> find users route
-app.use("/api/admin/users", findUserRoutes);
-
-// Admin delete post route
-app.use("/api/admin/posts", deletePostRoute);
-
-// DELETE /api/admin/users/ban
-app.use("/api/admin/users", deleteUserRoutes);
+// Report route
+app.use("/api/report", reportRoutes);
 
 export default app;
