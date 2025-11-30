@@ -1,10 +1,11 @@
 import { Box, Container, Divider, Stack, Typography } from "@mui/material";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import ProfileIcon from "../assets/ProfileIconSVG";
-import CustomButton from "../components/CustomButton";
+import DesktopNav from "../components/DesktopNav";
 import Header from "../components/Header";
-import dayjs from "dayjs";
+import MobileNav from "../components/MobileNav";
 
 export default function AdminProfile() {
   const [items, setItems] = useState([]);
@@ -38,6 +39,10 @@ export default function AdminProfile() {
       setUserData({ fname: "Jone", lname: "Carter", email: "jw@ucalgary.ca" });
       let actionData = [
         { date: "2025-11-01T00:00:00.000Z", action: "Delete a user" },
+        { date: "2025-11-01T00:00:00.000Z", action: "Delete a user" },
+         { date: "2025-11-01T00:00:00.000Z", action: "Delete a user" },
+        { date: "2025-11-01T00:00:00.000Z", action: "Delete a user" },
+         { date: "2025-11-01T00:00:00.000Z", action: "Delete a user" },
         { date: "2025-11-01T00:00:00.000Z", action: "Delete a user" },
       ];
       actionData = actionData.map((item) => {
@@ -74,8 +79,8 @@ export default function AdminProfile() {
   const ActionItem = ({ dateTime, action }) => (
     <Box>
       <Stack direction="row" spacing={2}>
-        <Typography variant="h6">{dateTime}:</Typography>
-        <Typography variant="h6">{action}</Typography>
+        <Typography variant="body1">{dateTime}:</Typography>
+        <Typography variant="body1">{action}</Typography>
       </Stack>
       <Box>
         <Divider
@@ -92,15 +97,19 @@ export default function AdminProfile() {
   );
 
   return (
-    <Stack
-      direction="column"
-      sx={(theme) => ({
-        bgcolor: theme.palette.background.default,
-        minHeight: "100vh",
-        justifyContent: "space-between",
-      })}
+   
+    
+    //1. Root container must look like this 
+  <Stack
+      direction="row"
+      sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
     >
-      <Header />
+      {/* 2: Add Nav bar */}
+      <DesktopNav></DesktopNav>
+      {/*3. Enclouse Header, and MAIN PAGECONTENT  with this box */}
+      <Box sx={{ flex: "1", m: 0 }}>
+      <Header></Header>
+      
       <Container
         maxWidth="lg"
         sx={{
@@ -110,6 +119,11 @@ export default function AdminProfile() {
           display: "flex",
           flexDirection: "column",
           gap: { xs: 3, md: 4 },
+          /* 
+          4: To prevent the bottom content from being covered by the mobile nav
+          you may need to adjust the margin forr the Container for your main page content
+          */
+          mb: 10,
         }}
       >
         <Box sx={{ borderWidth: 0 }}>
@@ -158,6 +172,9 @@ export default function AdminProfile() {
           ))}
         </Box>
       </Container>
+      </Box>
+      {/* 5: Place the mobile nav after the box  */}
+     <MobileNav></MobileNav>
     </Stack>
   );
 }

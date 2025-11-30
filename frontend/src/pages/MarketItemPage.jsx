@@ -12,7 +12,7 @@ import InfoIcon from "../assets/InfoIcon";
 import ImageSlider from "../components/ImageSlider";
 import ReportIssueDialog from "../components/ReportIssueDialog";
 import Header from "../components/Header";
-import Navigation from "../components/Navigation";
+import MobileNav from "../components/MobileNav";
 import CustomButton from "../components/CustomButton";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
@@ -98,7 +98,7 @@ export default function MarketItemPage() {
           <Typography>Loading market listing...</Typography>
         </Box>
 
-        <Navigation />
+        <MobileNav />
       </Stack>
     );
   }
@@ -112,7 +112,7 @@ export default function MarketItemPage() {
           <Typography color="error">Market listing not found.</Typography>
         </Box>
 
-        <Navigation />
+        <MobileNav />
       </Stack>
     );
   }
@@ -248,7 +248,7 @@ export default function MarketItemPage() {
         onClose={() => setIsReportOpen(false)}
       />
 
-      <Navigation />
+      <MobileNav />
     </Stack>
   );
 }

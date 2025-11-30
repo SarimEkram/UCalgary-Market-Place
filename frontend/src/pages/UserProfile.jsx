@@ -1,18 +1,12 @@
-import {
-  Box,
-  Container,
-  Divider,
-  Icon,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Container, Divider, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import Home from "../assets/HomeSVG";
-import Header from "../components/Header";
-import UserMenu from "../components/UserMenu";
-import PostCard from "../components/ReportedPostCard";
-import ProfileIcon from "../assets/ProfileIconSVG";
 import { useParams } from "react-router";
+import ProfileIcon from "../assets/ProfileIconSVG";
+import Header from "../components/Header";
+import PostCard from "../components/ReportedPostCard";
+
+import DesktopNav from "../components/DesktopNav";
+import MobileNav from "../components/MobileNav";
 
 export default function UserProfile() {
   const [items, setItems] = useState([]);
@@ -23,10 +17,10 @@ export default function UserProfile() {
   useEffect(() => {
     let isMounted = true;
     async function fetchData() {
-      // TODO: BTASK 
-      // add fetch request to get user info (fname, lname, email),all events, and all market posts: 
-      // body of request: 
-      // {  
+      // TODO: BTASK
+      // add fetch request to get user info (fname, lname, email),all events, and all market posts:
+      // body of request:
+      // {
       // id: id
       // }
 
@@ -133,115 +127,112 @@ export default function UserProfile() {
     </Box>
   );
 
-  function GetIcon() {
-    return (
-      <Icon fontSize="large">
-        <Home></Home>
-      </Icon>
-    );
-  }
-
   return (
     <Stack
-      direction="column"
-      sx={(theme) => ({
-        bgcolor: theme.palette.background.default,
-        minHeight: "100vh",
-        justifyContent: "space-between",
-      })}
+      direction="row"
+      sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
     >
-      <Header />
-      <Container
-        maxWidth="lg"
-        sx={{
-          flexGrow: 1,
-          py: { xs: 2, md: 4 },
-          px: { xs: 2, sm: 3, md: 6 },
-          display: "flex",
-          flexDirection: "column",
-          gap: { xs: 3, md: 4 },
-        }}
-      >
-        <Box>
-          <Typography variant="h4">User Profile</Typography>
-          <CustomDivider></CustomDivider>
-        </Box>
-        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
-          <ProfileIcon></ProfileIcon>
-
-          <Box>
-            <Typography variant="h4">
-              {userData.fname} {userData.lname}
-            </Typography>
-            <Typography variant="h6">{userData.email}</Typography>
-          </Box>
-        </Stack>
-        <Box
+      <DesktopNav></DesktopNav>
+      <Box sx={{ flex: "1", m: 0 }}>
+        <Header></Header>
+        <Container
+          maxWidth="lg"
           sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "repeat(1, minmax(0, 1fr))", // 1 rows on mobile
-              sm: "repeat(2, minmax(0, 1fr))", // 2 rows on small tablets
-            },
-            columnGap: 5,
-            rowGap: 2,
-            mt: 0.5,
+            flexGrow: 1,
+            py: { xs: 4, md: 8 },
+            px: { xs: 4, sm: 6, md: 10 },
+            display: "flex",
+            flexDirection: "column",
+            gap: { xs: 3, md: 4 },
+            mb: 30,
           }}
         >
-          <Stack direction={"column"} spacing={2}>
-            <Typography variant="h4">Event Posts</Typography>
-            <Box
-              sx={{
-                display: "grid",
-                gridAutoFlow: "row",
-                gridAutoColumns: "1fr",
-                gridAutoRows: "0.6fr",
-                columnGap: 2,
-                 rowGap: 10,
-                mt: 0.5,
-              }}
-            >
-              {items.map((post, index) => {
-                return (
-                  <PostCard
-                    key={"card-" + index}
-                    primaryText={post.title}
-                    reportDate={post.report_date}
-                    numReports={post.report_count}
-                    image={post.image}
-                  ></PostCard>
-                );
-              })}
+          <Box>
+            <Typography variant="h4">User Profile</Typography>
+            <CustomDivider></CustomDivider>
+          </Box>
+          <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+            <ProfileIcon></ProfileIcon>
+            <Box>
+              <Typography variant="h4">
+                {userData.fname} {userData.lname}
+              </Typography>
+              <Typography variant="h6">{userData.email}</Typography>
             </Box>
           </Stack>
-          <Stack direction={"column"} spacing={2}>
-            <Typography variant="h4">Market Posts</Typography>
-            <Box
-              sx={{
-                display: "grid",
-                gridAutoFlow: "row",
-                gridAutoColumns: "1fr",
-                gridAutoRows: "0.6fr",
-                columnGap: 2,
-                rowGap: 10,
-                mt: 0.5,
-              }}
-            >
-              {items.map((post, index) => {
-                return (
-                  <PostCard
-                    key={"card-" + index}
-                    primaryText={post.title}
-                    reportDate={post.report_date}
-                    numReports={post.report_count}
-                    image={post.image}
-                  ></PostCard>
-                );
-              })}
-            </Box>
-          </Stack>
-        </Box>
-      </Container>
+          <Box
+            sx={(theme) => ({
+              display: "grid",
+              [theme.breakpoints.down("sm")]: {
+                gridTemplateColumns: "repeat(1, minmax(0, 1fr))",
+              },
+              [theme.breakpoints.between("sm", "1000")]: {
+                gridTemplateColumns: "repeat(1, 0.6fr)",
+              },
+              [theme.breakpoints.up("1000")]: {
+                gridTemplateColumns: "repeat(2, minmax(0, 0.6fr))",
+              },
+              columnGap: 5,
+              rowGap: 2,
+              mt: 0.5,
+            })}
+          >
+            <Stack direction={"column"} spacing={2} sx={{ my: 5 }}>
+              <Typography variant="h4">Event Posts</Typography>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridAutoFlow: "row",
+                  gridAutoColumns: "1fr",
+                  gridAutoRows: "0.6fr",
+                  columnGap: 2,
+                  rowGap: 10,
+                  mt: 0.5,
+                }}
+              >
+                {items.map((post, index) => {
+                  return (
+                    <PostCard
+                      key={"card-" + index}
+                      primaryText={post.title}
+                      reportDate={post.report_date}
+                      numReports={post.report_count}
+                      image={post.image}
+                    ></PostCard>
+                  );
+                })}
+              </Box>
+            </Stack>
+            <Stack direction={"column"} spacing={2} sx={{ my: 5 }}>
+              <Typography variant="h4">Market Posts</Typography>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridAutoFlow: "row",
+                  gridAutoColumns: "1fr",
+                  gridAutoRows: "0.6fr",
+                  columnGap: 2,
+                  rowGap: 10,
+                  mt: 0.5,
+                }}
+              >
+                {items.map((post, index) => {
+                  return (
+                    <PostCard
+                      key={"card-" + index}
+                      primaryText={post.title}
+                      reportDate={post.report_date}
+                      numReports={post.report_count}
+                      image={post.image}
+                    ></PostCard>
+                  );
+                })}
+              </Box>
+            </Stack>
+          </Box>
+        </Container>
+      </Box>
+      <MobileNav></MobileNav>
     </Stack>
   );
 }

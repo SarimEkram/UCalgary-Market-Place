@@ -18,6 +18,8 @@ import DateRangeDialog from "../components/DateRangeDialog";
 import Header from "../components/Header";
 import ImageSlider from "../components/ImageSlider";
 import InputField from "../components/InputField";
+import DesktopNav from "../components/DesktopNav";
+import MobileNav from "../components/MobileNav";
 
 import dayjs from "dayjs";
 
@@ -204,195 +206,212 @@ export default function EditEvent() {
     return result;
   };
 
-  return (
-    <Stack direction="column" spacing={2} sx={styles.page}>
-      <Header></Header>
-      <Container maxWidth={"sm"} sx={styles.main}>
-        <RouterLink to=".." style={{ textDecoration: "none" }}>
-          <Link
-            component={"div"}
-            color="secondary"
-            sx={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              textDecoration: "none",
-            }}
-            variant="text"
-          >
-            <ChevronLeftIcon></ChevronLeftIcon>
-            <Typography variant="h6" sx={{ fontWeight: "400" }}>
-              Back to My Events
-            </Typography>
-          </Link>
-        </RouterLink>
-        <Divider
-          variant="fullWidth"
-          sx={(theme) => ({
-            boxSizing: "border-box",
-            borderBottom: theme.palette.dividerWidth,
-            borderColor: theme.palette.divider,
-            marginTop: 3,
-            marginBottom: 3,
-          })}
-        ></Divider>
+  const onDelete = ()=>{
+    /*TODO: BTASK
+    handle deleting a post
+    */
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Stack direction="column" component={"div"} spacing={4}>
-            <InputField
-              placeholder={"Title"}
-              label={"Title"}
-              errorMsg={errors["title"] ? errors["title"].message : null}
-              {...register("title", {
-                required: "Title is required.",
-                maxLength: {
-                  value: 255,
-                  message: "Maximum length of 255 characters.",
-                },
-              })}
-            ></InputField>
-            <InputField
-              placeholder={"Organization Name"}
-              label={"Organization Name"}
-              errorMsg={
-                errors["organization_name"]
-                  ? errors["organization_name"].message
-                  : null
-              }
-              {...register("organization_name", {
-                required: "Organization name is required.",
-                maxLength: {
-                  value: 255,
-                  message: "Maximum length of 255 characters.",
-                },
-              })}
-            ></InputField>
-            <InputField
-              multiline
-              disableUnderline
-              addPadding
-              sx={(theme) => ({
-                boxSizing: "border-box",
-                padding: 1,
-                border: 2,
-                borderColor: theme.palette.inputBorderColor,
-                borderRadius: 2,
-              })}
-              minRows={5}
-              placeholder={"Description"}
-              label={"Description"}
-              inputProps={{ type: "description" }}
-              errorMsg={
-                errors["description"] ? errors["description"].message : null
-              }
-              {...register("description", {
-                required: "Description is required.",
-              })}
-            ></InputField>
-            <InputField
-              placeholder={"T1B 2C3"}
-              label={"Location (Your Postal Code)"}
-              errorMsg={errors["location"] ? errors["location"].message : null}
-              {...register("location", {
-                required: "Location is required.",
-                maxLength: {
-                  value: 20,
-                  message: "Maximum length of 20 characters.",
-                },
-              })}
-            ></InputField>
-            <InputField
-              placeholder={"15.00"}
-              label={"Price"}
-              type="number"
-              errorMsg={errors["price"] ? errors["price"].message : null}
-              {...register("price", {
-                required: "Price is required.",
-                // valueAsNumber: true,
-              })}
-            ></InputField>
-            <Box>
-              <InputLabel shrink>Date</InputLabel>
-              <Input
-                sx={(theme) => ({
-                  width: "100%",
-                  "& .Mui-disabled": {
-                    color: theme.palette.text.primary,
-                    WebkitTextFillColor: "unset",
+  }
+
+  return (
+    <Stack
+      direction="row"
+      sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
+    >
+      <DesktopNav></DesktopNav>
+      <Box sx={{ flex: "1", m: 0 }}>
+        <Header></Header>
+        <Container maxWidth={"sm"} sx={styles.main}>
+          <RouterLink to=".." style={{ textDecoration: "none" }}>
+            <Link
+              component={"div"}
+              color="secondary"
+              sx={{
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                textDecoration: "none",
+              }}
+              variant="text"
+            >
+              <ChevronLeftIcon></ChevronLeftIcon>
+              <Typography variant="h6" sx={{ fontWeight: "400" }}>
+                Back to My Events
+              </Typography>
+            </Link>
+          </RouterLink>
+          <Divider
+            variant="fullWidth"
+            sx={(theme) => ({
+              boxSizing: "border-box",
+              borderBottom: theme.palette.dividerWidth,
+              borderColor: theme.palette.divider,
+              marginTop: 3,
+              marginBottom: 3,
+            })}
+          ></Divider>
+          <CustomButton style={{alignSelf: 'flex-end', pb: 2}}>Delete</CustomButton>
+
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <Stack direction="column" component={"div"} spacing={4}>
+              <InputField
+                placeholder={"Title"}
+                label={"Title"}
+                errorMsg={errors["title"] ? errors["title"].message : null}
+                {...register("title", {
+                  required: "Title is required.",
+                  maxLength: {
+                    value: 255,
+                    message: "Maximum length of 255 characters.",
                   },
                 })}
-                value={getDate()}
-                disabled={true}
-                disableUnderline={true}
-                {...register("date", {
-                  validate: validateDate,
+              ></InputField>
+              <InputField
+                placeholder={"Organization Name"}
+                label={"Organization Name"}
+                errorMsg={
+                  errors["organization_name"]
+                    ? errors["organization_name"].message
+                    : null
+                }
+                {...register("organization_name", {
+                  required: "Organization name is required.",
+                  maxLength: {
+                    value: 255,
+                    message: "Maximum length of 255 characters.",
+                  },
                 })}
-              ></Input>
-              <CustomButton
-                style={{
-                  width: "fit-content",
-                }}
-                color={"black"}
-                onClick={() => setOpen(true)}
-              >
-                {"Change Date"}
-              </CustomButton>
-              <DateRangeDialog
-                open={open}
-                onClose={() => setOpen(false)}
-                onApply={handleApply}
-                initialRange={range}
-              />
-            </Box>
+              ></InputField>
+              <InputField
+                multiline
+                disableUnderline
+                addPadding
+                sx={(theme) => ({
+                  boxSizing: "border-box",
+                  padding: 1,
+                  border: 2,
+                  borderColor: theme.palette.inputBorderColor,
+                  borderRadius: 2,
+                })}
+                minRows={5}
+                placeholder={"Description"}
+                label={"Description"}
+                inputProps={{ type: "description" }}
+                errorMsg={
+                  errors["description"] ? errors["description"].message : null
+                }
+                {...register("description", {
+                  required: "Description is required.",
+                })}
+              ></InputField>
+              <InputField
+                placeholder={"T1B 2C3"}
+                label={"Location (Your Postal Code)"}
+                errorMsg={
+                  errors["location"] ? errors["location"].message : null
+                }
+                {...register("location", {
+                  required: "Location is required.",
+                  maxLength: {
+                    value: 20,
+                    message: "Maximum length of 20 characters.",
+                  },
+                })}
+              ></InputField>
+              <InputField
+                placeholder={"15.00"}
+                label={"Price"}
+                type="number"
+                errorMsg={errors["price"] ? errors["price"].message : null}
+                {...register("price", {
+                  required: "Price is required.",
+                  // valueAsNumber: true,
+                })}
+              ></InputField>
+              <Box>
+                <InputLabel shrink>Date</InputLabel>
+                <Input
+                  sx={(theme) => ({
+                    width: "100%",
+                    "& .Mui-disabled": {
+                      color: theme.palette.text.primary,
+                      WebkitTextFillColor: "unset",
+                    },
+                  })}
+                  value={getDate()}
+                  disabled={true}
+                  disableUnderline={true}
+                  {...register("date", {
+                    validate: validateDate,
+                  })}
+                ></Input>
+                <CustomButton
+                  style={{
+                    width: "fit-content",
+                  }}
+                  color={"black"}
+                  onClick={() => setOpen(true)}
+                >
+                  {"Change Date"}
+                </CustomButton>
+                <DateRangeDialog
+                  open={open}
+                  onClose={() => setOpen(false)}
+                  onApply={handleApply}
+                  initialRange={range}
+                />
+              </Box>
 
-            <ImageSlider
-              images={images}
-              setDeletedImages={setDeletedImages}
-              showDelete
-            ></ImageSlider>
+              <ImageSlider
+                images={images}
+                setDeletedImages={setDeletedImages}
+                showDelete
+              ></ImageSlider>
 
-            <Stack spacing={3}>
-              <CustomButton
-                color="black"
-                onClick={() => {
-                  fileInputRef.current.children[0].click();
-                }}
-              >
-                Add Image
-              </CustomButton>
+              <Stack spacing={3}>
+                <CustomButton
+                  color="black"
+                  onClick={() => {
+                    fileInputRef.current.children[0].click();
+                  }}
+                >
+                  Add Image
+                </CustomButton>
 
-              <Typography
-                sx={[{ fontSize: "1rem", visibility: newImages.length != 0 }]}
-              >
-                Selected files:{" "}
-                {newImages.length != 0 && printImageNames(newImages)}
-              </Typography>
+                <Typography
+                  sx={[{ fontSize: "1rem", visibility: newImages.length != 0 }]}
+                >
+                  Selected files:{" "}
+                  {newImages.length != 0 && printImageNames(newImages)}
+                </Typography>
 
-              <CustomButton type="submit">Save Changes</CustomButton>
+                <CustomButton type="submit">Save Changes</CustomButton>
+              </Stack>
             </Stack>
+            <Input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              sx={{ display: "none" }}
+              inputProps={{ multiple: true }}
+              onChange={handleImagesChange}
+              disableUnderline
+            ></Input>
+          </form>
+          <Stack spacing={2} sx={styles.bottomContent}>
+            <FormHelperText
+              error={true}
+              sx={[
+                { textAlign: "center", fontSize: "1rem" },
+                { visibility: editFailed ? "visible" : "hidden" },
+              ]}
+            >
+              Failed to updat the post.<br></br>Please try again.
+            </FormHelperText>
           </Stack>
-          <Input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            sx={{ display: "none" }}
-            inputProps={{ multiple: true }}
-            onChange={handleImagesChange}
-            disableUnderline
-          ></Input>
-        </form>
-        <Stack spacing={2} sx={styles.bottomContent}>
-          <FormHelperText
-            error={true}
-            sx={[
-              { textAlign: "center", fontSize: "1rem" },
-              { visibility: editFailed ? "visible" : "hidden" },
-            ]}
-          >
-            Failed to updat the post.<br></br>Please try again.
-          </FormHelperText>
-        </Stack>
-      </Container>
+        </Container>
+      </Box>
+      <MobileNav></MobileNav>
     </Stack>
   );
 }
@@ -413,8 +432,8 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center",
     alignContent: "space-between",
-    padding: 10,
-    paddingTop: 3,
+    p: 5,
+    mb: 10,
   },
 
   bottomContent: {

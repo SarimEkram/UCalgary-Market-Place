@@ -13,7 +13,7 @@ import dayjs from "dayjs";
 import SearchIcon from "@mui/icons-material/Search";
 import Filters from "../components/Filters";
 import Header from "../components/Header";
-import Navigation from "../components/Navigation";
+import MobileNav from "../components/MobileNav";
 import DesktopNav from "../components/DesktopNav";
 import { useNavigate } from "react-router-dom";
 
@@ -160,7 +160,7 @@ export default function Events() {
 
         {/* Mobile bottom nav */}
         <Box sx={{ display: { xs: "block", md: "none" } }}>
-          <Navigation />
+          <MobileNav />
         </Box>
       </Stack>
     </Box>

@@ -34,7 +34,8 @@ export default function ImageSlider({ images, setDeletedImages, showDelete = fal
 
   useEffect(()=>{ 
       if( images) {
-        setInternalImages(images); setNumberOfSteps(images.length)
+        setInternalImages(images); 
+        setNumberOfSteps(images.length);
       }
     }
     ,[images]);
@@ -61,7 +62,6 @@ export default function ImageSlider({ images, setDeletedImages, showDelete = fal
     {
       setCurrStep((prev) => {
         const newStep = (prev + 1) % numberOfSteps;
-
         return newStep;
       });
     };
