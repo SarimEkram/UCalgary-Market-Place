@@ -11,6 +11,10 @@ import myPostsRoutes from "./routes/userSettingsRoute/myPostsRoute.js";
 import myEventsRoute from "./routes/userSettingsRoute/myEventsRoute.js";
 import reportRoutes from "./routes/reportRoutes/reportRoutes.js";
 
+import findUserRoutes from "./routes/adminRoutes/findUserRoute.js";
+import deleteUserRoutes from "./routes/adminRoutes/deleteUserRoute.js";
+import deletePostRoutes from "./routes/adminRoutes/deletePostRoute.js";
+
 const app = express();
 
 app.use(express.json());
@@ -54,5 +58,10 @@ app.use("/api/my-events", myEventsRoute);
 
 // Report route
 app.use("/api/report", reportRoutes);
+
+
+app.use("/api/admin/users", findUserRoutes);   // GET /api/admin/users?q=...
+app.use("/api/admin/users", deleteUserRoutes); // DELETE /api/admin/users/ban
+app.use("/api/admin/posts", deletePostRoutes); // DELETE /api/admin/posts/:postId
 
 export default app;
