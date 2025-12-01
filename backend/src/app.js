@@ -9,7 +9,7 @@ import mySettingsRoutes from "./routes/userSettingsRoute/mySettingsRoute.js";
 import myContactedRoutes from "./routes/userSettingsRoute/myContactedRoute.js";
 import myPostsRoutes from "./routes/userSettingsRoute/myPostsRoute.js";
 import myEventsRoute from "./routes/userSettingsRoute/myEventsRoute.js";
-// import reportRoutes from "./routes/reportRoutes/reportRoutes.js";
+import reportRoutes from "./routes/reportRoutes/reportRoutes.js";
 
 const app = express();
 
@@ -53,6 +53,6 @@ app.use("/api/my-posts", myPostsRoutes);
 app.use("/api/my-events", myEventsRoute);
 
 // Report route
-// app.use("/api/report", reportRoutes);
+app.use("/api/report", reportRoutes);
 
 export default app;
