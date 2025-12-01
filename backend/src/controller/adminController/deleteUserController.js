@@ -1,4 +1,5 @@
 import db from "../../config/db.js";
+import { sendBanNotificationEmail } from "./adminEmailHelpers.js";
 
 export const adminBanUser = (req, res) => {
     const { adminId, email } = req.body;
@@ -80,11 +81,26 @@ export const adminBanUser = (req, res) => {
                             });
                         }
 
-                        return res.status(200).json({
-                            success: true,
-                            message: "User banned and deleted successfully",
-                            actionId,
-                        });
+                        // 5) Send ban notification email
+                        sendBanNotificationEmail(email)
+                            .then(() => {
+                                return res.status(200).json({
+                                    success: true,
+                                    message: "User banned and deleted successfully",
+                                    actionId,
+                                    emailStatus: "sent",
+                                });
+                            })
+                            .catch((emailErr) => {
+                                console.error("Error sending ban email:", emailErr);
+                                return res.status(200).json({
+                                    success: true,
+                                    message:
+                                        "User banned and deleted successfully (ban email failed to send)",
+                                    actionId,
+                                    emailStatus: "failed",
+                                });
+                            });
                     });
                 });
             }
