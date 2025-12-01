@@ -34,7 +34,7 @@ export const adminDeletePost = (req, res) => {
 
     db.query(selectQuery, [postIdNum], (selectErr, rows) => {
         if (selectErr) {
-            console.error("Error fetching post:", selectErr);
+
             return res
                 .status(500)
                 .json({ success: false, error: "Database error while fetching post" });
@@ -54,7 +54,7 @@ export const adminDeletePost = (req, res) => {
 
         db.query(deleteQuery, [postIdNum], (deleteErr, result) => {
             if (deleteErr) {
-                console.error("Error deleting post:", deleteErr);
+
                 return res
                     .status(500)
                     .json({ success: false, error: "Failed to delete post" });
@@ -98,7 +98,7 @@ export const adminDeletePost = (req, res) => {
                         });
                     })
                     .catch((emailErr) => {
-                        console.error("Error sending post removal email:", emailErr);
+
                         return res.status(200).json({
                             success: true,
                             message: "Post deleted successfully",
