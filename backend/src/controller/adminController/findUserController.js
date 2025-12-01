@@ -18,7 +18,7 @@ export const searchUsers = (req, res) => {
 
     db.query(sql, [like, like, like], (err, rows) => {
         if (err) {
-            console.error("DB error (searchUsers):", err);
+
             return res.status(500).json({ error: "Failed to search users" });
         }
 
@@ -37,7 +37,7 @@ export const getUserProfileForAdmin = (req, res) => {
 
     db.query(userSql, [id], (userErr, userRows) => {
         if (userErr) {
-            console.error("DB error (getUserProfile/user):", userErr);
+
             return res.status(500).json({ error: "Database error" });
         }
 
@@ -89,13 +89,13 @@ export const getUserProfileForAdmin = (req, res) => {
 
         db.query(eventPostsSql, [id], (eventErr, eventRows) => {
             if (eventErr) {
-                console.error("DB error (getUserProfile/events):", eventErr);
+
                 return res.status(500).json({ error: "Failed to load event posts" });
             }
 
             db.query(marketPostsSql, [id], (marketErr, marketRows) => {
                 if (marketErr) {
-                    console.error("DB error (getUserProfile/market):", marketErr);
+
                     return res.status(500).json({ error: "Failed to load market posts" });
                 }
 
