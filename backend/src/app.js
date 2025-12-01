@@ -6,7 +6,11 @@ import postRoutes from "./routes/postRoutes/postRoutes.js";
 import passwordRoutes from "./routes/authRoutes/passwordRoutes.js";
 import savedPostRoutes from "./routes/userSettingsRoute/savedPostRoute.js";
 import mySettingsRoutes from "./routes/userSettingsRoute/mySettingsRoute.js";
+
 import myContactedRoutes from "./routes/userSettingsRoute/myContactedRoute.js";
+import contactUserPostRoute from "./routes/contactSellerPostRoute/contactSellerPostRoute.js";
+
+
 import myPostsRoutes from "./routes/userSettingsRoute/myPostsRoute.js";
 import myEventsRoute from "./routes/userSettingsRoute/myEventsRoute.js";
 import reportRoutes from "./routes/reportRoutes/reportRoutes.js";
@@ -45,11 +49,12 @@ app.use("/api/getSavedPosts", savedPostRoutes)
 // Post route for settings updates
 app.use("/api/settings", mySettingsRoutes);
 
-// Contacted posts list
-app.use("/api/getContactedPosts", myContactedRoutes);
+// Post route to view all contacted posts
+app.use("/api/contacted", myContactedRoutes);
 
-// Contact seller route (for contacting sellers/organizers)
-app.use("/api/contactSeller", myContactedRoutes);
+// Post route to contact a user
+app.use("/api/contactSeller", contactUserPostRoute);
+
 
 // My posts route
 app.use("/api/my-posts", myPostsRoutes);
