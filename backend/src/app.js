@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+
 import loginRoutes from "./routes/authRoutes/loginRoutes.js";
 import registrationRoutes from "./routes/authRoutes/registrationRoutes.js";
 import postRoutes from "./routes/postRoutes/postRoutes.js";
@@ -9,7 +10,6 @@ import mySettingsRoutes from "./routes/userSettingsRoute/mySettingsRoute.js";
 
 import myContactedRoutes from "./routes/userSettingsRoute/myContactedRoute.js";
 import contactUserPostRoute from "./routes/contactSellerPostRoute/contactSellerPostRoute.js";
-
 
 import myPostsRoutes from "./routes/userSettingsRoute/myPostsRoute.js";
 import myEventsRoute from "./routes/userSettingsRoute/myEventsRoute.js";
