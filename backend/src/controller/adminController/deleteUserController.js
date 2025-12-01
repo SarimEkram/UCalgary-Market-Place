@@ -21,7 +21,7 @@ export const adminBanUser = (req, res) => {
     const findUserSql = "SELECT user_id FROM users WHERE email = ?";
     db.query(findUserSql, [email], (findErr, userRows) => {
         if (findErr) {
-            console.error("DB error (find user to ban):", findErr);
+
             return res
                 .status(500)
                 .json({ success: false, error: "Database error (find user)" });
@@ -43,7 +43,7 @@ export const adminBanUser = (req, res) => {
             [adminIdNum, actionText],
             (actionErr, actionResult) => {
                 if (actionErr) {
-                    console.error("DB error (insert admin action ban):", actionErr);
+
                     return res.status(500).json({
                         success: false,
                         error: "Failed to log admin action for ban",
@@ -57,7 +57,7 @@ export const adminBanUser = (req, res) => {
                     "INSERT INTO banned_users (action_id, user_email) VALUES (?, ?)";
                 db.query(insertBanSql, [actionId, email], (banErr) => {
                     if (banErr) {
-                        console.error("DB error (insert banned_users row):", banErr);
+
                         return res.status(500).json({
                             success: false,
                             error: "Failed to insert into banned_users",
@@ -68,7 +68,7 @@ export const adminBanUser = (req, res) => {
                     const deleteUserSql = "DELETE FROM users WHERE email = ?";
                     db.query(deleteUserSql, [email], (delErr, delResult) => {
                         if (delErr) {
-                            console.error("DB error (delete user):", delErr);
+
                             return res
                                 .status(500)
                                 .json({ success: false, error: "Failed to delete user" });
@@ -92,7 +92,7 @@ export const adminBanUser = (req, res) => {
                                 });
                             })
                             .catch((emailErr) => {
-                                console.error("Error sending ban email:", emailErr);
+
                                 return res.status(200).json({
                                     success: true,
                                     message:
