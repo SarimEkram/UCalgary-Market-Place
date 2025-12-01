@@ -1,4 +1,3 @@
-// backend/src/config/mail.js
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
