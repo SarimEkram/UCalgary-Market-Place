@@ -1,7 +1,6 @@
-// src/controller/userSettingsController/savedPostController.js
 import db from "../../config/db.js";
 
-// 1) Get all saved posts for a user, with first image as thumbnail
+
 export const getSavedPosts = (req, res) => {
     const { userId } = req.body;
 
@@ -19,10 +18,17 @@ export const getSavedPosts = (req, res) => {
             p.postal_code,
             p.posted_date,
             p.description,
-            i.image_text_data AS thumbnail_blob
+            i.image_text_data AS thumbnail_blob,
+            u.fname,
+            u.lname,
+            ep.organization_name
         FROM saved_posts sp
                  JOIN posts p
                       ON sp.post_id = p.post_id
+                 JOIN users u
+                      ON p.user_id = u.user_id
+                 LEFT JOIN event_posts ep
+                           ON ep.event_id = p.post_id
                  LEFT JOIN images i
                            ON i.image_id = (
                                SELECT MIN(image_id)
@@ -48,6 +54,9 @@ export const getSavedPosts = (req, res) => {
             postal_code: row.postal_code,
             posted_date: row.posted_date,
             description: row.description,
+            owner_fname: row.fname,
+            owner_lname: row.lname,
+            organization_name: row.organization_name || null, //  (only for events)
             thumbnail: row.thumbnail_blob
                 ? row.thumbnail_blob.toString("base64")
                 : null,
@@ -83,10 +92,10 @@ export const savePost = (req, res) => {
         const sql = `
             INSERT INTO saved_posts (user_id, post_id)
             VALUES (?, ?)
-            ON DUPLICATE KEY UPDATE user_id = user_id
+                ON DUPLICATE KEY UPDATE user_id = user_id
         `;
 
-        db.query(sql, [userId, postId], (err, result) => {
+        db.query(sql, [userId, postId], (err) => {
             if (err) {
                 console.error("DB error (savePost):", err);
                 return res.status(500).json({ error: "Database error" });
