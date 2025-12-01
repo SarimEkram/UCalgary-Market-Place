@@ -16,9 +16,9 @@ export const contactSeller = (req, res) => {
         });
     }
 
-    // Step 1: Check if this contact already exists (avoid duplicates)
+    // Step 1: Check if this contact already exists and check cooldown period
     const checkExistingQuery = `
-        SELECT * FROM contacted_seller
+        SELECT contacted_at FROM contacted_seller
         WHERE user_id = ? AND post_id = ?
     `;
 
@@ -28,8 +28,23 @@ export const contactSeller = (req, res) => {
             return res.status(500).json({ error: "Database error" });
         }
 
-        // If already contacted, still proceed but don't insert duplicate
+        // Check if user has contacted before and if cooldown is still active
         const alreadyContacted = checkResults.length > 0;
+        const COOLDOWN_HOURS = 24;
+
+        if (alreadyContacted) {
+            const contactedAt = new Date(checkResults[0].contacted_at);
+            const now = new Date();
+            const hoursSinceContact = (now - contactedAt) / (1000 * 60 * 60); // Convert milliseconds to hours
+
+            if (hoursSinceContact < COOLDOWN_HOURS) {
+                const remainingHours = Math.ceil(COOLDOWN_HOURS - hoursSinceContact);
+                return res.status(429).json({
+                    error: `You can contact this seller again in ${remainingHours} ${remainingHours === 1 ? 'hour' : 'hours'}`,
+                    cooldownRemaining: remainingHours
+                });
+            }
+        }
 
         // Step 2: Get post details, seller/organizer info, and buyer info
         const getPostDetailsQuery = `
@@ -73,20 +88,20 @@ export const contactSeller = (req, res) => {
                 });
             }
 
-            // Step 3: Insert into contacted_seller table (if not already contacted)
-            if (!alreadyContacted) {
-                const insertQuery = `
-                    INSERT INTO contacted_seller (user_id, post_id)
-                    VALUES (?, ?)
-                `;
+            // Step 3: Insert or update contacted_seller table with current timestamp
+            // If not contacted before, insert new record; if cooldown passed, update timestamp
+            const upsertQuery = `
+                INSERT INTO contacted_seller (user_id, post_id, contacted_at)
+                VALUES (?, ?, NOW())
+                ON DUPLICATE KEY UPDATE contacted_at = NOW()
+            `;
 
-                db.query(insertQuery, [buyerId, postId], (insertErr) => {
-                    if (insertErr) {
-                        console.error("DB error (contactSeller - insert):", insertErr);
-                        // Continue to send email even if insert fails (non-critical)
-                    }
-                });
-            }
+            db.query(upsertQuery, [buyerId, postId], (insertErr) => {
+                if (insertErr) {
+                    console.error("DB error (contactSeller - upsert):", insertErr);
+                    // Continue to send email even if insert fails (non-critical)
+                }
+            });
 
             // Step 4: Send automated email to seller/organizer
             const isEvent = postData.post_type === 'event';
@@ -166,9 +181,7 @@ Marketplace Team
             // Return success response
             return res.status(201).json({
                 success: true,
-                message: alreadyContacted
-                    ? "Email sent successfully (already contacted previously)"
-                    : "Contact entry created and email sent successfully",
+                message: "Contact entry created and email sent successfully",
                 sellerEmail: postData.seller_email,
             });
         });
