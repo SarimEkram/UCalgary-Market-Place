@@ -11,6 +11,7 @@ import myPostsRoutes from "./routes/userSettingsRoute/myPostsRoute.js";
 import myEventsRoute from "./routes/userSettingsRoute/myEventsRoute.js";
 import reportRoutes from "./routes/reportRoutes/reportRoutes.js";
 
+// Admin routes:
 import findUserRoutes from "./routes/adminRoutes/findUserRoute.js";
 import deleteUserRoutes from "./routes/adminRoutes/deleteUserRoute.js";
 import deletePostRoutes from "./routes/adminRoutes/deletePostRoute.js";
