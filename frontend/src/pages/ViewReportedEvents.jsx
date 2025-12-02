@@ -126,7 +126,7 @@ export default function ViewReportedEvents() {
             <CustomDivider></CustomDivider>
           </Box>
           <Box
-            sx={{
+            sx={(theme)=>({
               display: "grid",
               gridAutoRows: "0.6fr",
               columnGap: 5,
@@ -141,7 +141,7 @@ export default function ViewReportedEvents() {
               [theme.breakpoints.up("1000")]: {
                 gridTemplateColumns: "repeat(2, minmax(0, 0.6fr))",
               },
-            }}
+            })}
           >
             {items.map((post, index) => {
               return (

@@ -1,22 +1,18 @@
-import CloseIcon from "@mui/icons-material/Close";
 import {
-  Alert,
   Box,
   Card,
-  CardActions,
   CardContent,
   CardMedia,
-  Collapse,
   Icon,
-  IconButton,
   Stack,
-  Typography,
+  Typography
 } from "@mui/material";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import Reported from "../assets/ReportedSVG";
+import ConfirmationPopup from "./ConfirmationPopup";
 import CustomButton from "./CustomButton";
 
 export default function PostCard({
@@ -30,38 +26,32 @@ export default function PostCard({
   const navigate = useNavigate();
   dayjs.extend(relativeTime);
   const [date, setDate] = useState(dayjs(reportDate).fromNow());
-  const [submitSatus, setSubmitSatus] = useState({
-    success: null,
-    msg: "No message. ",
+
+  const [userID, setUserID] = useState(()=>{
+      return JSON.parse(localStorage.getItem("user")).id;
   });
-  const onDelete = async () => {
-    // TODO: BTASK
-    // add delete post api
-    // body of request
-    // {id: id}
-    try {
-      const response = await fetch("http://localhost:8080/api/[]", {
-        method: "POST",
+   
+  const confirmedDelete = async () => {
+      const response = await fetch(`http://localhost:8080/api/admin/posts/${id}`, {
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: id }),
+        body :  {"adminId": userID}
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        navigate(`/reports/${type}`);
-      } else {
-        //handle failed delete post request
-        setSubmitSatus({ success: false, msg: data.error });
-        setOpen(true);
-      }
-    } catch (error) {
-      alert("An error occurred. Please try again later.");
-    }
+      return response;
   };
 
+  const onDelete = ()=>{
+    setOpen(true);
+  }
+
+  const callBackDelete = (ok)=>{
+     if (ok) {
+        navigate(`/reports/${type}`);
+      }
+  }
+  
   const onView = () => {
     navigate(`/reports/${type}/${id}`);
   };
@@ -87,30 +77,12 @@ export default function PostCard({
         minWidth: "min-content",
       })}
     >
-      <Collapse
-        in={open}
-        sx={{ position: "absolute", zIndex: 1, bottom: 5, width: "90%" }}
-      >
-        <Alert
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setOpen(false);
-              }}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-          sx={{ mb: 2 }}
-        >
-          {submitSatus.msg}
-        </Alert>
-      </Collapse>
-
+     <ConfirmationPopup  warningMessage={
+      <div>
+      <div>Do You Want To Proceed With Deleting The Post Named:</div>
+      <div>{primaryText} ?</div>
+      </div>
+      } open={open} handleClose={()=>{setOpen(false)}} executeFunction={confirmedDelete} callBack={callBackDelete}></ConfirmationPopup>
       <Stack spacing={5} direction="row" sx={{ height: "100%" }}>
         {/* IMAGE */}
         <Box sx={{ flexGrow: 1 }} position="relative">
