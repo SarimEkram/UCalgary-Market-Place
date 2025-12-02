@@ -32,20 +32,20 @@ export default function MySettings() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: userData.email, 
+      email: userData.email,
       fname: userData.fname,
       lname: userData.lname,
-    
     },
   });
 
-  const navigate =  useNavigate();
+  const navigate = useNavigate();
 
   const [submitStatus, setSubmitStatus] = useState({
     success: null,
     msg: "No message.",
   });
 
+  //handle updating user info 
   const onSubmit = async (formData) => {
     delete formData["password"];
 
@@ -59,28 +59,31 @@ export default function MySettings() {
     const data = await response.json();
 
     if (response.ok) {
-       
-        const newData = {...userData};
-        newData.fname = formData.fname; 
-        newData.lname = formData.lname;
-        //reset local storage info
-        localStorage.setItem("user", JSON.stringify(newData));
-        //reset form 
-        reset({
-            email: newData.email, 
-            fname: newData.fname,
-            lname: newData.lname,
-            password: "",
-            newPassword: "",
-        });
-         //re-fresh page with new details 
-        navigate("/user"); 
+      const newData = { ...userData };
+      newData.fname = formData.fname;
+      newData.lname = formData.lname;
+      //reset local storage info
+      localStorage.setItem("user", JSON.stringify(newData));
+      //reset form
+      reset({
+        email: newData.email,
+        fname: newData.fname,
+        lname: newData.lname,
+        password: "",
+        newPassword: "",
+      });
+      //re-fresh page with new details
+      navigate("/user");
+    } else {
+      //set status of
+      setSubmitStatus({ success: false, msg: data.error });
+    }
+  };
 
-      } else{
-        //set status of 
-        setSubmitStatus({success: false, msg: data.error})
-      }
-
+  //handle logging out 
+  const onLogOut = ()=>{
+    navigate("/");
+    localStorage.removeItem("user");
   };
 
   //component that renders the password rules
@@ -124,6 +127,7 @@ export default function MySettings() {
     return passwords[0] === passwords[1] ? true : "Passwords do not match.";
   };
 
+
   //a styled divider for easy re-use
   const CustomDivider = ({ props, style, variant, thin, marginThin }) => (
     <Box>
@@ -150,9 +154,21 @@ export default function MySettings() {
       <Box sx={{ flex: "1", m: 0 }}>
         <Header></Header>
         <Container maxWidth={"sm"} sx={styles.main}>
-          <Stack direction={"row"} spacing={1}>
-            <UserMenu></UserMenu>
-            <Typography variant="h4">My Settings</Typography>
+          <Stack
+            direction="row"
+            sx={{ justifyContent: "space-between", alignItems: "center" }}
+          >
+            <Stack direction={"row"} spacing={1}>
+              <UserMenu></UserMenu>
+              <Typography variant="h4">My Settings</Typography>
+            </Stack>
+            <CustomButton
+              onClick={onLogOut}
+              color="black"
+              style={{ flexGrow: 0 }}
+            >
+              Logout
+            </CustomButton>
           </Stack>
           <CustomDivider thin></CustomDivider>
           <Box sx={styles.icon}>
@@ -194,7 +210,7 @@ export default function MySettings() {
                   errors["password"] ? errors["password"].message : null
                 }
                 {...register("password", {
-                 validate : validateNewPassword
+                  validate: validateNewPassword,
                 })}
               ></InputField>
               <InputField
@@ -214,9 +230,7 @@ export default function MySettings() {
                 label={"First Name"}
                 autoComplete={"name"}
                 inputProps={{ type: "text" }}
-                errorMsg={
-                  errors["fname"] ? errors["fname"].message : null
-                }
+                errorMsg={errors["fname"] ? errors["fname"].message : null}
                 {...register("fname", {
                   required: "First name is required.",
                   pattern: {
@@ -230,9 +244,7 @@ export default function MySettings() {
                 label={"Last Name"}
                 autoComplete={"family-name"}
                 inputProps={{ type: "text" }}
-                errorMsg={
-                  errors["lname"] ? errors["lname"].message : null
-                }
+                errorMsg={errors["lname"] ? errors["lname"].message : null}
                 {...register("lname", {
                   required: "Last name is required.",
                   pattern: {

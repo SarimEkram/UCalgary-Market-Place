@@ -22,7 +22,7 @@ export default function MySettings() {
     JSON.parse(localStorage.getItem("user"))
   );
 
-  //router hook to navigate between pages 
+  //router hook to navigate between pages
   const navigate = useNavigate();
 
   const {
@@ -44,8 +44,9 @@ export default function MySettings() {
     msg: "No message.",
   });
 
-  
-    const onSubmit = async (formData) => {
+  //handle updating user info
+
+  const onSubmit = async (formData) => {
     delete formData["password"];
 
     const response = await fetch(`http://localhost:8080/api/settings/update`, {
@@ -58,29 +59,32 @@ export default function MySettings() {
     const data = await response.json();
 
     if (response.ok) {
-        const newData = {...userData};
-        newData.fname = formData.fname; 
-        newData.lname = formData.lname;
-        //reset local storage info
-        localStorage.setItem("user", JSON.stringify(newData));
-        //reset form 
-        reset({
-            email: newData.email, 
-            fname: newData.fname,
-            lname: newData.lname,
-            password: "",
-            newPassword: "",
-        });
-         //re-fresh page with new details 
-        navigate("/admin/settings"); 
-
-      } else{
-        //set status of 
-        setSubmitStatus({success: false, msg: data.error})
-      }
-
+      const newData = { ...userData };
+      newData.fname = formData.fname;
+      newData.lname = formData.lname;
+      //reset local storage info
+      localStorage.setItem("user", JSON.stringify(newData));
+      //reset form
+      reset({
+        email: newData.email,
+        fname: newData.fname,
+        lname: newData.lname,
+        password: "",
+        newPassword: "",
+      });
+      //re-fresh page with new details
+      navigate("/admin/settings");
+    } else {
+      //set status of
+      setSubmitStatus({ success: false, msg: data.error });
+    }
   };
 
+  //handle logging out
+  const onLogOut = () => {
+    navigate("/");
+    localStorage.removeItem("user");
+  };
 
   //component that renders the password rules
   const PassHelpText = () => {
@@ -101,7 +105,7 @@ export default function MySettings() {
     );
   };
 
-  //makes sure that new password meets password requirements 
+  //makes sure that new password meets password requirements
   const validateNewPassword = () => {
     const passwords = getValues(["password"]);
 
@@ -111,13 +115,13 @@ export default function MySettings() {
       return "Miniumum length of 8 characters.";
     } else if (passwords[0].length > 20) {
       return "Maxiumum length of 20 characters.";
-    } else if ( !passwords[0].match(/^(?=.*\d)(?=.*[!@#$%^&*(),.?:{}|<>]).*$/) ) {
+    } else if (!passwords[0].match(/^(?=.*\d)(?=.*[!@#$%^&*(),.?:{}|<>]).*$/)) {
       return "Must have at least one number and one special character (!@#$%^&*(),.?:{}|<></>).";
     }
     return true;
   };
 
-  //make sure that password fields match 
+  //make sure that password fields match
   const validateConfirmPassword = () => {
     const passwords = getValues(["newPassword", "password"]);
     return passwords[0] === passwords[1] ? true : "Passwords do not match.";
@@ -161,7 +165,19 @@ export default function MySettings() {
           }}
         >
           <Box>
-            <Typography variant="h4">Settings</Typography>
+            <Stack
+              direction="row"
+              sx={{ justifyContent: "space-between", alignItems: "center" }}
+            >
+              <Typography variant="h4">Settings</Typography>
+              <CustomButton
+                onClick={onLogOut}
+                color="black"
+                style={{ flexGrow: 0 }}
+              >
+                Logout
+              </CustomButton>
+            </Stack>
             <CustomDivider thin></CustomDivider>
           </Box>
           <Container maxWidth={"sm"} sx={styles.main}>
@@ -224,9 +240,7 @@ export default function MySettings() {
                   label={"First Name"}
                   autoComplete={"name"}
                   inputProps={{ type: "text" }}
-                  errorMsg={
-                    errors["fname"] ? errors["fname"].message : null
-                  }
+                  errorMsg={errors["fname"] ? errors["fname"].message : null}
                   {...register("fname", {
                     required: "First name is required.",
                     pattern: {
@@ -240,9 +254,7 @@ export default function MySettings() {
                   label={"Last Name"}
                   inputProps={{ type: "text" }}
                   autoComplete={"family-name"}
-                  errorMsg={
-                    errors["lname"] ? errors["lname"].message : null
-                  }
+                  errorMsg={errors["lname"] ? errors["lname"].message : null}
                   {...register("lname", {
                     required: "Last name is required.",
                     pattern: {
