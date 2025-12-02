@@ -61,14 +61,16 @@ export default function PostCard({
 
   return (
     <Card
+      class="new-card"
       variant="elevation"
       elevation={1}
       sx={(theme) => ({
-        p: 4,
         position: "relative",
+         p: 4,
         py: 2,
         overflow: "hidden",
         fontWeight: 0,
+        backgroundColore: "red",
         boxShadow: "0px 1px 3px rgba(0,0,0,0.2)",
         display: "flex",
         flexDirection: "column",
@@ -90,6 +92,7 @@ export default function PostCard({
             <CardMedia
               sx={(theme) => ({
                 width: "100%",
+                maxWidth: "70px",
                 height: "90%",
                 objectFit: "cover",
                 minHeight: "155px",
@@ -108,11 +111,16 @@ export default function PostCard({
                 minHeight: "155px",
                 minWidth: "155px",
                 borderRadius: theme.shape.borderRadius,
+                backgroundColor: "#b3b3b3ff",
+                display:"flex", 
+                justifyContent: "center",
+                alignItems: "center"
+              
               })}
             >
               <Typography
                 variant="h3"
-                sx={{ color: "#b8b4b4ff", alignSelf: "center" }}
+                sx={{ color: "#252525ff", verticalAlign: "bottom" }}
               >
                 No Image
               </Typography>

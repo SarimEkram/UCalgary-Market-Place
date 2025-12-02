@@ -32,6 +32,7 @@ export default function UserProfile() {
 
       let eventPosts = [...data.eventPosts];
       
+      
       eventPosts = eventPosts.map((item) => {
         if (item.thumbnail != null) {
           const blob = item.thumbnail.data.replace(/\s/g, "");
@@ -122,13 +123,13 @@ export default function UserProfile() {
             sx={(theme) => ({
               display: "grid",
               [theme.breakpoints.down("sm")]: {
-                gridTemplateColumns: "repeat(1, minmax(0, 1fr))",
+                gridTemplateColumns: "repeat(1, minmax(min-content, 1fr))",
               },
               [theme.breakpoints.between("sm", "1000")]: {
-                gridTemplateColumns: "repeat(1, 0.6fr)",
+                gridTemplateColumns: "repeat(1, minmax(min-content, 0.6fr))",
               },
               [theme.breakpoints.up("1000")]: {
-                gridTemplateColumns: "repeat(2, minmax(0, 0.6fr))",
+                gridTemplateColumns: "repeat(2, minmax(min-content, 0.6fr))",
               },
               columnGap: 5,
               rowGap: 2,
@@ -138,6 +139,7 @@ export default function UserProfile() {
             <Stack direction={"column"} spacing={2} sx={{ my: 5 }}>
               <Typography variant="h4">Event Posts</Typography>
               <Box
+              id="event-container"
                 sx={{
                   display: "grid",
                   gridAutoFlow: "row",
