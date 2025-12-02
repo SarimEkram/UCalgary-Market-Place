@@ -26,7 +26,7 @@ export default function MyPosts() {
            headers: {
              "Content-Type": "application/json",
            },
-           body : JSON.stringify({userId : 1}),
+           body : JSON.stringify({userId : userID}),
          }
        );
 
