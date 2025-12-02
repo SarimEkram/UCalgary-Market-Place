@@ -1,30 +1,65 @@
 import db from "../../config/db.js";
 
 export const searchUsers = (req, res) => {
-    const { q } = req.query;
+    let { q, limit, offset } = req.query;
 
-    if (!q || q.trim() === "") {
-        return res.status(400).json({ error: "Search query is required" });
+    // Default: 6 users at a time
+    // 6 cards at a time, when we scroll down we get 6 more users
+    const pageSize = 6;
+
+    // Parse limit/offset safely
+    limit = parseInt(limit, 10);
+    offset = parseInt(offset, 10);
+
+    if (Number.isNaN(limit) || limit <= 0 || limit > pageSize) {
+        limit = pageSize;
     }
 
-    const like = `%${q.trim()}%`;
+    if (Number.isNaN(offset) || offset < 0) {
+        offset = 0;
+    }
 
-    const sql = `
-        SELECT user_id, fname, lname, email
-        FROM users
-        WHERE fname LIKE ? OR lname LIKE ? OR email LIKE ?
-        ORDER BY fname, lname
+    // If q is provided and not empty → do a filtered search
+    if (q && q.trim() !== "") {
+        const like = `%${q.trim()}%`;
+
+        const sql = `
+      SELECT user_id, fname, lname, email
+      FROM users
+      WHERE fname LIKE ? OR lname LIKE ? OR email LIKE ?
+      ORDER BY fname, lname
+      LIMIT ? OFFSET ?
     `;
 
-    db.query(sql, [like, like, like], (err, rows) => {
-        if (err) {
+        db.query(sql, [like, like, like, limit, offset], (err, rows) => {
+            if (err) {
+                console.error("DB error (searchUsers with query):", err);
+                return res.status(500).json({ error: "Failed to search users" });
+            }
 
-            return res.status(500).json({ error: "Failed to search users" });
-        }
+            return res.status(200).json({ users: rows });
+        });
 
-        return res.status(200).json({ users: rows });
-    });
+    } else {
+        // No search term → just return users in order (for initial page / scrolling)
+        const sql = `
+      SELECT user_id, fname, lname, email
+      FROM users
+      ORDER BY fname, lname
+      LIMIT ? OFFSET ?
+    `;
+
+        db.query(sql, [limit, offset], (err, rows) => {
+            if (err) {
+                console.error("DB error (searchUsers default list):", err);
+                return res.status(500).json({ error: "Failed to load users" });
+            }
+
+            return res.status(200).json({ users: rows });
+        });
+    }
 };
+
 
 export const getUserProfileForAdmin = (req, res) => {
     const { id } = req.params;
