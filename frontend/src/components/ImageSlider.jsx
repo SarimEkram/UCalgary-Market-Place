@@ -90,7 +90,7 @@ export default function ImageSlider({ images, setDeletedImages, showDelete = fal
             sx={{
               width: "100%", //full width of image
               height: { xs: 220, sm: 260, md: 320 }, //responsive height
-              objectFit: "cover", //maintains aspect ratio
+              objectFit: "contain", //maintains aspect ratio
             }}
             component="img"
             image={internalImages[currStep].src} //Source of image
