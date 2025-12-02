@@ -10,7 +10,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import CustomButton from "./CustomButton";
 import InputField from "./InputField";
-import CheckMark from "../assets/CheckMarkSVG";
 
 export default function ResetPassword({ open, handleClose }) {
   const [page, setPage] = useState(1);
@@ -49,9 +48,6 @@ export default function ResetPassword({ open, handleClose }) {
             code={code}
           ></ThirdPage>
         )}
-        {page == 4 && (
-          <FourthPage handleClose={closeDialog} setPage={setPage}></FourthPage>
-        )}
       </Box>
     </Dialog>
   );
@@ -61,6 +57,7 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
 
@@ -88,6 +85,7 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
       if (response.ok) {
         setEmail(formData["email"]);
         setPage(2);
+        reset();
       } else {
         // Handle case where email failed to send
         const status = { ...submitStatus };
@@ -162,6 +160,7 @@ const SecondPage = ({ setPage, handleClose, setCode }) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
 
@@ -189,6 +188,7 @@ const SecondPage = ({ setPage, handleClose, setCode }) => {
       if (response.ok) {
         setCode(formData["code"]);
         setPage(3);
+        reset();
       } else {
         // Handle failures
         const status = { ...submitStatus };
@@ -269,9 +269,9 @@ const ThirdPage = ({ setPage, handleClose, email, code }) => {
     register,
     handleSubmit,
     getValues,
+    reset, 
     formState: { errors },
   } = useForm();
-
  
 
   const [submitStatus, setSubmitStatus] = useState({
@@ -299,7 +299,9 @@ const ThirdPage = ({ setPage, handleClose, email, code }) => {
       const data = await response.json();
       // handle successful case
       if (response.ok) {
-         setPage(4);
+         handleClose();
+         setPage(1); 
+         reset();
       } else {
         // Handle failures
         const status = { ...submitStatus };
@@ -414,44 +416,3 @@ const ThirdPage = ({ setPage, handleClose, email, code }) => {
   );
 };
 
-const FourthPage = ({ handleClose }) => {
-  return (
-    <>
-      <Stack spacing={2}>
-        <Stack sx={{ justifyContent: "center", alignItems: "center" }}>
-          <CheckMark></CheckMark>
-        </Stack>
-        <DialogTitle
-          sx={(theme) => ({
-            padding: 0,
-            color: theme.palette.success.main,
-            width: "520px",
-            minWidth: "fit-content",
-            textAlign: " center",
-          })}
-        >
-          Password change was succesful.
-        </DialogTitle>
-        <Divider
-          variant="fullWidth"
-          sx={(theme) => ({
-            boxSizing: "border-box",
-            borderBottom: theme.palette.dividerWidth,
-            borderColor: theme.palette.divider,
-            marginTop: 3,
-            marginBottom: 3,
-          })}
-        ></Divider>
-        <CustomButton
-          sx={() => {
-            width: "100%";
-          }}
-          color="black"
-          onClick={handleClose}
-        >
-          Exit
-        </CustomButton>
-      </Stack>
-    </>
-  );
-};
