@@ -1,7 +1,6 @@
-// src/controller/userSettingsController/savedPostController.js
 import db from "../../config/db.js";
 
-// 1) Get all saved posts for a user, with first image as thumbnail
+
 export const getSavedPosts = (req, res) => {
     const { userId } = req.body;
 
@@ -19,10 +18,17 @@ export const getSavedPosts = (req, res) => {
             p.postal_code,
             p.posted_date,
             p.description,
-            i.image_text_data AS thumbnail_blob
+            i.image_text_data AS thumbnail_blob,
+            u.fname,
+            u.lname,
+            ep.organization_name
         FROM saved_posts sp
                  JOIN posts p
                       ON sp.post_id = p.post_id
+                 JOIN users u
+                      ON p.user_id = u.user_id
+                 LEFT JOIN event_posts ep
+                           ON ep.event_id = p.post_id
                  LEFT JOIN images i
                            ON i.image_id = (
                                SELECT MIN(image_id)
@@ -48,6 +54,9 @@ export const getSavedPosts = (req, res) => {
             postal_code: row.postal_code,
             posted_date: row.posted_date,
             description: row.description,
+            owner_fname: row.fname,
+            owner_lname: row.lname,
+            organization_name: row.organization_name || null, //  (only for events)
             thumbnail: row.thumbnail_blob
                 ? row.thumbnail_blob.toString("base64")
                 : null,
@@ -57,7 +66,50 @@ export const getSavedPosts = (req, res) => {
     });
 };
 
-// 2) Unsave (remove) a post for this user
+// 2) Save (add) a post for this user
+export const savePost = (req, res) => {
+    const { userId, postId } = req.body;
+
+    if (!userId || !postId) {
+        return res
+            .status(400)
+            .json({ error: "userId and postId are required" });
+    }
+
+    // First, check if the post exists
+    const checkPostQuery = "SELECT post_id FROM posts WHERE post_id = ?";
+    db.query(checkPostQuery, [postId], (err, postResults) => {
+        if (err) {
+            console.error("DB error (checkPost):", err);
+            return res.status(500).json({ error: "Database error" });
+        }
+
+        if (postResults.length === 0) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        // Insert into saved_posts (ignore duplicate key errors)
+        const sql = `
+            INSERT INTO saved_posts (user_id, post_id)
+            VALUES (?, ?)
+                ON DUPLICATE KEY UPDATE user_id = user_id
+        `;
+
+        db.query(sql, [userId, postId], (err) => {
+            if (err) {
+                console.error("DB error (savePost):", err);
+                return res.status(500).json({ error: "Database error" });
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: "Post saved successfully",
+            });
+        });
+    });
+};
+
+// 3) Unsave (remove) a post for this user
 export const unsavePost = (req, res) => {
     const { userId, postId } = req.body;
 

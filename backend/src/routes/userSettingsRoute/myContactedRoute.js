@@ -3,7 +3,7 @@ import { getContactedPosts } from "../../controller/userSettingsController/myCon
 
 const router = Router();
 
-// POST /api/getContactedPosts
-router.post("/", getContactedPosts);
+// POST /api/contacted/list
+router.post("/list", getContactedPosts);
 
 export default router;

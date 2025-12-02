@@ -1,0 +1,189 @@
+import db from "../../config/db.js";
+import transporter from "../../config/mail.js";
+
+/**
+ * POST /api/contactSeller
+ * Body: { buyerId, postId }
+ * Inserts into contacted_seller table and sends automated email to seller/organizer
+ */
+export const contactSeller = (req, res) => {
+    const { buyerId, postId } = req.body;
+
+    // Validation
+    if (!buyerId || !postId) {
+        return res.status(400).json({
+            error: "buyerId and postId are required"
+        });
+    }
+
+    // Step 1: Check if this contact already exists and check cooldown period
+    const checkExistingQuery = `
+        SELECT contacted_at FROM contacted_seller
+        WHERE user_id = ? AND post_id = ?
+    `;
+
+    db.query(checkExistingQuery, [buyerId, postId], (checkErr, checkResults) => {
+        if (checkErr) {
+            console.error("DB error (contactSeller - check existing):", checkErr);
+            return res.status(500).json({ error: "Database error" });
+        }
+
+        // Check if user has contacted before and if cooldown is still active
+        const alreadyContacted = checkResults.length > 0;
+        const COOLDOWN_HOURS = 24;
+
+        if (alreadyContacted) {
+            const contactedAt = new Date(checkResults[0].contacted_at);
+            const now = new Date();
+            const hoursSinceContact = (now - contactedAt) / (1000 * 60 * 60); // Convert milliseconds to hours
+
+            if (hoursSinceContact < COOLDOWN_HOURS) {
+                const remainingHours = Math.ceil(COOLDOWN_HOURS - hoursSinceContact);
+                return res.status(429).json({
+                    error: `You can contact this seller again in ${remainingHours} ${remainingHours === 1 ? 'hour' : 'hours'}`,
+                    cooldownRemaining: remainingHours
+                });
+            }
+        }
+
+        // Step 2: Get post details, seller/organizer info, and buyer info
+        const getPostDetailsQuery = `
+            SELECT 
+                p.post_id,
+                p.name AS post_title,
+                p.post_type,
+                p.price,
+                p.description,
+                u.user_id AS seller_id,
+                u.fname AS seller_fname,
+                u.lname AS seller_lname,
+                u.email AS seller_email,
+                e.organization_name,
+                buyer.fname AS buyer_fname,
+                buyer.lname AS buyer_lname,
+                buyer.email AS buyer_email
+            FROM posts p
+            JOIN users u ON p.user_id = u.user_id
+            JOIN users buyer ON buyer.user_id = ?
+            LEFT JOIN event_posts e ON e.event_id = p.post_id
+            WHERE p.post_id = ?
+        `;
+
+        db.query(getPostDetailsQuery, [buyerId, postId], (err, rows) => {
+            if (err) {
+                console.error("DB error (contactSeller - get post details):", err);
+                return res.status(500).json({ error: "Failed to fetch post details" });
+            }
+
+            if (rows.length === 0) {
+                return res.status(404).json({ error: "Post not found" });
+            }
+
+            const postData = rows[0];
+
+            // Prevent users from contacting themselves
+            if (postData.seller_id === parseInt(buyerId)) {
+                return res.status(400).json({
+                    error: "You cannot contact yourself about your own post"
+                });
+            }
+
+            // Step 3: Insert or update contacted_seller table with current timestamp
+            // If not contacted before, insert new record; if cooldown passed, update timestamp
+            const upsertQuery = `
+                INSERT INTO contacted_seller (user_id, post_id, contacted_at)
+                VALUES (?, ?, NOW())
+                ON DUPLICATE KEY UPDATE contacted_at = NOW()
+            `;
+
+            db.query(upsertQuery, [buyerId, postId], (insertErr) => {
+                if (insertErr) {
+                    console.error("DB error (contactSeller - upsert):", insertErr);
+                    // Continue to send email even if insert fails (non-critical)
+                }
+            });
+
+            // Step 4: Send automated email to seller/organizer
+            const isEvent = postData.post_type === 'event';
+            const sellerName = `${postData.seller_fname} ${postData.seller_lname}`;
+            const buyerName = `${postData.buyer_fname} ${postData.buyer_lname}`;
+            const itemType = isEvent ? 'event' : 'item';
+
+            const sellerEmailSubject = isEvent
+                ? `Someone is Interested in Your Event: ${postData.post_title}`
+                : `Someone is Interested in Your Item: ${postData.post_title}`;
+
+            const sellerEmailText = `
+Hello ${sellerName},
+
+Great news! ${buyerName} (${postData.buyer_email}) is interested in your ${itemType} "${postData.post_title}".
+
+Post Details:
+${isEvent && postData.organization_name ? `Organization: ${postData.organization_name}\n` : ''}${postData.price ? `Price: $${postData.price}\n` : ''}${postData.description ? `Description: ${postData.description}\n` : ''}
+You can contact the buyer directly at: ${postData.buyer_email}
+
+Thank you for using our marketplace!
+
+Best regards,
+Marketplace Team
+            `;
+
+            const sellerMailOptions = {
+                from: process.env.EMAIL_USER,
+                to: postData.seller_email,
+                subject: sellerEmailSubject,
+                text: sellerEmailText,
+            };
+
+            // Step 5: Send email to seller (non-blocking - don't fail if email fails)
+            transporter.sendMail(sellerMailOptions, (mailErr, info) => {
+                if (mailErr) {
+                    console.error("Error sending email to seller:", mailErr);
+                    // Still return success since the table insert succeeded
+                } else {
+                    console.log("Contact email sent to seller:", info.response);
+                }
+            });
+
+            // Step 6: Send confirmation email to buyer (optional)
+            const buyerEmailSubject = `Confirmation: You Contacted About ${postData.post_title}`;
+            const buyerEmailText = `
+Hello ${buyerName},
+
+This is a confirmation that you have expressed interest in ${postData.post_title}.
+
+${isEvent && postData.organization_name ? `Organization: ${postData.organization_name}\n` : ''}${postData.price ? `Price: $${postData.price}\n` : ''}
+The seller/organizer (${sellerName}) has been notified and can be reached at: ${postData.seller_email}
+
+You can view all your contacted posts in your account settings.
+
+Thank you for using our marketplace!
+
+Best regards,
+Marketplace Team
+            `;
+
+            const buyerMailOptions = {
+                from: process.env.EMAIL_USER,
+                to: postData.buyer_email,
+                subject: buyerEmailSubject,
+                text: buyerEmailText,
+            };
+
+            transporter.sendMail(buyerMailOptions, (buyerMailErr, buyerInfo) => {
+                if (buyerMailErr) {
+                    console.error("Error sending confirmation email to buyer:", buyerMailErr);
+                } else {
+                    console.log("Confirmation email sent to buyer:", buyerInfo.response);
+                }
+            });
+
+            // Return success response
+            return res.status(201).json({
+                success: true,
+                message: "Contact entry created and email sent successfully",
+                sellerEmail: postData.seller_email,
+            });
+        });
+    });
+};

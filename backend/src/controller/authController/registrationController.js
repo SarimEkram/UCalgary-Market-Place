@@ -1,23 +1,9 @@
 import db from "../../config/db.js";
 import bcrypt from "bcryptjs";
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
+import transporter from "../../config/mail.js";
 
-dotenv.config();
-
-// Allowed email domain (e.g., @ucalgary.ca)
 const ALLOWED_DOMAIN = "@ucalgary.ca";
 
-/**
- * Nodemailer transporter using Gmail + app password
- */
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-});
 
 /**
  * Generate a random 8-character uppercase code
