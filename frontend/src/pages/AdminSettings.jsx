@@ -14,6 +14,7 @@ import Header from "../components/Header";
 import InputField from "../components/InputField";
 import DesktopNav from "../components/DesktopNav";
 import MobileNav from "../components/MobileNav";
+import { useNavigate } from "react-router";
 
 export default function MySettings() {
   //get user data from local storage
@@ -21,8 +22,12 @@ export default function MySettings() {
     JSON.parse(localStorage.getItem("user"))
   );
 
+  //router hook to navigate between pages 
+  const navigate = useNavigate();
+
   const {
     register,
+    reset,
     handleSubmit,
     getValues,
     formState: { errors },
@@ -39,7 +44,8 @@ export default function MySettings() {
     msg: "No message.",
   });
 
-  const onSubmit = async (formData) => {
+  
+    const onSubmit = async (formData) => {
     delete formData["password"];
 
     const response = await fetch(`http://localhost:8080/api/settings/update`, {
@@ -52,14 +58,29 @@ export default function MySettings() {
     const data = await response.json();
 
     if (response.ok) {
-        //re-fresh page 
-        navigate("admin/settings");
+        const newData = {...userData};
+        newData.fname = formData.fname; 
+        newData.lname = formData.lname;
+        //reset local storage info
+        localStorage.setItem("user", JSON.stringify(newData));
+        //reset form 
+        reset({
+            email: newData.email, 
+            fname: newData.fname,
+            lname: newData.lname,
+            password: "",
+            newPassword: "",
+        });
+         //re-fresh page with new details 
+        navigate("/admin/settings"); 
+
       } else{
-        //set status of msg on failure
+        //set status of 
         setSubmitStatus({success: false, msg: data.error})
-    }
+      }
 
   };
+
 
   //component that renders the password rules
   const PassHelpText = () => {

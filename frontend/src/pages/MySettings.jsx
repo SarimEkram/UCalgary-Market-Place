@@ -26,6 +26,7 @@ export default function MySettings() {
 
   const {
     register,
+    reset,
     handleSubmit,
     getValues,
     formState: { errors },
@@ -58,11 +59,21 @@ export default function MySettings() {
     const data = await response.json();
 
     if (response.ok) {
-        //re-fresh page with new details 
+       
         const newData = {...userData};
         newData.fname = formData.fname; 
         newData.lname = formData.lname;
+        //reset local storage info
         localStorage.setItem("user", JSON.stringify(newData));
+        //reset form 
+        reset({
+            email: newData.email, 
+            fname: newData.fname,
+            lname: newData.lname,
+            password: "",
+            newPassword: "",
+        });
+         //re-fresh page with new details 
         navigate("/user"); 
 
       } else{
