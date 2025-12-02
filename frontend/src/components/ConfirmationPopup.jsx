@@ -8,6 +8,12 @@ import {
 import { useState } from "react";
 import CustomButton from "./CustomButton";
 
+// Callback - is passed the result of response.ok,  
+// handleClose - closes popup
+// open - open popup ( use a useState())
+// warningMessage  - the message you want to show can be text or component 
+// executefunction  - a function that executes a fetch request, and returns the response 
+// An example is in componnents/ReportedPostCard
 export default function ConfirmationPopup({ callBack, open, handleClose, warningMessage, executeFunction }) {
   return (
     <Dialog
