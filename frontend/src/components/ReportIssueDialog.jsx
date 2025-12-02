@@ -1,7 +1,7 @@
+                                                                          
 import { useState } from "react";
 import {
   Box,
-  Button,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -14,7 +14,12 @@ import {
 } from "@mui/material";
 import CustomButton from "../components/CustomButton";
 
-export default function ReportIssueDialog({ open, onClose }) {
+export default function ReportIssueDialog({
+  open,
+  onClose,
+  onSubmit,       
+  loading = false 
+}) {
   const [reportType, setReportType] = useState("user");
   const [reason, setReason] = useState("inappropriate");
 
@@ -31,7 +36,15 @@ export default function ReportIssueDialog({ open, onClose }) {
   };
 
   const handleSubmit = () => {
-    onClose();
+    if (!onSubmit) {
+      onClose();
+      return;
+    }
+
+    onSubmit({
+      reportType, 
+      reason,    
+    });
   };
 
   return (
@@ -50,9 +63,9 @@ export default function ReportIssueDialog({ open, onClose }) {
       <DialogTitle
         sx={{
           fontSize: 15,
-          lineHeight: 1.50,
+          lineHeight: 1.5,
           pb: 1,
-          mb: 1
+          mb: 1,
         }}
       >
         Thank you for reporting this claim. We will do our utmost to resolve the
@@ -130,7 +143,7 @@ export default function ReportIssueDialog({ open, onClose }) {
             },
 
             "& .MuiToggleButton-root.Mui-selected": {
-              backgroundColor: "#FFFFFF",
+              backgroundColor: "#a1a1a1ff",
               color: "rgba(0,5,9,0.89)",
               fontWeight: 600,
               boxShadow: "none",
@@ -159,6 +172,7 @@ export default function ReportIssueDialog({ open, onClose }) {
           <CustomButton
             color="red"
             onClick={onClose}
+            disabled={loading}
             style={{
               "&&": {
                 width: 200,
@@ -177,6 +191,7 @@ export default function ReportIssueDialog({ open, onClose }) {
           <CustomButton
             color="red"
             onClick={handleSubmit}
+            disabled={loading}
             style={{
               "&&": {
                 width: 200,
@@ -190,10 +205,10 @@ export default function ReportIssueDialog({ open, onClose }) {
               },
             }}
           >
-            Report
+            {loading ? "Reporting..." : "Report"}
           </CustomButton>
         </Box>
       </DialogContent>
     </Dialog>
   );
-}                                                                               
+}
