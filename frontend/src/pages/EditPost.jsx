@@ -101,38 +101,50 @@ export default function EditPost() {
     };
   }, []);
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     data["condition"] = condition;
     data["deleted_images"] = deletedImages;
     data["new_images"] = Array.from(newImages);
-    console.log(
-      "send edit post request to the server... using this data:",
-      data
-    );
-    /**
-     * 
-     TODO: BTASK
-     ------
-     Updated an edit post.    
 
-     Example Data
-     --------
-    {
-    "title": "eni",
-    "description": "rni",
-    "location": "t3a2m1",
-    "price": 13,
-    "condition": "new",
-    "deleted_images": [401, 402...etc], list of image ids 
-    "new_images": [Fileobject, Fileobject]
-}
-}
-     */
+    const formData = new FormData();
+    formData.append("userId", userData.user_id); // from localStorage
+    formData.append("postId", id); // from useParams
 
-    const success = true;
-    if (success) {
-      //navigate to home page
-    } else {
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("location", data.location);
+    formData.append("price", data.price);
+    formData.append("condition", data.condition);
+
+    // JSON string for the backend
+    formData.append("deleted_images", JSON.stringify(data.deleted_images || []));
+
+    // attach new images
+    data.new_images.forEach((file) => {
+      formData.append("new_images", file);
+    });
+
+    try {
+      const resp = await fetch(
+        "http://localhost:8080/api/my-posts/edit-market",
+        {
+          method: "PUT",
+          body: formData,
+        }
+      );
+
+      if (!resp.ok) {
+        console.error("Edit failed:", resp.status);
+        setEditFailed(true);
+        return;
+      }
+
+      const result = await resp.json();
+      console.log("Edit success:", result);
+      // navigate back to user posts page
+      navigate("/user/market");
+    } catch (err) {
+      console.error("Network error editing post:", err);
       setEditFailed(true);
     }
   };

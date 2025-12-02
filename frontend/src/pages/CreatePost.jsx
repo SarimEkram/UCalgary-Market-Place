@@ -17,13 +17,20 @@ import ProfileIcon from "../assets/ProfileIconSVG";
 import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
 import InputField from "../components/InputField";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink, useNavigate } from "react-router";
 import MobileNav from "../components/MobileNav";
 import DesktopNav from "../components/DesktopNav";
 import ImageSlider from "../components/ImageSlider";
 
 // backend tasks, can be found using ctrl+f "TODO".
 export default function CreatePost() {
+
+  const [userData, setUserData] = useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
+
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -36,37 +43,47 @@ export default function CreatePost() {
 
   const fileInputRef = useRef(null);
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
+    // augment with condition + files
     data["condition"] = condition;
     data["images"] = Array.from(newImages);
-    console.log(
-      "send create post request to the server... using this data:",
-      data
-    );
-    /*
-    *
-     * 
-     TODO: BTASK
-     ------
-    create post.    
 
-     Example Data
-     --------
-    {
-    "title": "eni",
-    "description": "rni",
-    "location": "t3a2m1",
-    "price": 13,
-    "condition": "new",
-    "images": [Fileobject, Fileobject  ]
-}
-}
-     */
+    const formData = new FormData();
+    formData.append("userId", userData.user_id); // from localStorage
 
-    const success = true;
-    if (success) {
-      //navigate to home page
-    } else {
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("location", data.location);
+    formData.append("price", data.price);
+    formData.append("condition", data.condition);
+
+    // attach images[] (matches upload.array("images") on backend)
+    data.images.forEach((file) => {
+      formData.append("images", file);
+    });
+
+    try {
+      const resp = await fetch(
+        "http://localhost:8080/api/my-posts/create-market",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!resp.ok) {
+        console.error("Create failed:", resp.status);
+        setCreateFailed(true);
+        return;
+      }
+
+      const result = await resp.json();
+      console.log("Create success:", result);
+
+      // navigate back to My Posts
+      navigate("/user/market");
+    } catch (err) {
+      console.error("Network error creating post:", err);
       setCreateFailed(true);
     }
   };
