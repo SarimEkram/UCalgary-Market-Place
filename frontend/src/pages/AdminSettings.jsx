@@ -73,7 +73,7 @@ export default function MySettings() {
         newPassword: "",
       });
       //re-fresh page with new details
-      navigate("/admin/settings");
+      navigate("/admin");
     } else {
       //set status of
       setSubmitStatus({ success: false, msg: data.error });

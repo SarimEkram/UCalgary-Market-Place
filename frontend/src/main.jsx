@@ -169,11 +169,10 @@ createRoot(document.getElementById("root")).render(
                   <Route path=":id" element={<div>Not done view reported market post.</div>}></Route>
              </Route>
           </Route>
-          {/* @ Deep, feel free to customize as needed. you're in charge of the list users/admin pages*/}
           <Route path="profile/:id" element={<UserProfile></UserProfile>}></Route>
           <Route path="admin">
-            {/* Settings page the currently logged in admin. */}
-            <Route path="settings" element={<AdminSettings></AdminSettings>}></Route>
+            {/* Settings page the currently logged in admin. Admin settings MUST be the index route it's used by the nav bar.*/}
+            <Route index element={<AdminSettings></AdminSettings>}></Route>
              <Route path="profile/:id" element={<AdminProfile></AdminProfile>}></Route>
           </Route>
         </Routes>
