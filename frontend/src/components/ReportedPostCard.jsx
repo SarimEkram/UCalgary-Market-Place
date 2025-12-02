@@ -37,7 +37,7 @@ export default function PostCard({
         headers: {
           "Content-Type": "application/json",
         },
-        body :  {"adminId": userID}
+        body :  JSON.stringify({ adminId: userID })
       });
       return response;
   };
