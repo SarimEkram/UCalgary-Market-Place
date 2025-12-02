@@ -15,6 +15,7 @@ import Header from "../components/Header";
 import InputField from "../components/InputField";
 import MobileNav from "../components/MobileNav";
 import UserMenu from "../components/UserMenu";
+import { useNavigate } from "react-router";
 
 // 1 Backend Task(s) (Ctrl+F "TODO")
 export default function MySettings() {
@@ -30,11 +31,14 @@ export default function MySettings() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: userData.email,
+      email: userData.email, 
       fname: userData.fname,
       lname: userData.lname,
+    
     },
   });
+
+  const navigate =  useNavigate();
 
   const [submitStatus, setSubmitStatus] = useState({
     success: null,
@@ -54,8 +58,13 @@ export default function MySettings() {
     const data = await response.json();
 
     if (response.ok) {
-        //re-fresh page 
-        navigate("user");
+        //re-fresh page with new details 
+        const newData = {...userData};
+        newData.fname = formData.fname; 
+        newData.lname = formData.lname;
+        localStorage.setItem("user", JSON.stringify(newData));
+        navigate("/user"); 
+
       } else{
         //set status of 
         setSubmitStatus({success: false, msg: data.error})
