@@ -123,7 +123,7 @@ export default function MyPosts() {
               ))
             ) : (
               <Typography variant="h5" color="textSecondary">
-                No saved posts.
+                No Posts.
               </Typography>
             )}
           </Box>

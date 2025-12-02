@@ -100,11 +100,11 @@ export default function MySaved() {
               link={`/${post.post_type}/${post.post_id}`}
               primaryText={post.name}
               image={post.image}
-              secondaryText={post.seller_fname + " " + post.seller_lname}
+              secondaryText={post.organization_name ? post.organization_name :   post.owner_fname + " " + post.owner_lname}
               tertiaryText={post.price}
               TopLeftAction={GetIcon}
             ></PostCard>
-          )) : <Typography variant="h5" color="textSecondary">No saved posts.</Typography>}
+          )) : <Typography variant="h5" color="textSecondary">No Saved Posts.</Typography>}
         </Box>
       </Container>
       </Box>

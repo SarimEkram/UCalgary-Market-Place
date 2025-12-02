@@ -141,7 +141,7 @@ export default function MyEvents() {
               mt: 0.5,
             }}
           >
-            {items.map((post, index) => (
+            {items.length > 0 ? items.map((post, index) => (
               <PostCard
                 key={"post-card-" + index}
                 postID={post.post_id}
@@ -155,7 +155,7 @@ export default function MyEvents() {
                 )}
                 disableNavigation
               ></PostCard>
-            ))}
+            )) : <Typography variant="h5" color="textSecondary">No Events.</Typography>}
           </Box>
         </Container>
       </Box>

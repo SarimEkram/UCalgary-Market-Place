@@ -112,7 +112,7 @@ export default function MyContacted() {
               ))
             ) : (
               <Typography variant="h5" color="textSecondary">
-                No saved posts.
+                No Contacted Sellers.
               </Typography>
             )}
           </Box>
