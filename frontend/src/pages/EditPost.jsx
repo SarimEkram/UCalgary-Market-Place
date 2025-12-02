@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link as RouterLink, useParams } from "react-router";
+import { Link as RouterLink, useNavigate, useParams } from "react-router";
 import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
 import ImageSlider from "../components/ImageSlider";
@@ -29,7 +29,7 @@ export default function EditPost() {
   );
 
   //get post id from url
-  let { id } = useParams();
+  const { id } = useParams();
 
   //keep track of selected images
   const [images, setImages] = useState([]);
@@ -45,6 +45,10 @@ export default function EditPost() {
   const [newImages, setNewImages] = useState([]);
 
   const fileInputRef = useRef(null);
+
+  const navigate = useNavigate();
+
+  const [deleteFailed, setDeleteFailed] = useState(false);
 
   //react hook form
   const {
@@ -159,11 +163,29 @@ export default function EditPost() {
     return result;
   };
 
-   const onDelete = ()=>{
-    /*TODO: BTASK
-    handle deleting a post
-    */
+   const onDelete = async ()=>{
+      try {
+      const response = await fetch("http://localhost:8080/api/my-posts/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({userId : userData.id, postId: id}),
+      });
 
+      const data = await response.json();
+      //navigate to My posts on success
+      if (response.ok) {
+        navigate("/user/market");
+      } else {
+        // Handle case where delete failed for some reason
+         setDeleteFailed(data.error);
+         
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+      alert("An error occurred. Please try again later.");
+    }  
   }
 
   return (
