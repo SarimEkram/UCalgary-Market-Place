@@ -147,7 +147,6 @@ createRoot(document.getElementById("root")).render(
              <Route path="saved" element={<MySaved></MySaved>}></Route>
              <Route path="contacted" element={<MyContacted></MyContacted>}></Route>
           </Route>
-          {/* @ Deep, feel free to customize as needed. i made this for testing. */}
           <Route path="home" element={<Home></Home>}></Route>
           <Route path="market" element={<Market></Market>}></Route>
           <Route path="/market/:id" element={<MarketItemPage />} />
