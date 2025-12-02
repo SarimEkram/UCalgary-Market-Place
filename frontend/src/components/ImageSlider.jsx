@@ -27,18 +27,21 @@ import CustomButton from "../components/CustomButton";
 //   },
 // ];
 
-export default function ImageSlider({ images, setDeletedImages, showDelete = false }) {
+export default function ImageSlider({ images=[], uploadedImages =[], setDeletedImages, showDelete = false }) {
   const [internalImages, setInternalImages] = useState([]);
   const [currStep, setCurrStep] = useState(0); //Current step index of image
   const [numberOfSteps, setNumberOfSteps]= useState(0); //Total number of images
+  console.log(uploadedImages);
 
   useEffect(()=>{ 
-      if( images) {
-        setInternalImages(images); 
-        setNumberOfSteps(images.length);
+      if ( images) {
+        const newImages = (uploadedImages).concat(images);
+        setInternalImages(newImages); 
+        setNumberOfSteps(newImages.length);
+        setCurrStep(0);
       }
     }
-    ,[images]);
+    ,[images, uploadedImages]);
 
   //handle deleted images
   function handleDeletedImage() {
@@ -196,9 +199,11 @@ export default function ImageSlider({ images, setDeletedImages, showDelete = fal
               top: 0,
               right: 0,
               margin: 2,
+              display: currStep < uploadedImages.length ?"none" : "initial",
             }}
             color={"red"}
             onClick={handleDeletedImage}
+            disabled={currStep < uploadedImages.length}
           >
             {"Delete"}
           </CustomButton>

@@ -206,6 +206,15 @@ export default function EditEvent() {
     return result;
   };
 
+  //turn new uploads into rendable URLs
+  const getNewImages = ()=>{
+    let imgs = Array.from(newImages);
+    imgs = imgs.map((img )=> ({src : URL.createObjectURL(img), label : img.name}));
+    console.log(imgs);
+    return imgs;
+  }
+
+
   const onDelete = ()=>{
     /*TODO: BTASK
     handle deleting a post
@@ -364,6 +373,7 @@ export default function EditEvent() {
 
               <ImageSlider
                 images={images}
+                uploadedImages={getNewImages()}
                 setDeletedImages={setDeletedImages}
                 showDelete
               ></ImageSlider>

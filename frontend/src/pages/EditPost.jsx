@@ -163,6 +163,15 @@ export default function EditPost() {
     return result;
   };
 
+
+  //turn new uploads into rendable URLs
+  const getNewImages = ()=>{
+    let imgs = Array.from(newImages);
+    imgs = imgs.map((img )=> ({src : URL.createObjectURL(img), label : img.name}));
+    console.log(imgs);
+    return imgs;
+  }
+
    const onDelete = async ()=>{
       try {
       const response = await fetch("http://localhost:8080/api/my-posts/delete", {
@@ -321,6 +330,7 @@ export default function EditPost() {
               </ToggleButtonGroup>
               <ImageSlider
                 images={images}
+                uploadedImages={getNewImages()}
                 setDeletedImages={setDeletedImages}
                 showDelete
               ></ImageSlider>
