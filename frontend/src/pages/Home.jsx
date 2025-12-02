@@ -104,7 +104,7 @@ function DynamicSection({ title, typeFilter }) {
     let mounted = true;
 
     // typeFilter is "market" | "event"
-    const url = `http://localhost:8080/api/posts/postfetch?type=${encodeURIComponent(
+    const url = `/api/posts/postfetch?type=${encodeURIComponent(
       typeFilter
     )}&limit=8`;
 

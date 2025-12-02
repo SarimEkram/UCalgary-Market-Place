@@ -37,7 +37,7 @@ export default function SignUp() {
 
     if (verified.status) {
       try {
-      const response = await fetch("http://localhost:8080/api/registration/create-account", {
+      const response = await fetch("/api/registration/create-account", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +60,7 @@ export default function SignUp() {
     } else {
       try {
       const emailData = { email: formData["email"] };
-      const response = await fetch("http://localhost:8080/api/registration/send-verification", {
+      const response = await fetch("/api/registration/send-verification", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
