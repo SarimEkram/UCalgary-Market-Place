@@ -100,7 +100,7 @@ export default function ViewReportedEvents() {
             })}
           >
            
-            {items.map((post, index) => {
+            {items.length == 0 ? <Typography variant="h5" color="textSecondary">No Posts</Typography> : items.map((post, index) => {
               return (
                 <PostCard
                   key={"card-" + (index + 2)}
