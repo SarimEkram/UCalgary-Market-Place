@@ -15,7 +15,8 @@ import DesktopNav from "../components/DesktopNav";
 import MobileNav from "../components/MobileNav";
 import Header from "../components/Header";
 import ConfirmationPopup from "../components/ConfirmationPopup";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
+
 
 
 const API_BASE = "http://localhost:8080";
@@ -130,8 +131,9 @@ export default function FindUser() {
     }, [searchTermUser]);
 
     const handleViewUser = (id) => {
-        navigate(`/profile/${id}`);
+        navigate(`/admin/profile/user/${id}`);
     };
+
 
     return (
         <Stack
