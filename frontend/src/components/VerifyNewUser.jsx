@@ -76,7 +76,7 @@ const FirstPage = ({ handleClose, setVerified }) => {
   };
   return (
     <>
-      <DialogTitle sx={{ padding: 0, width: "520px", minWidth: "fit-content" }}>
+      <DialogTitle sx={{ padding: 0, width: { md: "520px"} , minWidth: "fit-content" }}>
         Please enter the 8-digit code that was sent to your email.
       </DialogTitle>
       <Divider

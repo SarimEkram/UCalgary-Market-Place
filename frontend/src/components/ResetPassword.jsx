@@ -101,7 +101,7 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
 
   return (
     <>
-      <DialogTitle sx={{ padding: 0, width: "520px", minWidth: "fit-content" }}>
+      <DialogTitle sx={{ padding: 0, width: { md: "520px"} , minWidth: "fit-content" }}>
         Please enter your email.
       </DialogTitle>
       <Divider
