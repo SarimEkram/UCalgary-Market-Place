@@ -33,7 +33,9 @@ export default function FindUser() {
 
     //  Delete request used by ConfirmationPopup
     const executeDelete = async () => {
-        const adminId = 1; // TODO: replace with real admin ID
+        // const adminId = 1; // replace with real admin ID
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        const adminId = storedUser?.id;   // real admin ID from login
 
         console.log("DELETE REQUEST STARTED:", selectedEmail);
 
