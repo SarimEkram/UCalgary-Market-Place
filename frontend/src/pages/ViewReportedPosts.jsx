@@ -2,10 +2,10 @@ import { Box, Container, Divider, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import PostCard from "../components/ReportedPostCard";
-import MobileNav from "../components/MobileNav";
 import DesktopNav from "../components/DesktopNav";
+import MobileNav from "../components/MobileNav";
 
-export default function ViewReportedEvents() {
+export default function ViewReportedPosts() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ export default function ViewReportedEvents() {
     async function fetchData() {
       try {
         const response = await fetch(
-          `/api/admin/reported-events`,
+          `/api/admin/reported-market-posts`,
           {
             method: "GET",
             headers: {
@@ -23,7 +23,7 @@ export default function ViewReportedEvents() {
         );
 
         if (!response.ok) {
-          console.error("Failed to fetch reported events");
+          console.error("Failed to fetch reported posts");
           return;
         }
 
@@ -49,10 +49,9 @@ export default function ViewReportedEvents() {
           setItems(data);
         }
       } catch (error) {
-        console.error("Error fetching reported events:", error);
+        console.error("Error fetching reported posts:", error);
       }
     }
-
     fetchData();
     return () => {
       isMounted = false;
@@ -86,7 +85,7 @@ export default function ViewReportedEvents() {
         <Container
           maxWidth="lg"
           sx={{
-             flexGrow: 1,
+            flexGrow: 1,
             py: { xs: 4, md: 8 },
             px: { xs: 4, sm: 6, md: 10 },
             display: "flex",
@@ -96,11 +95,11 @@ export default function ViewReportedEvents() {
           }}
         >
           <Box>
-            <Typography variant="h4">View Reported Event Posts</Typography>
+            <Typography variant="h4">View Reported Market Posts</Typography>
             <CustomDivider></CustomDivider>
           </Box>
           <Box
-            sx={(theme)=>({
+            sx={(theme) => ({
               display: "grid",
               gridAutoRows: "0.6fr",
               columnGap: 5,
@@ -117,16 +116,15 @@ export default function ViewReportedEvents() {
               },
             })}
           >
-           
             {items.length == 0 ? <Typography variant="h5" color="textSecondary">No Posts</Typography> : items.map((post, index) => {
               return (
                 <PostCard
-                  key={"card-" + (index + 2)}
+                  key={"card-" + index}
                   primaryText={post.title}
                   reportDate={post.report_date}
                   numReports={post.report_count}
                   image={post.image}
-                  type="events"
+                  type="market"
                   id={post.id}
                 ></PostCard>
               );
