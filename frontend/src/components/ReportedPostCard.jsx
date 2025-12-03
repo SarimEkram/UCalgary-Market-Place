@@ -1,5 +1,3 @@
-// ReportedPostCard.jsx
-
 import {
     Box,
     Card,
@@ -50,16 +48,23 @@ export default function PostCard({
         setOpen(true);
     };
 
-    // ⬇️ Changed: after successful delete, just refresh the current page
     const callBackDelete = (ok) => {
         if (ok) {
-            // full page reload → same URL, data refetched, card disappears
+            // stay on same page, just reload data
             window.location.reload();
         }
     };
 
+    // 🔹 NEW: go to actual event / market post
     const onView = () => {
-        navigate(`/reports/${type}/${id}`);
+        if (type === "events") {
+            navigate(`/events/${id}`);
+        } else if (type === "market") {
+            navigate(`/market/${id}`);
+        } else {
+            // fallback for any other usage
+            navigate(`/reports/${type}/${id}`);
+        }
     };
 
     return (
