@@ -48,8 +48,16 @@ export default function CreatePost() {
     data["condition"] = condition;
     data["images"] = Array.from(newImages);
 
+    const userId = userData?.id;
+
+    if (!userId) {
+      console.error("No valid userId in userData:", userData);
+      setCreateFailed(true);
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("userId", userData.user_id); // from localStorage
+    formData.append("userId", userId); // from localStorage
 
     formData.append("title", data.title);
     formData.append("description", data.description);
