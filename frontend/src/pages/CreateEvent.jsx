@@ -84,40 +84,40 @@ export default function CreateEvent() {
   };
 
   // submit create request to server
-  const onSubmit = async (data) => {
-    const { start, end } = range;
+const onSubmit = async (data) => {
+  const { start, end } = range;
 
-    if (!start) {
-      setCreateFailed(true);
-      return;
-    }
+  if (!start) {
+    setCreateFailed(true);
+    return;
+  }
 
-    // backend expects event_start / event_end
-    const eventStart = start.format("YYYY-MM-DD HH:mm:ss");
+  const userId = userData?.id;
 
-    // if end is null (single-day event), just use same timestamp for now
-    // (if you later relax backend validation, you can send null instead)
-    const eventEnd = end
-      ? end.format("YYYY-MM-DD HH:mm:ss")
-      : eventStart;
+  if (!userId) {
+    console.error("No valid userId in userData:", userData);
+    setCreateFailed(true);
+    return;
+  }
 
-    // files
-    const imagesArray = Array.from(newImages);
+  const eventStart = start.format("YYYY-MM-DD HH:mm:ss");
+  const eventEnd = end ? end.format("YYYY-MM-DD HH:mm:ss") : eventStart;
 
-    const formData = new FormData();
-    formData.append("userId", userData.user_id);
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("location", data.location);
-    formData.append("price", data.price); // optional is handled on backend
-    formData.append("organization_name", data.organization_name);
-    formData.append("event_start", eventStart);
-    formData.append("event_end", eventEnd);
+  const imagesArray = Array.from(newImages);
 
-    imagesArray.forEach((file) => {
-      // matches upload.array("images") in myEventsRoute.js
-      formData.append("images", file);
-    });
+  const formData = new FormData();
+  formData.append("userId", userId);
+  formData.append("title", data.title);
+  formData.append("description", data.description);
+  formData.append("location", data.location);
+  formData.append("price", data.price); // optional is handled on backend
+  formData.append("organization_name", data.organization_name);
+  formData.append("event_start", eventStart);
+  formData.append("event_end", eventEnd);
+
+  imagesArray.forEach((file) => {
+    formData.append("images", file);
+  });
 
     try {
       const resp = await fetch(
@@ -139,6 +139,7 @@ export default function CreateEvent() {
 
       // go back to My Events page
       navigate("/user/events");
+
     } catch (err) {
       console.error("Network error creating event:", err);
       setCreateFailed(true);

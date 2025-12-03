@@ -110,7 +110,7 @@ export default function EditPost() {
     data["new_images"] = Array.from(newImages);
 
     const formData = new FormData();
-    formData.append("userId", userData.user_id); // from localStorage
+    formData.append("userId", userData.id); // from localStorage
     formData.append("postId", id); // from useParams
 
     formData.append("title", data.title);
