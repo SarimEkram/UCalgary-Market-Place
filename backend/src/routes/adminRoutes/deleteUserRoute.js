@@ -3,7 +3,7 @@ import { adminBanUser } from "../../controller/adminController/deleteUserControl
 
 const router = Router();
 
-// DELETE /api/admin/users/ban
-router.delete("/ban", adminBanUser);
+// CHANGE DELETE → POST
+router.post("/ban", adminBanUser);
 
 export default router;
