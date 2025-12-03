@@ -11,28 +11,46 @@ export default function ViewReportedEvents() {
   useEffect(() => {
     let isMounted = true;
     async function fetchData() {
-      
-      const response = await fetch(
-        `/api/admin/reported-events`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      try {
+        const response = await fetch(
+          `/api/admin/reported-events`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      let data = await response.json();
-      data = data.map((item) => {
-        if (item.thumbnail != null) {
-          const blob = item.thumbnail.data.replace(/\s/g, "");
-          const src = `data:image/jpeg;base64,${blob}`;
-          item["image"] = src;
-        } else {
-          item["image"] = null;
+        if (!response.ok) {
+          console.error("Failed to fetch reported events");
+          return;
         }
-        return item;
-      })
+
+        let data = await response.json();
+        
+        if (!Array.isArray(data)) {
+          console.error("Expected array but got:", typeof data);
+          return;
+        }
+        
+        data = data.map((item) => {
+          if (item.thumbnail != null && item.thumbnail.data) {
+            const blob = item.thumbnail.data.replace(/\s/g, "");
+            const src = `data:image/jpeg;base64,${blob}`;
+            item["image"] = src;
+          } else {
+            item["image"] = null;
+          }
+          return item;
+        });
+
+        if (isMounted) {
+          setItems(data);
+        }
+      } catch (error) {
+        console.error("Error fetching reported events:", error);
+      }
     }
 
     fetchData();
@@ -108,7 +126,7 @@ export default function ViewReportedEvents() {
                   reportDate={post.report_date}
                   numReports={post.report_count}
                   image={post.image}
-                  type="market"
+                  type="events"
                   id={post.id}
                 ></PostCard>
               );
