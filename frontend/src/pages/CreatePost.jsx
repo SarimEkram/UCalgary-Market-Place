@@ -64,7 +64,7 @@ export default function CreatePost() {
 
     try {
       const resp = await fetch(
-        "http://localhost:8080/api/my-posts/create-market",
+        "/api/my-posts/create-market",
         {
           method: "POST",
           body: formData,

@@ -31,7 +31,7 @@ export default function ImageSlider({ images=[], uploadedImages =[], setDeletedI
   const [internalImages, setInternalImages] = useState([]);
   const [currStep, setCurrStep] = useState(0); //Current step index of image
   const [numberOfSteps, setNumberOfSteps]= useState(0); //Total number of images
-  console.log(uploadedImages);
+  
 
   useEffect(()=>{ 
       if ( images) {

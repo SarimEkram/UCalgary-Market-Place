@@ -32,7 +32,7 @@ export default function PostCard({
   });
    
   const confirmedDelete = async () => {
-      const response = await fetch(`http://localhost:8080/api/admin/posts/${id}`, {
+      const response = await fetch(`/api/admin/posts/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

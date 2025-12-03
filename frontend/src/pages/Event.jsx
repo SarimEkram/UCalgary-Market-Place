@@ -17,7 +17,7 @@ import MobileNav from "../components/MobileNav";
 import DesktopNav from "../components/DesktopNav";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = "http://localhost:8080";
+const API_BASE = "";
 const EVENTS_ENDPOINT = `${API_BASE}/api/posts/eventres`;
 
 export default function Events() {

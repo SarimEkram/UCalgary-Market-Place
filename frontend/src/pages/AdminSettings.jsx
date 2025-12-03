@@ -49,7 +49,7 @@ export default function MySettings() {
   const onSubmit = async (formData) => {
     delete formData["password"];
 
-    const response = await fetch(`http://localhost:8080/api/settings/update`, {
+    const response = await fetch(`/api/settings/update`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -73,7 +73,7 @@ export default function MySettings() {
         newPassword: "",
       });
       //re-fresh page with new details
-      navigate("/admin");
+      navigate("/admin/settings");
     } else {
       //set status of
       setSubmitStatus({ success: false, msg: data.error });

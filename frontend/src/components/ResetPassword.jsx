@@ -69,7 +69,7 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
   const onSubmit = async (formData) => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/password/forgot",
+        "/api/password/forgot",
         {
           method: "POST",
           headers: {
@@ -172,7 +172,7 @@ const SecondPage = ({ setPage, handleClose, setCode }) => {
   const onSubmit = async (formData) => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/password/verify",
+        "/api/password/verify",
         {
           method: "POST",
           headers: {
@@ -286,7 +286,7 @@ const ThirdPage = ({ setPage, handleClose, email, code }) => {
    
     try {
       const response = await fetch(
-        "http://localhost:8080/api/password/reset",
+        "/api/password/reset",
         {
           method: "POST",
           headers: {

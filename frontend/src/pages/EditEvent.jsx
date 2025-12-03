@@ -67,7 +67,7 @@ export default function EditEvent() {
     let isMounted = true;
     async function fetchData() {
       const response = await fetch(
-        `http://localhost:8080/api/posts/eventdetails/${id}`,
+        `/api/posts/eventdetails/${id}`,
         {
           method: "GET",
           headers: {
@@ -185,7 +185,7 @@ export default function EditEvent() {
     });
 
     try {
-      const resp = await fetch("http://localhost:8080/api/my-events/edit", {
+      const resp = await fetch("/api/my-events/edit", {
         method: "PUT",
         body: formData,
       });
@@ -236,7 +236,7 @@ export default function EditEvent() {
   //send delete request to server
   const onDelete = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/my-events/delete", {
+      const response = await fetch("/api/my-events/delete", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

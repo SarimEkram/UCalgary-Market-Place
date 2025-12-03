@@ -121,7 +121,7 @@ export default function CreateEvent() {
 
     try {
       const resp = await fetch(
-        "http://localhost:8080/api/my-events/create",
+        "/api/my-events/create",
         {
           method: "POST",
           body: formData,

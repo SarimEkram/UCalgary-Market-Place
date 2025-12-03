@@ -20,7 +20,7 @@ export default function MyEvents() {
     let isMounted = true;
     async function fetchData() {
       //  const response = await fetch(
-      //    `http://localhost:8080/api/posts/eventdetails/${id}`,
+      //    `/api/posts/eventdetails/${id}`,
       //    {
       //      method: "GET",
       //      headers: {

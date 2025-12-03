@@ -63,7 +63,7 @@ export default function EditPost() {
     let isMounted = true;
     async function fetchData() {
       const response = await fetch(
-        `http://localhost:8080/api/posts/itemdetails/${id}`,
+        `/api/posts/itemdetails/${id}`,
         {
           method: "GET",
           headers: {
@@ -102,6 +102,7 @@ export default function EditPost() {
   }, []);
 
   const onSubmit = async (data) => {
+  const onSubmit = async (data) => {
     data["condition"] = condition;
     data["deleted_images"] = deletedImages;
     data["new_images"] = Array.from(newImages);
@@ -126,7 +127,7 @@ export default function EditPost() {
 
     try {
       const resp = await fetch(
-        "http://localhost:8080/api/my-posts/edit-market",
+        "/api/my-posts/edit-market",
         {
           method: "PUT",
           body: formData,
@@ -186,7 +187,7 @@ export default function EditPost() {
 
    const onDelete = async ()=>{
       try {
-      const response = await fetch("http://localhost:8080/api/my-posts/delete", {
+      const response = await fetch("/api/my-posts/delete", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -392,7 +393,7 @@ export default function EditPost() {
       <MobileNav></MobileNav>
     </Stack>
   );
-}
+}}
 
 const styles = {
   icon: {
@@ -413,13 +414,11 @@ const styles = {
     p: 5,
     mb: 10,
   },
-
-  bottomContent: {
-    paddingTop: 2,
-  },
-
   stackRow: {
     justifyContent: "center",
     alignItems: "center",
   },
+  bottomContent: {
+    paddingTop: 2,
+  }
 };
