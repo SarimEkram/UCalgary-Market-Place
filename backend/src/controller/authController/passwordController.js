@@ -28,6 +28,7 @@ export const forgotPassword = (req, res) => {
 
     const createAndStoreCode = () => {
         const code = generateVerificationCode();
+        console.log(code)
         const expirationTime = getExpirationTime();
 
         const insertQuery =
