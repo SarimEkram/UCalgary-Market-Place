@@ -65,7 +65,7 @@ export default function EditEvent() {
     let isMounted = true;
     async function fetchData() {
       const response = await fetch(
-        `http://localhost:8080/api/posts/eventdetails/${id}`,
+        `/api/posts/eventdetails/${id}`,
         {
           method: "GET",
           headers: {
@@ -143,46 +143,64 @@ export default function EditEvent() {
   };
 
   //send an edit request to the server
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     data["deleted_images"] = deletedImages;
     data["new_images"] = Array.from(newImages);
     const { start, end } = range;
 
-    data["event_start"] = start.format("YYYY-MM-DD HH:mm:ss");
-    //backend needs an end_date even if the event is only one day.
-    data["event_end"] =
-      end == null
-        ? start.format("YYYY-MM-DD HH:mm:ss")
-        : end.format("YYYY-MM-DD HH:mm:ss");
-    console.log(
-      "send edit post request to the server... using this data:",
-      data
-    );
-    /**
-     * 
-     TODO: BTASK
-     ------
-     Updated an edit post.    
+    // safety: no date selected → fail fast
+    if (!start) {
+      setEditFailed(true);
+      return;
+    }
 
-     Example Data
-     --------
-    {
-    "title": "eni",
-    "description": "rni",
-    "location": "t3a2m1",
-    "price": 13,
-    "start_date": YYYY-MM-DD HH:mm:ss,
-    "end_date": YYYY-MM-DD HH:mm:ss or null [for one day events], 
-    "deleted_images": [image_id1, imageid_2...etc],
-    "new_images": [Fileobject, Fileobject  ]
-}
-}
-     */
+    const eventStart = start.format("YYYY-MM-DD HH:mm:ss");
+    const eventEnd =
+      end == null ? start.format("YYYY-MM-DD HH:mm:ss") : end.format("YYYY-MM-DD HH:mm:ss");
 
-    const success = true;
-    if (success) {
-      //navigate to home page
-    } else {
+    const formData = new FormData();
+    formData.append("userId", userData.user_id);   // from localStorage
+    formData.append("postId", id);                 // from useParams
+
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("location", data.location);
+
+    let priceToSend = data.price;
+    if (priceToSend === undefined || priceToSend === null) {
+      priceToSend = "";
+    }
+    formData.append("price", priceToSend);
+
+    formData.append("organization_name", data.organization_name);
+    formData.append("event_start", eventStart);
+    formData.append("event_end", eventEnd);
+
+    // deleted_images as JSON string for backend
+    formData.append("deleted_images", JSON.stringify(deletedImages || []));
+
+    // attach new images
+    Array.from(newImages).forEach((file) => {
+      formData.append("new_images", file); // matches upload.array("new_images")
+    });
+
+    try {
+      const resp = await fetch("/api/my-events/edit", {
+        method: "PUT",
+        body: formData,
+      });
+
+      if (!resp.ok) {
+        console.error("Edit event failed:", resp.status);
+        setEditFailed(true);
+        return;
+      }
+
+      const result = await resp.json();
+      console.log("Edit event success:", result);
+      navigate("/user/events");
+    } catch (err) {
+      console.error("Network error editing event:", err);
       setEditFailed(true);
     }
   };
@@ -215,12 +233,31 @@ export default function EditEvent() {
   }
 
 
-  const onDelete = ()=>{
-    /*TODO: BTASK
-    handle deleting a post
-    */
+  //send delete request to server
+  const onDelete = async () => {
+    try {
+      const response = await fetch("/api/my-events/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: userData.user_id, postId: id }),
+      });
 
-  }
+      const data = await response.json();
+
+      if (response.ok) {
+        navigate("/user/events");
+      } else {
+        console.error("Delete event failed:", data.error);
+        setDeleteFailed(true);
+      }
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      setDeleteFailed(true);
+    }
+  };
+
 
   return (
     <Stack

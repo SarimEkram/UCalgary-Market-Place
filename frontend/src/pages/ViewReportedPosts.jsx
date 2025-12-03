@@ -12,7 +12,7 @@ export default function ViewReportedPosts() {
     let isMounted = true;
     async function fetchData() {
       const response = await fetch(
-        `http://localhost:8080/api/admin/reported-market-posts`,
+        `/api/admin/reported-market-posts`,
         {
           method: "GET",
           headers: {

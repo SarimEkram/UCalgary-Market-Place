@@ -16,7 +16,7 @@ import Header from "../components/Header";
 import MobileNav from "../components/MobileNav";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = "http://localhost:8080";
+const API_BASE = "";
 
 export default function Market() {
   const [postFilters, setPostFilters] = useState(null);

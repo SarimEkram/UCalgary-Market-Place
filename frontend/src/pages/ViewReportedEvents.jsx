@@ -13,7 +13,7 @@ export default function ViewReportedEvents() {
     async function fetchData() {
       
       const response = await fetch(
-        `http://localhost:8080/api/admin/reported-events`,
+        `/api/admin/reported-events`,
         {
           method: "GET",
           headers: {

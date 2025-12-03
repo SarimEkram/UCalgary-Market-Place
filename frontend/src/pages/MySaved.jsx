@@ -18,7 +18,7 @@ export default function MySaved() {
     let isMounted = true;
     async function fetchData() {
        const response = await fetch(
-         `http://localhost:8080/api/getSavedPosts`,
+         `/api/getSavedPosts`,
          {
            method: "POST",
            headers: {

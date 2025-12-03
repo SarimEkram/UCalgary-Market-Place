@@ -152,28 +152,24 @@ createRoot(document.getElementById("root")).render(
           <Route path="/market/:id" element={<MarketItemPage />} />
           <Route path="events" element={<Event />} />
           <Route path="events/:id" element={<EventItemPage />} />
-          <Route path="admin/find-admin" element={<AdminList></AdminList>}></Route>
-          <Route path ="admin/find-user" element={<FindUser></FindUser>}></Route>
-          <Route path="users" element={<FindUser />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="admin/reported-users" element={<ViewReportedUsers></ViewReportedUsers>}></Route>
-
-
-          <Route path="reports">
-             <Route path="events">
-                  <Route index element={<ViewReportedEvents></ViewReportedEvents>}></Route>
-                  <Route path=":id" element={<div>Not done view reported event.</div>}></Route>
-             </Route>
-              <Route path="market">
-                  <Route index element={<ViewReportedPosts></ViewReportedPosts>}></Route>
-                  <Route path=":id" element={<div>Not done view reported market post.</div>}></Route>
-             </Route>
-          </Route>
-          <Route path="profile/:id" element={<UserProfile></UserProfile>}></Route>
           <Route path="admin">
-            {/* Settings page the currently logged in admin. Admin settings MUST be the index route it's used by the nav bar.*/}
-            <Route index element={<AdminSettings></AdminSettings>}></Route>
+            <Route index element={<AdminDashboard />} />
+            <Route path="find-admin" element={<AdminList></AdminList>}></Route>
+            <Route path ="find-user" element={<FindUser></FindUser>}></Route>
+             <Route path="reported-users" element={<ViewReportedUsers></ViewReportedUsers>}></Route>
              <Route path="profile/:id" element={<AdminProfile></AdminProfile>}></Route>
+             <Route path="settings" element={<AdminSettings></AdminSettings>}></Route>
+             <Route path="profile/user/:id" element={<UserProfile></UserProfile>}></Route>
+            <Route path="reports">
+              <Route path="events">
+                    <Route index element={<ViewReportedEvents></ViewReportedEvents>}></Route>
+                    <Route path=":id" element={<div>Not done view reported event.</div>}></Route>
+              </Route>
+                <Route path="market">
+                    <Route index element={<ViewReportedPosts></ViewReportedPosts>}></Route>
+                    <Route path=":id" element={<div>Not done view reported market post.</div>}></Route>
+              </Route>
+          </Route>
           </Route>
         </Routes>
       </BrowserRouter>

@@ -20,7 +20,7 @@ export default function MyPosts() {
     let isMounted = true;
     async function fetchData() {
        const response = await fetch(
-         `http://localhost:8080/api/my-posts/list`,
+         `/api/my-posts/list`,
          {
            method: "POST",
            headers: {

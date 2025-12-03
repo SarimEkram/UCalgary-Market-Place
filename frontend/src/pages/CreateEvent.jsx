@@ -77,38 +77,64 @@ export default function CreateEvent() {
   };
 
   // submit create request to server
-  const onSubmit = (data) => {
+  const onSubmit =  async(data) => {
     data["images"] = Array.from(newImages);
     const { start, end } = range;
-    console.log(start, end);
-    data["startDate"] = start.format("YYYY-MM-DD HH:mm:ss");
-    data["endDate"] = end == null ? null : end.format("YYYY-MM-DD HH:mm:ss");
-    console.log("sending create request to server...", data);
-    /*
-    *
-     * 
-     TODO: BTASK
-     ------
-    create post.    
 
-     Example Data
-     --------
-    {
-    "title": "eni",
-    "description": "rni",
-    "location": "t3a2m1",
-    "price": 13,
-    "start_date": YYYY-MM-DD HH:mm:ss,
-    "end_date": YYYY-MM-DD HH:mm:ss or null [for one dya events], 
-    "images": [Fileobject, Fileobject  ]
-}
-}
-     */
+    if (!start) {
+      setCreateFailed(true);
+      return;
+    }
 
-    const success = true;
-    if (success) {
-      //navigate to home page
-    } else {
+    // backend expects event_start / event_end
+    const eventStart = start.format("YYYY-MM-DD HH:mm:ss");
+
+    // if end is null (single-day event), just use same timestamp for now
+    // (if you later relax backend validation, you can send null instead)
+    const eventEnd = end
+      ? end.format("YYYY-MM-DD HH:mm:ss")
+      : eventStart;
+
+    // files
+    const imagesArray = Array.from(newImages);
+
+    const formData = new FormData();
+    formData.append("userId", userData.user_id);
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("location", data.location);
+    formData.append("price", data.price); // optional is handled on backend
+    formData.append("organization_name", data.organization_name);
+    formData.append("event_start", eventStart);
+    formData.append("event_end", eventEnd);
+
+    imagesArray.forEach((file) => {
+      // matches upload.array("images") in myEventsRoute.js
+      formData.append("images", file);
+    });
+
+    try {
+      const resp = await fetch(
+        "/api/my-events/create",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!resp.ok) {
+        console.error("Create event failed:", resp.status);
+        setCreateFailed(true);
+        return;
+      }
+
+      const result = await resp.json();
+      console.log("Create event success:", result);
+
+      // go back to My Events page
+      navigate("/user/events");
+    } catch (err) {
+      console.error("Network error creating event:", err);
       setCreateFailed(true);
     }
   };

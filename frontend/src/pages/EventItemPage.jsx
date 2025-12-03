@@ -116,7 +116,7 @@ export default function EventItemPage() {
         setIsLoading(true);
 
         const response = await fetch(
-          `http://localhost:8080/api/posts/eventdetails/${postId}`
+          `/api/posts/eventdetails/${postId}`
         );
 
         if (!response.ok) {
@@ -220,7 +220,7 @@ export default function EventItemPage() {
       if (!userId || !postId) return;
 
       try {
-        const response = await fetch(`http://localhost:8080/api/getSavedPosts`, {
+        const response = await fetch(`/api/getSavedPosts`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId }),
@@ -255,8 +255,8 @@ export default function EventItemPage() {
       setIsSavingEvent(true);
 
       const url = isSavedEvent
-        ? `http://localhost:8080/api/getSavedPosts/unsave`
-        : `http://localhost:8080/api/getSavedPosts/save`;
+        ? `/api/getSavedPosts/unsave`
+        : `/api/getSavedPosts/save`;
 
       const response = await fetch(url, {
         method: "POST",
@@ -298,7 +298,7 @@ export default function EventItemPage() {
       setIsContacting(true);
       setContactMessage("");
 
-      const response = await fetch(`http://localhost:8080/api/contactSeller`, {
+      const response = await fetch(`/api/contactSeller`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -383,7 +383,7 @@ export default function EventItemPage() {
       body.reportedUserId = currentItem.sellerId;
     }
 
-    const response = await fetch(`http://localhost:8080/api/report`, {
+    const response = await fetch(`/api/report`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

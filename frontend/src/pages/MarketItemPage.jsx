@@ -110,7 +110,7 @@ export default function MarketItemPage() {
         setIsLoading(true);
 
         const response = await fetch(
-          `http://localhost:8080/api/posts/itemdetails/${postId}`
+          `/api/posts/itemdetails/${postId}`
         );
 
         if (!response.ok) {
@@ -201,7 +201,7 @@ export default function MarketItemPage() {
       if (!userId || !postId) return;
 
       try {
-        const resp = await fetch(`http://localhost:8080/api/getSavedPosts`, {
+        const resp = await fetch(`/api/getSavedPosts`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId }),
@@ -232,8 +232,8 @@ export default function MarketItemPage() {
       setIsPostSaving(true);
 
       const url = isPostSaved
-        ? `http://localhost:8080/api/getSavedPosts/unsave`
-        : `http://localhost:8080/api/getSavedPosts/save`;
+        ? `/api/getSavedPosts/unsave`
+        : `/api/getSavedPosts/save`;
 
       const resp = await fetch(url, {
         method: "POST",
@@ -269,7 +269,7 @@ export default function MarketItemPage() {
       setIsContactingSeller(true);
       setContactSellerMsg("");
 
-      const resp = await fetch(`http://localhost:8080/api/contactSeller`, {
+      const resp = await fetch(`/api/contactSeller`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -347,7 +347,7 @@ export default function MarketItemPage() {
       if (type === "post") body.postId = postId;
       if (type === "user") body.reportedUserId = currentItem?.sellerId;
 
-      const resp = await fetch(`http://localhost:8080/api/report`, {
+      const resp = await fetch(`/api/report`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
