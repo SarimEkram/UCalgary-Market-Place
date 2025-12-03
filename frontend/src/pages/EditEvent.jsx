@@ -20,6 +20,7 @@ import ImageSlider from "../components/ImageSlider";
 import InputField from "../components/InputField";
 import DesktopNav from "../components/DesktopNav";
 import MobileNav from "../components/MobileNav";
+import ConfirmationPopup from "../components/ConfirmationPopup";
 
 import dayjs from "dayjs";
 
@@ -55,6 +56,10 @@ export default function EditEvent() {
 
   //ref for input[type="file"]
   const fileInputRef = useRef(null);
+
+
+  //confirmation popuop 
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const {
     register,
@@ -156,11 +161,13 @@ export default function EditEvent() {
 
     const eventStart = start.format("YYYY-MM-DD HH:mm:ss");
     const eventEnd =
-      end == null ? start.format("YYYY-MM-DD HH:mm:ss") : end.format("YYYY-MM-DD HH:mm:ss");
+      end == null
+        ? start.format("YYYY-MM-DD HH:mm:ss")
+        : end.format("YYYY-MM-DD HH:mm:ss");
 
     const formData = new FormData();
-    formData.append("userId", userData.user_id);   // from localStorage
-    formData.append("postId", id);                 // from useParams
+    formData.append("userId", userData.id); // from localStorage
+    formData.append("postId", id); // from useParams
 
     formData.append("title", data.title);
     formData.append("description", data.description);
@@ -225,39 +232,47 @@ export default function EditEvent() {
   };
 
   //turn new uploads into rendable URLs
-  const getNewImages = ()=>{
+  const getNewImages = () => {
     let imgs = Array.from(newImages);
-    imgs = imgs.map((img )=> ({src : URL.createObjectURL(img), label : img.name}));
+    imgs = imgs.map((img) => ({
+      src: URL.createObjectURL(img),
+      label: img.name,
+    }));
     console.log(imgs);
     return imgs;
-  }
-
+  };
 
   //send delete request to server
   const onDelete = async () => {
-    try {
-      const response = await fetch("/api/my-events/delete", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: userData.user_id, postId: id }),
-      });
+    setConfirmOpen(true);
+  };
 
-      const data = await response.json();
+  const confirmedDelete = async()=>{
+    const resp =   await fetch(
+        "http://localhost:8080/api/my-events/delete",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: userData.id, postId: id }),
+        }
+      );
 
-      if (response.ok) {
+      return resp; 
+
+  };
+
+
+  const callBackDelete = (ok)=>{
+    if (ok) {
         navigate("/user/events");
       } else {
         console.error("Delete event failed:", data.error);
-        setDeleteFailed(true);
-      }
-    } catch (error) {
-      console.error("Error deleting event:", error);
-      setDeleteFailed(true);
+        
     }
-  };
-
+  }
+  
 
   return (
     <Stack
@@ -296,7 +311,21 @@ export default function EditEvent() {
               marginBottom: 3,
             })}
           ></Divider>
-          <CustomButton onClick={onDelete} style={{ alignSelf: "flex-end", pb: 2 }}>Delete</CustomButton>
+          <ConfirmationPopup
+            warningMessage={" Do You Want To Proceed With Deleting Your Post ?"}
+            open={confirmOpen}
+            handleClose={() => {
+              setConfirmOpen(false);
+            }}
+            executeFunction={confirmedDelete}
+            callBack={callBackDelete}
+          ></ConfirmationPopup>
+          <CustomButton
+            onClick={onDelete}
+            style={{ alignSelf: "flex-end", pb: 2 }}
+          >
+            Delete
+          </CustomButton>
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <Stack direction="column" component={"div"} spacing={4}>
@@ -371,7 +400,9 @@ export default function EditEvent() {
                 errorMsg={errors["price"] ? errors["price"].message : null}
                 {...register("price", {
                   validate: (value) =>
-                    value === "" || Number(value) >= 0 || "Price must be 0 or greater.",
+                    value === "" ||
+                    Number(value) >= 0 ||
+                    "Price must be 0 or greater.",
                 })}
               ></InputField>
               <Box>

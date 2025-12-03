@@ -20,6 +20,7 @@ import ImageSlider from "../components/ImageSlider";
 import InputField from "../components/InputField";
 import DesktopNav from "../components/DesktopNav";
 import MobileNav from "../components/MobileNav";
+import ConfirmationPopup from "../components/ConfirmationPopup";
 
 // incomplete backend tasks, can be found using ctrl+f "TODO".
 export default function EditPost() {
@@ -48,7 +49,8 @@ export default function EditPost() {
 
   const navigate = useNavigate();
 
-  const [deleteFailed, setDeleteFailed] = useState(false);
+  //confirmation popuop
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   //react hook form
   const {
@@ -118,7 +120,10 @@ export default function EditPost() {
     formData.append("condition", data.condition);
 
     // JSON string for the backend
-    formData.append("deleted_images", JSON.stringify(data.deleted_images || []));
+    formData.append(
+      "deleted_images",
+      JSON.stringify(data.deleted_images || [])
+    );
 
     // attach new images
     data.new_images.forEach((file) => {
@@ -176,39 +181,39 @@ export default function EditPost() {
     return result;
   };
 
-
   //turn new uploads into rendable URLs
-  const getNewImages = ()=>{
+  const getNewImages = () => {
     let imgs = Array.from(newImages);
-    imgs = imgs.map((img )=> ({src : URL.createObjectURL(img), label : img.name}));
+    imgs = imgs.map((img) => ({
+      src: URL.createObjectURL(img),
+      label: img.name,
+    }));
     console.log(imgs);
     return imgs;
-  }
+  };
 
-   const onDelete = async ()=>{
-      try {
-      const response = await fetch("/api/my-posts/delete", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({userId : userData.id, postId: id}),
-      });
+  const onDelete = async () => {
+    setConfirmOpen(true);
+  };
 
-      const data = await response.json();
-      //navigate to My posts on success
-      if (response.ok) {
-        navigate("/user/market");
-      } else {
-        // Handle case where delete failed for some reason
-         setDeleteFailed(data.error);
-         
-      }
-    } catch (error) {
-      console.error("Error logging in:", error);
-      alert("An error occurred. Please try again later.");
-    }  
-  }
+  const confirmedDelete = async () => {
+    const resp = await fetch("http://localhost:8080/api/my-posts/delete", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: userData.id, postId: id }),
+    });
+
+    return resp;
+  };
+
+  const callBackDelete = (ok) => {
+    //navigate to My posts on success
+    if (ok) {
+      navigate("/user/market");
+    }
+  };
 
   return (
     <Stack
@@ -247,7 +252,21 @@ export default function EditPost() {
               marginBottom: 3,
             })}
           ></Divider>
-           <CustomButton onClick={onDelete} style={{alignSelf: 'flex-end', pb: 2}}>Delete</CustomButton>
+          <ConfirmationPopup
+            warningMessage={" Do You Want To Proceed With Deleting Your Post ?"}
+            open={confirmOpen}
+            handleClose={() => {
+              setConfirmOpen(false);
+            }}
+            executeFunction={confirmedDelete}
+            callBack={callBackDelete}
+          ></ConfirmationPopup>
+          <CustomButton
+            onClick={onDelete}
+            style={{ alignSelf: "flex-end", pb: 2 }}
+          >
+            Delete
+          </CustomButton>
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <Stack direction="column" component={"div"} spacing={4}>
               <InputField
