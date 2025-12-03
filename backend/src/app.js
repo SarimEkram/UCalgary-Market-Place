@@ -20,6 +20,9 @@ import findUserRoutes from "./routes/adminRoutes/findUserRoute.js";
 import deleteUserRoutes from "./routes/adminRoutes/deleteUserRoute.js";
 import deletePostRoutes from "./routes/adminRoutes/deletePostRoute.js";
 import viewReportedUserRoutes from "./routes/adminRoutes/viewReportedUserRoute.js";
+import findReportedEventRoutes from "./routes/adminRoutes/findReportedEventRoute.js";
+import findReportedMarketPostRoutes from "./routes/adminRoutes/findReportedMarketPostRoute.js";
+import getRecentActionsRoutes from "./routes/adminRoutes/getRecentActionsRoute.js";
 
 
 const app = express();
@@ -72,6 +75,9 @@ app.use("/api/admin/users", findUserRoutes);   // GET /api/admin/users?q=...
 app.use("/api/admin/users", deleteUserRoutes); // DELETE /api/admin/users/ban
 app.use("/api/admin/posts", deletePostRoutes); // DELETE /api/admin/posts/:postId
 app.use("/api/admin/reported-users", viewReportedUserRoutes);
+app.use("/api/admin/reported-events", findReportedEventRoutes); // GET /api/admin/reported-events
+app.use("/api/admin/reported-market-posts", findReportedMarketPostRoutes); // GET /api/admin/reported-market-posts
+app.use("/api/admin/recent-actions", getRecentActionsRoutes); // GET /api/admin/recent-actions?adminId=1
 
 
 export default app;
