@@ -15,11 +15,14 @@ import DesktopNav from "../components/DesktopNav";
 import MobileNav from "../components/MobileNav";
 import Header from "../components/Header";
 import ConfirmationPopup from "../components/ConfirmationPopup";
+import { useNavigate } from "react-router";
+
 
 const API_BASE = "http://localhost:8080";
 const PAGE_SIZE = 6;
 
 export default function FindUser() {
+    const navigate = useNavigate();
     const [searchTermUser, setSearchTermUser] = useState("");
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -125,8 +128,7 @@ export default function FindUser() {
     }, [searchTermUser]);
 
     const handleViewUser = (id) => {
-        console.log("View user", id);
-        // TODO: navigate to admin user profile page
+        navigate(`/profile/${id}`);
     };
 
     return (
