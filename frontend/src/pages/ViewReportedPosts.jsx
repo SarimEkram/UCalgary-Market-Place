@@ -2,40 +2,57 @@ import { Box, Container, Divider, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import PostCard from "../components/ReportedPostCard";
-import DesktopNav from "../components/DesktopNav";
 import MobileNav from "../components/MobileNav";
+import DesktopNav from "../components/DesktopNav";
 
-export default function ViewReportedPosts() {
+export default function ViewReportedEvents() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
     async function fetchData() {
-      const response = await fetch(
-        `/api/admin/reported-market-posts`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+      try {
+        const response = await fetch(
+          `/api/admin/reported-events`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          console.error("Failed to fetch reported events");
+          return;
         }
-      );
 
-      let data = await response.json();
-      data = data.map((item) => {
-        if (item.thumbnail != null) {
-          const blob = item.thumbnail.data.replace(/\s/g, "");
-          const src = `data:image/jpeg;base64,${blob}`;
-          item["image"] = src;
-        } else {
-          item["image"] = null;
+        let data = await response.json();
+        
+        if (!Array.isArray(data)) {
+          console.error("Expected array but got:", typeof data);
+          return;
         }
-        return item;
-      });
+        
+        data = data.map((item) => {
+          if (item.thumbnail != null && item.thumbnail.data) {
+            const blob = item.thumbnail.data.replace(/\s/g, "");
+            const src = `data:image/jpeg;base64,${blob}`;
+            item["image"] = src;
+          } else {
+            item["image"] = null;
+          }
+          return item;
+        });
 
-
-      setItems(data);
+        if (isMounted) {
+          setItems(data);
+        }
+      } catch (error) {
+        console.error("Error fetching reported events:", error);
+      }
     }
+
     fetchData();
     return () => {
       isMounted = false;
@@ -69,7 +86,7 @@ export default function ViewReportedPosts() {
         <Container
           maxWidth="lg"
           sx={{
-            flexGrow: 1,
+             flexGrow: 1,
             py: { xs: 4, md: 8 },
             px: { xs: 4, sm: 6, md: 10 },
             display: "flex",
@@ -79,11 +96,11 @@ export default function ViewReportedPosts() {
           }}
         >
           <Box>
-            <Typography variant="h4">View Reported Market Posts</Typography>
+            <Typography variant="h4">View Reported Event Posts</Typography>
             <CustomDivider></CustomDivider>
           </Box>
           <Box
-            sx={(theme) => ({
+            sx={(theme)=>({
               display: "grid",
               gridAutoRows: "0.6fr",
               columnGap: 5,
@@ -100,15 +117,16 @@ export default function ViewReportedPosts() {
               },
             })}
           >
+           
             {items.length == 0 ? <Typography variant="h5" color="textSecondary">No Posts</Typography> : items.map((post, index) => {
               return (
                 <PostCard
-                  key={"card-" + index}
+                  key={"card-" + (index + 2)}
                   primaryText={post.title}
                   reportDate={post.report_date}
                   numReports={post.report_count}
                   image={post.image}
-                  type="event"
+                  type="events"
                   id={post.id}
                 ></PostCard>
               );
