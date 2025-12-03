@@ -14,37 +14,55 @@ export default function AdminProfile() {
   const { id } = useParams();
 
   useEffect(() => {
+    if (!id) return; // Guard against undefined id
+    
     let isMounted = true;
     async function fetchData() {
-      const response = await fetch(
-        `/api/admin/users/${id}/profile`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+      try {
+        const response = await fetch(
+          `/api/admin/recent-actions?adminId=${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          console.error("Failed to fetch admin data");
+          return;
         }
-      );
 
-      let data = await response.json();
+        let data = await response.json();
 
-      setUserData({ fname: data.admin.fname, lname: data.admin.lname, email: data.admin.email });
+        if (!data || !data.admin) {
+          console.error("Invalid response data");
+          return;
+        }
 
-      let actionData = [...data.actions];
-      actionData = actionData.map((item) => {
-        let dateObject = dayjs(item.date);
+        setUserData({ fname: data.admin.fname, lname: data.admin.lname, email: data.admin.email });
 
-        item["dateTime"] = dayjs(item.date).format("YYYY/MM/DD, h:mma");
-        return item;
-      });
+        let actionData = data.actions ? [...data.actions] : [];
+        actionData = actionData.map((item) => {
+          if (item.date) {
+            item["dateTime"] = dayjs(item.date).format("YYYY/MM/DD, h:mma");
+          }
+          return item;
+        });
 
-      setItems(actionData);
+        if (isMounted) {
+          setItems(actionData);
+        }
+      } catch (error) {
+        console.error("Error fetching admin profile:", error);
+      }
     }
     fetchData();
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [id]);
 
   const CustomDivider = (props) => (
     <Box>
@@ -162,3 +180,4 @@ export default function AdminProfile() {
     </Stack>
   );
 }
+
