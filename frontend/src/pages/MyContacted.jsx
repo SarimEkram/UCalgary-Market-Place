@@ -17,7 +17,7 @@ export default function MyContacted() {
     let isMounted = true;
     async function fetchData() {
       const response = await fetch(
-        `http://localhost:8080/api/getContactedPosts`,
+        `http://localhost:8080/api/contacted/list`,
         {
           method: "POST",
           headers: {
