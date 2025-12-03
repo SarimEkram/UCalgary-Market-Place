@@ -53,6 +53,7 @@ export default function ViewReportedEvents() {
       }
     }
 
+
     fetchData();
     return () => {
       isMounted = false;
@@ -102,18 +103,15 @@ export default function ViewReportedEvents() {
           <Box
             sx={(theme)=>({
               display: "grid",
-              gridAutoRows: "0.6fr",
+              gridAutoRows: "200px",
               columnGap: 5,
               rowGap: 10,
               mt: 0.5,
-              [theme.breakpoints.down("sm")]: {
-                gridTemplateColumns: "repeat(1, minmax(0, 1fr))",
+               [theme.breakpoints.down("1100")]: {
+                gridTemplateColumns: "repeat(1, 1fr)",
               },
-              [theme.breakpoints.between("sm", "1000")]: {
-                gridTemplateColumns: "repeat(1, 0.6fr)",
-              },
-              [theme.breakpoints.up("1000")]: {
-                gridTemplateColumns: "repeat(2, minmax(0, 0.6fr))",
+              [theme.breakpoints.up("1100")]: {
+                gridTemplateColumns: "repeat(2, 0.6fr)",
               },
             })}
           >
