@@ -19,7 +19,7 @@ export default function UserProfile() {
 
         async function fetchData() {
             const response = await fetch(
-                `http://localhost:8080/api/admin/users/${id}/profile`,
+                `/api/admin/users/${id}/profile`,
                 {
                     method: "GET",
                     headers: {

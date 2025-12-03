@@ -39,7 +39,7 @@ export default function FindUser() {
 
         console.log("DELETE REQUEST STARTED:", selectedEmail);
 
-        const res = await fetch(`${API_BASE}/api/admin/users/ban`, {
+        const res = await fetch(`/api/admin/users/ban`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -98,7 +98,7 @@ export default function FindUser() {
                 }
 
                 const res = await fetch(
-                    `${API_BASE}/api/admin/users?${params.toString()}`
+                    `/api/admin/users?${params.toString()}`
                 );
 
                 if (!res.ok) {
