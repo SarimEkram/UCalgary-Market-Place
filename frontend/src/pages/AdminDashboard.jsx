@@ -12,8 +12,10 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import DesktopNav from "../components/DesktopNav";
 import MobileNav from "../components/MobileNav";
+import { useState } from "react";
 
 function DashCard({ icon, label, onClick }) {
+ 
   return (
     <Paper
       onClick={onClick}
@@ -61,6 +63,11 @@ function DashCard({ icon, label, onClick }) {
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+
+  const [userID, setUserID] = useState(() => {
+      return JSON.parse(localStorage.getItem("user")).id;
+  });
+
 
   return (
     <Stack
@@ -114,8 +121,8 @@ export default function AdminDashboard() {
 
               <DashCard
                 icon={<ProfileIconSVG />}
-                label="Find Admin"
-                onClick={() => navigate("/admin/find-admin")}
+                label="Recent Actions"
+                onClick={() => navigate(`/admin/profile/${userID}`)}
               />
             </Stack>
 
@@ -129,13 +136,13 @@ export default function AdminDashboard() {
               <DashCard
                 icon={<ReportIconSVG />}
                 label="View Reported Market Posts"
-                onClick={() => navigate("/admin/reported-market-posts")}
+                onClick={() => navigate("/admin/reports/market")}
               />
 
               <DashCard
                 icon={<ReportIconSVG />}
                 label="View Reported Event Posts"
-                onClick={() => navigate("/admin/reported-event-posts")}
+                onClick={() => navigate("/admin/reports/events")}
               />
             </Stack>
 

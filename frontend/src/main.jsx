@@ -28,7 +28,6 @@ import ViewReportedEvents from "./pages/ViewReportedEvents";
 import ViewReportedPosts from "./pages/ViewReportedPosts";
 import AdminSettings from "./pages/AdminSettings";
 import AdminProfile from "./pages/AdminProfile";
-import AdminList from "./pages/FindAdmin";
 import FindUser from "./pages/FindUser";
 import AdminDashboard from "./pages/AdminDashboard";
 import ViewReportedUsers from "./pages/ViewReportedUsers";
@@ -154,7 +153,6 @@ createRoot(document.getElementById("root")).render(
           <Route path="events/:id" element={<EventItemPage />} />
           <Route path="admin">
             <Route index element={<AdminDashboard />} />
-            <Route path="find-admin" element={<AdminList></AdminList>}></Route>
             <Route path ="find-user" element={<FindUser></FindUser>}></Route>
              <Route path="reported-users" element={<ViewReportedUsers></ViewReportedUsers>}></Route>
              <Route path="profile/:id" element={<AdminProfile></AdminProfile>}></Route>
