@@ -1,4 +1,3 @@
-
 // EventItemPage.jsx
 import {
   Box,
@@ -6,6 +5,7 @@ import {
   Typography,
   IconButton,
   Divider,
+  Tooltip,
   Container,
 } from "@mui/material";
 
@@ -43,8 +43,8 @@ export default function EventItemPage() {
   const [contacted, setContacted] = useState(false);
   const [isContacting, setIsContacting] = useState(false);
   const [contactMessage, setContactMessage] = useState("");
-  const [remCooldown, setCooldownRemaining] = useState(null); 
-  const [cooldownUntil, setCooldownUntil] = useState(null); 
+  const [remCooldown, setCooldownRemaining] = useState(null);
+  const [cooldownUntil, setCooldownUntil] = useState(null);
   const [cooldownText, setCooldownText] = useState("");
 
   // Saved event posts
@@ -99,8 +99,8 @@ export default function EventItemPage() {
       hours > 0
         ? `${hours}h ${mins}m ${sec}s`
         : mins > 0
-        ? `${mins}m ${sec}s`
-        : `${sec}s`;
+          ? `${mins}m ${sec}s`
+          : `${sec}s`;
 
     setCooldownUntil(until);
     setCooldownRemaining(ceil_hours);
@@ -116,7 +116,7 @@ export default function EventItemPage() {
         setIsLoading(true);
 
         const response = await fetch(
-          `/api/posts/eventdetails/${postId}`
+          `http://localhost:8080/api/posts/eventdetails/${postId}`
         );
 
         if (!response.ok) {
@@ -220,7 +220,7 @@ export default function EventItemPage() {
       if (!userId || !postId) return;
 
       try {
-        const response = await fetch(`/api/getSavedPosts`, {
+        const response = await fetch(`http://localhost:8080/api/getSavedPosts`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId }),
@@ -255,8 +255,8 @@ export default function EventItemPage() {
       setIsSavingEvent(true);
 
       const url = isSavedEvent
-        ? `/api/getSavedPosts/unsave`
-        : `/api/getSavedPosts/save`;
+        ? `http://localhost:8080/api/getSavedPosts/unsave`
+        : `http://localhost:8080/api/getSavedPosts/save`;
 
       const response = await fetch(url, {
         method: "POST",
@@ -298,7 +298,7 @@ export default function EventItemPage() {
       setIsContacting(true);
       setContactMessage("");
 
-      const response = await fetch(`/api/contactSeller`, {
+      const response = await fetch(`http://localhost:8080/api/contactSeller`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -342,7 +342,7 @@ export default function EventItemPage() {
         return;
       }
 
-        if (!response.ok) {
+      if (!response.ok) {
         setContactMessage(
           data?.error || "Failed to contact seller. Please try again."
         );
@@ -357,67 +357,67 @@ export default function EventItemPage() {
   };
 
   const handleSubmitReport = async ({ reportType, reason }) => {
-  if (!userId) {
-    setReportMessage("Please log in to submit a report.");
-    console.log("User not logged in. Failure to report");
-    return;
-  }
-
-  const type =
-    reportType === "user" || reportType === "post" ? reportType : "post";
-
-  const currentItem = eventDetails;
-
-  try {
-    setIsReporting(true);
-    setReportMessage("");
-
-    let body = {
-      reporterId: userId,
-      reportType: type,
-      reason,
-      postId,        
-    };
-
-    if (type === "user" && currentItem?.sellerId) {
-      body.reportedUserId = currentItem.sellerId;
-    }
-
-    const response = await fetch(`/api/report`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    const text = await response.text();
-    let data = null;
-    try {
-      data = text ? JSON.parse(text) : null;
-    } catch {
-      // ignore parse error
-    }
-
-    if (!response.ok) {
-      console.error("Report submission failed (event):", response.status, data);
-      setReportMessage(
-        (data && (data.error || data.message)) ||
-          "Failed to submit report."
-      );
+    if (!userId) {
+      setReportMessage("Please log in to submit a report.");
+      console.log("User not logged in. Failure to report");
       return;
     }
 
-    console.log("Report has been submitted successfully (event).");
-    setReportMessage(
-      "Your report has been submitted. Thank you for letting us know."
-    );
-    setIsReportOpen(false);
-  } catch (err) {
-    console.error("Report error (event):", err);
-    setReportMessage("Error submitting report.");
-  } finally {
-    setIsReporting(false);
-  }
-};
+    const type =
+      reportType === "user" || reportType === "post" ? reportType : "post";
+
+    const currentItem = eventDetails;
+
+    try {
+      setIsReporting(true);
+      setReportMessage("");
+
+      let body = {
+        reporterId: userId,
+        reportType: type,
+        reason,
+        postId,
+      };
+
+      if (type === "user" && currentItem?.sellerId) {
+        body.reportedUserId = currentItem.sellerId;
+      }
+
+      const response = await fetch(`http://localhost:8080/api/report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const text = await response.text();
+      let data = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        // ignore parse error
+      }
+
+      if (!response.ok) {
+        console.error("Report submission failed (event):", response.status, data);
+        setReportMessage(
+          (data && (data.error || data.message)) ||
+          "Failed to submit report."
+        );
+        return;
+      }
+
+      console.log("Report has been submitted successfully (event).");
+      setReportMessage(
+        "Your report has been submitted. Thank you for letting us know."
+      );
+      setIsReportOpen(false);
+    } catch (err) {
+      console.error("Report error (event):", err);
+      setReportMessage("Error submitting report.");
+    } finally {
+      setIsReporting(false);
+    }
+  };
 
 
   const item = eventDetails;
@@ -586,9 +586,38 @@ export default function EventItemPage() {
                 <Box sx={{ ...styles.rowGap, mb: 1 }}>
                   {contactButtonElement}
 
-                  <IconButton sx={styles.infoIcon}>
-                    <InfoIcon size={16} />
-                  </IconButton>
+
+                  <Tooltip
+                    arrow
+                    placement="top"
+                    title="Clicking contact seller button will send an email to the seller with your contact info."
+                    slotProps={{
+                      tooltip: {
+                        sx: {
+                          border: "1px solid #d2cacaff",
+                          bgcolor: "white",
+                          color: "black",
+                          fontSize: "14px",
+                          lineHeight: "1.8",
+                          padding: "14px 14px",
+
+                        },
+                      },
+                      arrow: {
+                        sx: {
+                          "&:before": {
+                            border: "1px solid #d2cacaff",
+                            boxSizing: "border-box",
+                            backgroundColor: "white",
+                          },
+                        },
+                      },
+                    }}
+                  >
+                    <IconButton sx={styles.infoIcon}>
+                      <InfoIcon size={16} />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
 
                 {contactMessage && (
