@@ -116,10 +116,12 @@ export default function Events() {
             placeholder="Search events"
             variant="standard"
             value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") fetchEvents(eventFilters, e.target.value);
+            onChange={(e) => {
+              const value = e.target.value;
+              setSearchKeyword(value);
+              fetchEvents(eventFilters, value); 
             }}
+
             sx={styles.searchBoxField}
             slotProps={{
               input: {
@@ -133,7 +135,7 @@ export default function Events() {
           />
 
           {/* Filters */}
-          <Filters onApply={handleApplyFilters} onClear={handleClearFilters} showCond = {false} />
+          <Filters onApply={handleApplyFilters} onClear={handleClearFilters} showCond={false} />
 
           <Divider sx={styles.secDiv} />
 
