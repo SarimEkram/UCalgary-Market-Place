@@ -4,62 +4,62 @@ import db from "../../config/db.js";
 // POST /api/my-events/list
 // Body: { userId }
 export const getUserEventPosts = (req, res) => {
-    const { userId } = req.body;
+  const { userId } = req.body;
 
-    if (!userId) {
-        return res.status(400).json({ error: "userId is required" });
+  if (!userId) {
+    return res.status(400).json({ error: "userId is required" });
+  }
+
+  const sql = `
+    SELECT
+        p.post_id,
+        p.name AS title,
+        p.description,
+        p.price,
+        p.postal_code,
+        p.posted_date,
+        e.organization_name,
+        e.event_start,
+        e.event_end,
+        i.image_text_data AS thumbnail_blob
+    FROM posts p
+    JOIN event_posts e
+        ON e.event_id = p.post_id
+    LEFT JOIN images i
+        ON i.image_id = (
+            SELECT MIN(image_id)
+            FROM images
+            WHERE post_id = p.post_id
+        )
+    WHERE p.user_id = ? AND p.post_type = 'event'
+    ORDER BY p.posted_date DESC
+  `;
+
+  db.query(sql, [userId], (err, rows) => {
+    if (err) {
+      console.error("DB error (getUserEventPosts):", err);
+      return res.status(500).json({ error: "Database error" });
     }
 
-    const sql = `
-        SELECT
-            p.post_id,
-            p.name,
-            p.description,
-            p.price,
-            p.postal_code,
-            p.posted_date,
-            e.organization_name,
-            e.event_start,
-            e.event_end,
-            i.image_text_data AS thumbnail_blob
-        FROM posts p
-        JOIN event_posts e
-            ON e.event_id = p.post_id
-        LEFT JOIN images i
-            ON i.image_id = (
-                SELECT MIN(image_id)
-                FROM images
-                WHERE post_id = p.post_id
-            )
-        WHERE p.user_id = ? AND p.post_type = 'event'
-        ORDER BY p.posted_date DESC
-    `;
+    const myEvents = rows.map((row) => ({
+      post_id: row.post_id,
+      title: row.title,
+      description: row.description,
+      price: row.price,
+      postal_code: row.postal_code,
+      posted_date: row.posted_date,
+      organization_name: row.organization_name,
+      event_start: row.event_start,
+      event_end: row.event_end,
+      thumbnail: row.thumbnail_blob
+        ? Buffer.isBuffer(row.thumbnail_blob)
+          ? row.thumbnail_blob.toString("base64")
+          : row.thumbnail_blob
+        : null,
+    }));
 
-    db.query(sql, [userId], (err, rows) => {
-        if (err) {
-            console.error("DB error (getUserEventPosts):", err);
-            return res.status(500).json({ error: "Database error" });
-        }
-
-        const myEvents = rows.map((row) => ({
-            post_id: row.post_id,
-            name: row.name,
-            description: row.description,
-            price: row.price,
-            postal_code: row.postal_code,
-            posted_date: row.posted_date,
-            organization_name: row.organization_name,
-            event_start: row.event_start,
-            event_end: row.event_end,
-            thumbnail: row.thumbnail_blob
-                ? Buffer.isBuffer(row.thumbnail_blob)
-                    ? row.thumbnail_blob.toString("base64")
-                    : row.thumbnail_blob
-                : null,
-        }));
-
-        return res.status(200).json({ myEvents });
-    });
+    return res.status(200).json({ myEvents });
+  });
 };
 
 // 2) Delete an EVENT post created by this user
