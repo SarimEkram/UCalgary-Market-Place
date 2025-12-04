@@ -32,6 +32,8 @@ import AdminList from "./pages/FindAdmin";
 import FindUser from "./pages/FindUser";
 import AdminDashboard from "./pages/AdminDashboard";
 import ViewReportedUsers from "./pages/ViewReportedUsers";
+import ReportedMarketItemPage from "./pages/ReportedMarketItemPage";
+import ReportedEventItemPage from "./pages/ReportEventItemPage";
 
 
 const black = "#221F1F";
@@ -48,6 +50,7 @@ const theme = createTheme({
     headerBackground: "#FFFDFB",
     dividerWidth: 2,
     divider: "#EBE7E4",
+    dullPrimary: "#F8E0DE"
   },
   text: {
     primary: black,
@@ -163,11 +166,11 @@ createRoot(document.getElementById("root")).render(
             <Route path="reports">
               <Route path="events">
                     <Route index element={<ViewReportedEvents></ViewReportedEvents>}></Route>
-                    <Route path=":id" element={<div>Not done view reported event.</div>}></Route>
+                    <Route path=":id" element={<ReportedEventItemPage></ReportedEventItemPage>}></Route>
               </Route>
                 <Route path="market">
                     <Route index element={<ViewReportedPosts></ViewReportedPosts>}></Route>
-                    <Route path=":id" element={<div>Not done view reported market post.</div>}></Route>
+                    <Route path=":id" element={<ReportedMarketItemPage></ReportedMarketItemPage>}></Route>
               </Route>
           </Route>
           </Route>
