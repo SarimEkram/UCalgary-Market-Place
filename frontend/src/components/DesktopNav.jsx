@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Calendar from "../assets/CalendarSVG.jsx";
 import Home from "../assets/HomeSVG.jsx";
+import Settings from "../assets/SettingsSVG.jsx";
 import Shoppingbag from "../assets/ShoppingbagSVG.jsx";
 import User from "../assets/UserSVG.jsx";
 
@@ -12,7 +13,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import { useLocation, useNavigate } from "react-router";
+import { Link, useLocation } from "react-router";
 
 export default function DesktopNav() {
   // set the options based on the role of the user
@@ -20,12 +21,19 @@ export default function DesktopNav() {
     const userData = JSON.parse(localStorage.getItem("user"));
     let options = [];
     if (userData.isAdmin) {
-      options = ["Home", "Admin", "Market", "Events"];
+      options = ["Home", "Admin", "Market", "Events", "Settings"];
     } else {
       options = ["Home", "User", "Market", "Events"];
     }
     return options;
   });
+
+  // navigate urls, and change the current selected page, when a user clicks on an item in the nav bar
+  function getURL(newValue) {
+    const url = newValue === "settings" ? "/admin/settings" : "/" + newValue;
+    
+    return url;
+  }
 
   //get the current path
   const location = useLocation();
@@ -37,42 +45,32 @@ export default function DesktopNav() {
   //constant width of the navigation bar
   const drawerWidth = 180;
 
-  //hook which handles navigating urls
-  const navigate = useNavigate();
-
   //render icon assocaited with a given value. ex: render Home icon
   const Icon = function ({ value }) {
     if (value == "home") {
       return <Home></Home>;
     } else if (value == "user" || value == "admin") {
       return <User></User>;
-    } else if (value == "events") {
+    } else if (value == "market") {
       return <Shoppingbag></Shoppingbag>;
+    } else if (value == "settings") {
+      return <Settings></Settings>;
     } else {
       return <Calendar></Calendar>;
     }
   };
 
-  // navigate urls, and change the current selected page, when a user clicks on an item in the nav bar
-  function handleChange(newValue) {
-    setValue(() => {
-      navigate("/" + newValue);
-      return newValue;
-    });
-  }
-
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
 
   return (
-    
     <Drawer
-      id="desktop-nav"  
-      slotProps={{ transition: { unmountOnExit: true, } }}
+      id="desktop-nav"
+      slotProps={{ transition: { unmountOnExit: true } }}
       sx={(theme) => ({
         width: drawerWidth,
         // flexShrink: 0,
-        display: matches ?  "block" : "none", 
+        display: matches ? "block" : "none",
         "& .MuiDrawer-paper": {
           width: drawerWidth,
           boxSizing: "border-box",
@@ -86,42 +84,46 @@ export default function DesktopNav() {
       variant="persistent"
       anchor="left"
       open={matches}
-      
     >
       <List id="list" sx={{ paddingTop: 10 }}>
         {options.map((title) => (
           <ListItem key={"nav-" + title.toLowerCase()} disablePadding>
-            <ListItemButton onClick={() => handleChange(title.toLowerCase())}>
-              <ListItemIcon
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <MUIIcon
-                  fontSize="medium"
+            <Link
+              to={getURL(title.toLowerCase())}
+              style={{ textDecoration: "none" }}
+            >
+              <ListItemButton component="div">
+                <ListItemIcon
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <MUIIcon
+                    fontSize="medium"
+                    sx={(theme) => ({
+                      padding: 0,
+                      color:
+                        value == title.toLowerCase()
+                          ? theme.palette.primary.main
+                          : theme.palette.secondary.main,
+                    })}
+                  >
+                    <Icon value={title.toLowerCase()}></Icon>
+                  </MUIIcon>
+                </ListItemIcon>
+                <ListItemText
                   sx={(theme) => ({
-                    padding: 0,
                     color:
                       value == title.toLowerCase()
                         ? theme.palette.primary.main
                         : theme.palette.secondary.main,
                   })}
-                >
-                  <Icon value={title.toLowerCase()}></Icon>
-                </MUIIcon>
-              </ListItemIcon>
-              <ListItemText
-                sx={(theme) => ({
-                  color:
-                    value == title.toLowerCase()
-                      ? theme.palette.primary.main
-                      : theme.palette.secondary.main,
-                })}
-                primary={title}
-              />
-            </ListItemButton>
+                  primary={title}
+                />
+              </ListItemButton>
+            </Link>
           </ListItem>
         ))}
       </List>
