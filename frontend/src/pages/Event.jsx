@@ -18,7 +18,7 @@ import DesktopNav from "../components/DesktopNav";
 import { useNavigate } from "react-router-dom";
 
 const API_BASE = "";
-const EVENTS_ENDPOINT = `${API_BASE}/api/posts/eventres`;
+const EVENTS_ENDPOINT = `/api/posts/eventres`;
 
 export default function Events() {
   const [eventFilters, setEventFilters] = useState(null);

@@ -249,7 +249,7 @@ export default function EditEvent() {
 
   const confirmedDelete = async()=>{
     const resp =   await fetch(
-        "http://localhost:8080/api/my-events/delete",
+        "/api/my-events/delete",
         {
           method: "DELETE",
           headers: {
