@@ -517,7 +517,7 @@ export default function EventItemPage() {
                 <IconButton size="small" onClick={() => navigate(-1)}>
                   <ArrowBackIosNewIcon sx={{ fontSize: 18 }} />
                 </IconButton>
-                <Typography variant="body2">Back to events</Typography>
+                <Typography variant="body2">Back</Typography>
               </Box>
 
               {/* Images */}
