@@ -230,10 +230,6 @@ export default function ReportedMarketItemPage() {
 
                 <Box sx={styles.rowGap}>
                   <Typography variant="h6">{priceDisplay}</Typography>
-
-                  <IconButton size="small" disabled={true}>
-                    <BookmarkBorderIcon></BookmarkBorderIcon>
-                  </IconButton>
                 </Box>
               </Box>
 
