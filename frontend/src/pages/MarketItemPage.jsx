@@ -6,10 +6,12 @@ import {
   Typography,
   IconButton,
   Divider,
+  Tooltip
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
+
 
 import InfoIcon from "../assets/InfoIcon";
 import ImageSlider from "../components/ImageSlider";
@@ -41,9 +43,9 @@ export default function MarketItemPage() {
   const [contactedSeller, setSellerContacted] = useState(false);
   const [isContactingSeller, setIsContactingSeller] = useState(false);
   const [contactSellerMsg, setContactSellerMsg] = useState("");
-  const [cooldownRemaining, setCooldownRemaining] = useState(null); 
-  const [cooldownUntil, setCooldownUntil] = useState(null);         
-  const [cooldownMsg, setCooldownMsg] = useState("");             
+  const [cooldownRemaining, setCooldownRemaining] = useState(null);
+  const [cooldownUntil, setCooldownUntil] = useState(null);
+  const [cooldownMsg, setCooldownMsg] = useState("");
 
   // Saved posts state
   const [isPostSaved, setIsPostSaved] = useState(false);
@@ -94,7 +96,7 @@ export default function MarketItemPage() {
     const mins = Math.floor(remainingSec / 60);
     const sec = remainingSec % 60;
 
-    const text = hours > 0 ? `${hours}h ${mins}m ${sec}s`: mins > 0 ? `${mins}m ${sec}s`: `${sec}s`;
+    const text = hours > 0 ? `${hours}h ${mins}m ${sec}s` : mins > 0 ? `${mins}m ${sec}s` : `${sec}s`;
 
     setCooldownUntil(until);
     setCooldownRemaining(ceil_hours);
@@ -110,7 +112,7 @@ export default function MarketItemPage() {
         setIsLoading(true);
 
         const response = await fetch(
-          `/api/posts/itemdetails/${postId}`
+          `http://localhost:8080/api/posts/itemdetails/${postId}`
         );
 
         if (!response.ok) {
@@ -186,7 +188,7 @@ export default function MarketItemPage() {
   useEffect(() => {
     if (!cooldownUntil) return;
 
-    calculateCooldown(cooldownUntil); 
+    calculateCooldown(cooldownUntil);
 
     const id = setInterval(() => {
       calculateCooldown(cooldownUntil);
@@ -201,7 +203,7 @@ export default function MarketItemPage() {
       if (!userId || !postId) return;
 
       try {
-        const resp = await fetch(`/api/getSavedPosts`, {
+        const resp = await fetch(`http://localhost:8080/api/getSavedPosts`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId }),
@@ -232,8 +234,8 @@ export default function MarketItemPage() {
       setIsPostSaving(true);
 
       const url = isPostSaved
-        ? `/api/getSavedPosts/unsave`
-        : `/api/getSavedPosts/save`;
+        ? `http://localhost:8080/api/getSavedPosts/unsave`
+        : `http://localhost:8080/api/getSavedPosts/save`;
 
       const resp = await fetch(url, {
         method: "POST",
@@ -269,7 +271,7 @@ export default function MarketItemPage() {
       setIsContactingSeller(true);
       setContactSellerMsg("");
 
-      const resp = await fetch(`/api/contactSeller`, {
+      const resp = await fetch(`http://localhost:8080/api/contactSeller`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -282,7 +284,7 @@ export default function MarketItemPage() {
       let data = null;
       try {
         data = JSON.parse(text);
-      } catch {}
+      } catch { }
 
       const key = CONTACT_COOLDOWN_KEY(userId, postId);
       const now = Date.now();
@@ -347,7 +349,7 @@ export default function MarketItemPage() {
       if (type === "post") body.postId = postId;
       if (type === "user") body.reportedUserId = currentItem?.sellerId;
 
-      const resp = await fetch(`/api/report`, {
+      const resp = await fetch(`http://localhost:8080/api/report`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -376,14 +378,14 @@ export default function MarketItemPage() {
 
   const infoItems = item
     ? [
-        { label: "Location", value: item.location },
-        { label: "Condition", value: item.condition },
-        { label: "Seller", value: item.seller },
-        { label: "Post Date", value: item.postDate },
-      ]
+      { label: "Location", value: item.location },
+      { label: "Condition", value: item.condition },
+      { label: "Seller", value: item.seller },
+      { label: "Post Date", value: item.postDate },
+    ]
     : [];
 
-  
+
   let contactButtonElement;
 
   if (cooldownRemaining !== null) {
@@ -528,9 +530,37 @@ export default function MarketItemPage() {
                 <Box sx={{ ...styles.rowGap, mb: 1 }}>
                   {contactButtonElement}
 
-                  <IconButton sx={styles.infoIcon}>
-                    <InfoIcon size={16} />
-                  </IconButton>
+                  <Tooltip
+                    arrow
+                    placement="top"
+                    title="Clicking contact seller button will send an email to the seller with your contact info."
+                    slotProps={{
+                      tooltip: {
+                        sx: {
+                          border: "1px solid #d2cacaff",
+                          bgcolor: "white",
+                          color: "black",
+                          fontSize: "14px",
+                          lineHeight: "1.8",
+                          padding: "14px 14px",
+
+                        },
+                      },
+                      arrow: {
+                        sx: {
+                          "&:before": {
+                            border: "1px solid #d2cacaff",
+                            boxSizing: "border-box",
+                            backgroundColor: "white",
+                          },
+                        },
+                      },
+                    }}
+                  >
+                    <IconButton sx={styles.infoIcon}>
+                      <InfoIcon size={16} />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
 
                 {contactSellerMsg && (
