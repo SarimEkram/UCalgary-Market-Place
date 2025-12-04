@@ -468,7 +468,7 @@ export default function MarketItemPage() {
                 <IconButton size="small" onClick={() => navigate(-1)}>
                   <ArrowBackIosNewIcon sx={{ fontSize: 18 }} />
                 </IconButton>
-                <Typography variant="body2">Back to search</Typography>
+                <Typography variant="body2">Back</Typography>
               </Box>
 
               <Box>
