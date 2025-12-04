@@ -14,6 +14,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import Filters from "../components/Filters";
 import Header from "../components/Header";
 import MobileNav from "../components/MobileNav";
+import DesktopNav from "../components/DesktopNav";
 import { useNavigate } from "react-router-dom";
 
 const API_BASE = "";
@@ -110,88 +111,94 @@ export default function Market() {
   const keywordOptions = ["textbook", "tutor", "desk", "equipment"];
 
   return (
-    <Stack
-      id="market-initial-page"
-      direction="column"
-      sx={styles.page}
-    >
-      <Header />
+    <Box sx={{ display: "flex", width: "100%" }}>
+      {/* Desktop left nav */}
+      <Box sx={{ display: { xs: "none", md: "block" } }}>
+        <DesktopNav />
+      </Box>
+      <Stack
+        id="market-initial-page"
+        direction="column"
+        sx={{...styles.page, flex:1}}
+      >
+        <Header />
 
-      <Container sx={styles.container} maxWidth="lg">
-        <TextField
-          size="medium"
-          placeholder="Search"
-          variant="standard"
-          value={searchKeyword}
-          onChange={(e) => setSearchKeyword(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              fetchMarketPosts(postFilters, e.target.value);
-            }
-          }}
-          sx={styles.searchBoxField}
-          slotProps={{
-            input: {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <SearchIcon fontSize="medium" />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
+        <Container sx={styles.container} maxWidth="lg">
+          <TextField
+            size="medium"
+            placeholder="Search"
+            variant="standard"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                fetchMarketPosts(postFilters, e.target.value);
+              }
+            }}
+            sx={styles.searchBoxField}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <SearchIcon fontSize="medium" />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
 
-        <Filters onApply={handleApplyFilters} onClear={handleClearFilters} />
+          <Filters onApply={handleApplyFilters} onClear={handleClearFilters} />
 
-        <Divider sx={styles.secDiv} />
+          <Divider sx={styles.secDiv} />
 
-        <Typography variant="caption" sx={styles.secLabel}>
-          Possible keywords
-        </Typography>
+          <Typography variant="caption" sx={styles.secLabel}>
+            Possible keywords
+          </Typography>
 
-        <Stack direction="row" spacing={1} sx={styles.keywordRow}>
-          {keywordOptions.map((kw) => (
-            <Typography
-              key={kw}
-              variant="caption"
-              sx={styles.kw}
-              onClick={() => {
-                setSearchKeyword(kw);
-                fetchMarketPosts(postFilters, kw);
-              }}
-            >
-              “{kw}”
-            </Typography>
-          ))}
-        </Stack>
-
-        <Divider sx={styles.secDiv} />
-
-        <Typography variant="caption" sx={styles.secLabel}>
-          Recent posts
-        </Typography>
-
-        <Box sx={styles.postGrid}>
-          {loading && (
-            <Typography sx={styles.loadingPostsText}>
-              Loading market posts...
-            </Typography>
-          )}
-
-          {error && !loading && (
-            <Typography sx={styles.noPostsText}>{error}</Typography>
-          )}
-
-          {!loading &&
-            !error &&
-            posts.map((marketPost) => (
-              <PostCard key={marketPost.id} marketPost={marketPost} />
+          <Stack direction="row" spacing={1} sx={styles.keywordRow}>
+            {keywordOptions.map((kw) => (
+              <Typography
+                key={kw}
+                variant="caption"
+                sx={styles.kw}
+                onClick={() => {
+                  setSearchKeyword(kw);
+                  fetchMarketPosts(postFilters, kw);
+                }}
+              >
+                “{kw}”
+              </Typography>
             ))}
-        </Box>
-      </Container>
+          </Stack>
 
-     <MobileNav/>
-    </Stack>
+          <Divider sx={styles.secDiv} />
+
+          <Typography variant="caption" sx={styles.secLabel}>
+            Recent posts
+          </Typography>
+
+          <Box sx={styles.postGrid}>
+            {loading && (
+              <Typography sx={styles.loadingPostsText}>
+                Loading market posts...
+              </Typography>
+            )}
+
+            {error && !loading && (
+              <Typography sx={styles.noPostsText}>{error}</Typography>
+            )}
+
+            {!loading &&
+              !error &&
+              posts.map((marketPost) => (
+                <PostCard key={marketPost.id} marketPost={marketPost} />
+              ))}
+          </Box>
+        </Container>
+
+        <MobileNav />
+      </Stack>
+    </Box>
   );
 }
 
