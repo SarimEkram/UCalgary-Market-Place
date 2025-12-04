@@ -153,30 +153,165 @@ INSERT INTO admins (admin_id, email, fname, lname, hashed_password) VALUES
 (1, 'alice.morgan@ucalgary.ca', 'Alice', 'Morgan', 'W2g0nlxR0R0wEq3dEUKdZmLQekUUEqkgmcnwcfmDKxY='),
 (2, 'david.nguyen@ucalgary.ca', 'David', 'Nguyen', 'V7Oxtb4UpvU0YUpkb9J3cQzU8D5Wspg3L07j1Dlm6yU=');
 
--- POSTS (market)
-INSERT INTO posts (post_id, post_type, postal_code, price, posted_date, name, description, user_id) VALUES
-(101, 'market', 'T2N1N4',  45.00, '2025-10-20 00:00:00', 'Linear Algebra Textbook', 'Used but in good condition, includes highlights.', 1),
-(102, 'market', 'T3P2A6', 120.00, '2025-10-25 00:00:00', 'Gaming Chair',             'Ergonomic chair used for 3 months.',              2),
-(103, 'market', 'T2L2M3',  65.00, '2025-11-01 00:00:00', 'TI-84 Calculator',          'Fully functional graphing calculator.',           3);
 
--- POSTS (events)
+-- POSTS (market + events)
 INSERT INTO posts (post_id, post_type, postal_code, price, posted_date, name, description, user_id) VALUES
-(201, 'event', 'T2N1N4', 2.00, '2025-10-20 00:00:00', 'SU Event',         'Student Union event', 1),
-(202, 'event', 'T3P2A6', NULL, '2025-10-22 00:00:00', 'LOREN Club Night', 'Club social night',   2),
-(203, 'event', 'T2L2M3', NULL, '2025-10-15 00:00:00', 'FSC Meetup',       'FSC general meeting', 3);
+-- USER 1 (John Doe) – MARKET (3 Posts)
+(101, 'market', 'T2N1N4',  45.00, '2025-10-20 00:00:00',
+ 'Linear Algebra Textbook',
+ 'Used textbook in good condition, includes highlights.',
+ 1),
+(104, 'market', 'T2N1N4', 150.00, '2025-11-05 00:00:00',
+ 'Study Desk with Bookshelf',
+ 'Sturdy study desk with attached bookshelf, perfect for textbooks and study equipment.',
+ 1),
+(105, 'market', 'T2N1N4',  30.00, '2025-11-10 00:00:00',
+ 'Physics Tutor Sessions',
+ 'Upper-year student offering 1:1 physics tutor sessions for first-year physics.',
+ 1),
+
+-- USER 2 (Sarah Lee) – MARKET (3 Posts)
+(102, 'market', 'T3P2A6', 120.00, '2025-10-25 00:00:00',
+ 'Gaming Chair',
+ 'Ergonomic gaming chair used for 3 months.',
+ 2),
+(106, 'market', 'T3P2A6',  80.00, '2025-11-02 00:00:00',
+ 'Economics Textbook',
+ 'Textbook for ECON 201, minor wear on cover but pages intact.',
+ 2),
+(107, 'market', 'T3P2A6', 400.00, '2025-11-15 00:00:00',
+ 'Home Gym Equipment Set',
+ 'Set of dumbbells and workout equipment, great for residence gyms.',
+ 2),
+
+-- USER 3 (Mike Chan) – MARKET (3 Posts)
+(103, 'market', 'T2L2M3',  65.00, '2025-11-01 00:00:00',
+ 'TI-84 Calculator',
+ 'Fully functional graphing calculator, ideal for exams.',
+ 3),
+(108, 'market', 'T2L2M3', 260.00, '2025-11-18 00:00:00',
+ 'Adjustable Standing Desk',
+ 'Sit-stand desk, fits dual monitors and stacks of textbooks.',
+ 3),
+(109, 'market', 'T2L2M3',  25.00, '2025-11-19 00:00:00',
+ 'Chemistry Tutor, 1 on 1',
+ 'Chemistry tutor sessions for CHEM 201/203, flexible hours.',
+ 3),
+
+-- USER 4 (Nora Kim) – MARKET (3 Posts)
+(110, 'market', 'T2P1K4', 120.00, '2025-11-03 00:00:00',
+ 'Computer Science Textbook',
+ 'CS textbook for algorithms and data structures.',
+ 4),
+(111, 'market', 'T2P1K4',  95.00, '2025-11-07 00:00:00',
+ 'Photography Equipment Rental',
+ 'Short-term rental of DSLR photography equipment for projects.',
+ 4),
+(112, 'market', 'T2P1K4', 650.00, '2025-11-22 00:00:00',
+ 'Lab Equipment, Microscope',
+ 'High-quality lab microscope with additional lenses and supporting equipment.',
+ 4),
+
+-- USER 1 (John Doe) – EVENTS (3 Posts)
+(201, 'event', 'T2N1N4',   2.00, '2025-10-20 00:00:00',
+ 'SU Event',
+ 'Student Union event with games and snacks.',
+ 1),
+(204, 'event', 'T2N1N4',  NULL, '2025-11-05 00:00:00',
+ 'Math Review Night',
+ 'Free group review session for the upcoming Calculus midterm.',
+ 1),
+(205, 'event', 'T2N1N4',   5.00, '2025-11-10 00:00:00',
+ 'Exam De-Stress Games Night',
+ 'Board games and snacks hosted by the SU before finals.',
+ 1),
+
+-- USER 2 (Sarah Lee) – EVENTS (3 Posts)
+(202, 'event', 'T3P2A6',  NULL, '2025-10-22 00:00:00',
+ 'LOREN Club Night',
+ 'Club social night with music and food.',
+ 2),
+(206, 'event', 'T3P2A6',  10.00, '2025-11-08 00:00:00',
+ 'LOREN Networking Mixer',
+ 'Networking mixer with club alumni and industry guests.',
+ 2),
+(207, 'event', 'T3P2A6',  NULL, '2025-11-25 00:00:00',
+ 'Tutor Match-Up Fair',
+ 'Meet volunteer tutors for various first-year subjects.',
+ 2),
+
+-- USER 3 (Mike Chan) – EVENTS (3 Posts)
+(203, 'event', 'T2L2M3',  NULL, '2025-10-15 00:00:00',
+ 'FSC Meetup',
+ 'FSC general meeting and introductions.',
+ 3),
+(208, 'event', 'T2L2M3',   3.00, '2025-11-12 00:00:00',
+ 'FSC Study Hall',
+ 'Quiet evening study hall with light snacks.',
+ 3),
+(209, 'event', 'T2L2M3',  15.00, '2025-11-28 00:00:00',
+ 'CSC Lab Skills Workshop',
+ 'Hands-on workshop practicing basic lab equipment skills.',
+ 3),
+
+-- USER 4 (Nora Kim) – EVENTS (3 Posts)
+(210, 'event', 'T2P1K4',  NULL, '2025-11-01 00:00:00',
+ 'Hackathon Weekend',
+ '48-hour on-campus hackathon hosted by CSUS.',
+ 4),
+(211, 'event', 'T2P1K4',  12.00, '2025-11-16 00:00:00',
+ 'Photography Workshop',
+ 'Photography club workshop covering camera basics and shooting tips.',
+ 4),
+(212, 'event', 'T2P1K4',  NULL, '2025-11-30 00:00:00',
+ 'Algorithms Group Study',
+ 'Open study group for the algorithms course final exam.',
+ 4);
 
 -- EVENT DETAILS
 INSERT INTO event_posts (event_id, organization_name, event_start, event_end) VALUES
-(201, 'Student Union', '2025-10-29 19:00:00', '2025-10-29 22:00:00'),
-(202, 'LOREN Club',    '2025-10-31 18:00:00', '2025-11-01 01:00:00'),
-(203, 'FSC',           '2025-10-22 17:30:00', '2025-10-22 19:00:00');
+(201, 'Student Union',
+ '2025-10-29 19:00:00', '2025-10-29 22:00:00'),
+(202, 'LOREN Club',
+ '2025-10-31 18:00:00', '2025-11-01 01:00:00'),
+(203, 'FSC',
+ '2025-10-22 17:30:00', '2025-10-22 19:00:00'),
+(204, 'Math Help Centre',
+ '2025-11-06 18:00:00', '2025-11-06 21:00:00'),
+(205, 'Student Union',
+ '2025-12-10 19:00:00', '2025-12-10 23:00:00'),
+(206, 'LOREN Club',
+ '2025-11-10 17:30:00', '2025-11-10 20:30:00'),
+(207, 'LOREN Club',
+ '2025-11-26 16:00:00', '2025-11-26 18:00:00'),
+(208, 'FSC',
+ '2025-11-15 16:00:00', '2025-11-15 19:00:00'),
+(209, 'CSC',
+ '2025-11-29 10:00:00', '2025-11-29 13:00:00'),
+(210, 'CSUS',
+ '2025-11-02 09:00:00', '2025-11-02 21:00:00'),
+(211, 'Photography Club',
+ '2025-11-17 13:00:00', '2025-11-17 17:00:00'),
+(212, 'CSUS',
+ '2025-12-01 18:00:00', '2025-12-01 21:00:00');
+
 
 
 -- MARKET DETAILS
 INSERT INTO market_posts (market_id, item_condition) VALUES
 (101, 'New'),
 (102, 'New'),
-(103, 'Good');
+(103, 'Good'),
+(104, 'Good'),
+(105, 'New'),
+(106, 'Good'),
+(107, 'Fair'),
+(108, 'New'),
+(109, 'Good'),
+(110, 'Fair'),
+(111, 'Good'),
+(112, 'New');
+
 
 -- IMAGES (all must reference existing post_ids)
 INSERT INTO images (image_id, post_id, image_text_data) VALUES
@@ -185,7 +320,28 @@ INSERT INTO images (image_id, post_id, image_text_data) VALUES
 (403, 103, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/ti84_calc.png')),
 (404, 103, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/ti84-img2.jpg')),
 (405, 201, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/study_group_flyer.jpg')),
-(406, 202, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/career_fair_poster.jpg'));
+(406, 202, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/career_fair_poster.jpg')),
+(407, 104, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/desk-with-bookshelf.jpg')),
+(408, 105, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/Physics-tutor.png')),
+(409, 106, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/economic-textbook.png')),
+(410, 107, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/gym-equipment.png')),
+(411, 108, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/standing-desk-1.jpg')),
+(412, 108, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/standing-desk-2.jpg')),
+(413, 109, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/chem-tutor-poster.png')),
+(414, 110, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/Computer Science Textbook.jpg')),
+(415, 111, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/photography-equip.jpg')),
+(416, 111, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/photography-equip-2.jpg')),
+(417, 112, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/microscope.jpg')),
+(418, 203, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/FSC-event.png')),
+(419, 204, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/math-review-event.png')),
+(420, 205, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/Exam-de-stress-games.jpg')),
+(421, 206, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/LOREN-networking.jpg')),
+(422, 207, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/tutor-match-up.png')),
+(423, 208, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/FSC Study Hall.jpg')),
+(424, 209, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/CSC-lab-skills.jpg')),
+(425, 210, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/CSUS Hackathon.jpg')),
+(426, 211, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/photography-workshop.jpg')),
+(427, 212, LOAD_FILE('/docker-entrypoint-initdb.d/seeding_imgs/data-structures-group-study.jpg'));
 
 -- SAVED POSTS
 INSERT INTO saved_posts (user_id, post_id) VALUES

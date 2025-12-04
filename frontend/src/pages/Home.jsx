@@ -1,9 +1,11 @@
 // Home.jsx
 import { Box, Container, Stack, Typography, Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";          // ⬅️ add this
 import Header from "../components/Header";
 import MobileNav from "../components/MobileNav";
 import DesktopNav from "../components/DesktopNav";
+import heroImg from "../assets/hero.png";
 
 export default function Home() {
   //id = home
@@ -12,9 +14,9 @@ export default function Home() {
       direction="row"
       sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
     >
-      <DesktopNav></DesktopNav>
+      <DesktopNav />
       <Box sx={{ flex: "1", m: 0 }}>
-        <Header></Header>
+        <Header />
         <Container
           maxWidth="lg"
           sx={{
@@ -37,7 +39,7 @@ export default function Home() {
             }}
           >
             <Stack
-              direction={{ xs: "column", md: "row" }} // column on mobile, row on desktop
+              direction={{ xs: "column", md: "row" }}
               spacing={{ xs: 2, md: 3 }}
               alignItems="center"
               justifyContent="space-between"
@@ -70,15 +72,18 @@ export default function Home() {
                 </Typography>
               </Box>
 
-              {/*  IMAGE PLACEHOLDER */}
+              {/* HERO IMAGE */}
               <Box
+                component="img"
+                src={heroImg}
+                alt="Students using the campus marketplace"
                 sx={{
                   flexShrink: 0,
                   mt: { xs: 2, md: 0 },
-                  width: { xs: 140, sm: 180, md: 260 },
-                  height: { xs: 140, sm: 180, md: 260 },
+                  width: { xs: 180, sm: 220, md: 280 },
                   borderRadius: 3,
-                  bgcolor: "#FFE6E0",
+                  objectFit: "cover",
+                  display: "block",
                 }}
               />
             </Stack>
@@ -99,6 +104,7 @@ export default function Home() {
 // Wrapper to fetch posts of a given type and render the Section.
 function DynamicSection({ title, typeFilter }) {
   const [items, setItems] = useState([]);
+  const navigate = useNavigate();                    // ⬅️ use navigate here
 
   useEffect(() => {
     let mounted = true;
@@ -117,7 +123,7 @@ function DynamicSection({ title, typeFilter }) {
         if (!mounted) return;
 
         const mapped = (data || []).map((p) => {
-          // For Market: subtitle = location (use postal for now) - should be city region eventually (need to add api ***or change to post date like homepage?***)
+          // For Market: subtitle = location (use postal code)
           // For Events: subtitle = organization name
           const subtitle =
             typeFilter === "event"
@@ -147,12 +153,24 @@ function DynamicSection({ title, typeFilter }) {
     };
   }, [typeFilter]);
 
-  return <Section title={title} items={items} />;
+  return (
+    <Section
+      title={title}
+      items={items}
+      // "See all" -> public listing pages
+      onSeeAll={() =>
+        navigate(typeFilter === "event" ? "/events" : "/market")
+      }
+      // Card click -> item details pages
+      onItemClick={(id) =>
+        navigate(typeFilter === "event" ? `/events/${id}` : `/market/${id}`)
+      }
+    />
+  );
 }
 
-/*title + responsive cards grid */
-
-function Section({ title, items }) {
+/* title + responsive cards grid */
+function Section({ title, items, onSeeAll, onItemClick }) {
   return (
     <Stack spacing={1}>
       {/* Header row */}
@@ -167,6 +185,7 @@ function Section({ title, items }) {
         <Button
           size="small"
           disableRipple
+          onClick={onSeeAll}                      // ⬅️ link See all
           sx={{
             p: 0,
             minWidth: "auto",
@@ -183,9 +202,9 @@ function Section({ title, items }) {
         sx={{
           display: "grid",
           gridTemplateColumns: {
-            xs: "repeat(2, minmax(0, 1fr))", // 2 rows on mobile
-            sm: "repeat(3, minmax(0, 1fr))", // 3 rows on small tablets
-            md: "repeat(4, minmax(0, 1fr))", // 4 rows on desktop
+            xs: "repeat(2, minmax(0, 1fr))",
+            sm: "repeat(3, minmax(0, 1fr))",
+            md: "repeat(4, minmax(0, 1fr))",
           },
           columnGap: 2,
           rowGap: 2,
@@ -193,7 +212,11 @@ function Section({ title, items }) {
         }}
       >
         {items.map((item) => (
-          <ItemCard key={item.id} {...item} />
+          <ItemCard
+            key={item.id}
+            {...item}
+            onClick={() => onItemClick(item.id)}  // ⬅️ card click handler
+          />
         ))}
       </Box>
     </Stack>
@@ -201,8 +224,7 @@ function Section({ title, items }) {
 }
 
 /* ===== SINGLE CARD ===== */
-function ItemCard({ title, subtitle, price, thumbnailBase64 }) {
-  // Clean up any whitespace/newlines in the base64 string
+function ItemCard({ title, subtitle, price, thumbnailBase64, onClick }) {
   const cleanedThumb = thumbnailBase64
     ? thumbnailBase64.replace(/\s/g, "")
     : null;
@@ -210,11 +232,20 @@ function ItemCard({ title, subtitle, price, thumbnailBase64 }) {
   return (
     <Stack
       spacing={0.5}
+      onClick={onClick}
       sx={(theme) => ({
         borderRadius: 2,
         p: 1,
         bgcolor: theme.palette.background.paper,
         boxShadow: "0px 2px 6px rgba(0,0,0,0.08)",
+        cursor: onClick ? "pointer" : "default",   // ⬅️ shows it's clickable
+        "&:hover": onClick
+          ? {
+              boxShadow: "0px 4px 10px rgba(0,0,0,0.12)",
+              transform: "translateY(-1px)",
+              transition: "all 0.15s ease-out",
+            }
+          : {},
       })}
     >
       {cleanedThumb ? (
@@ -236,7 +267,7 @@ function ItemCard({ title, subtitle, price, thumbnailBase64 }) {
             width: "100%",
             aspectRatio: "4 / 3",
             borderRadius: 1.5,
-            bgcolor: "#EEE", // simple grey fallback
+            bgcolor: "#EEE",
           }}
         />
       )}
