@@ -157,7 +157,7 @@ export default function UserProfile() {
                         (post.report_count ?? 0) > 0 ? post.report_date : null
                       }
                       image={post.image}
-                      viewPath={`/events/${post.post_id}`}
+                      viewPath={`/admin/reports/events/${post.post_id}`}
                       onDeleteSuccess={(deletedId) =>
                                                 setMarketPosts((prev) => prev.filter((p) => p.post_id !== deletedId))
                       }
@@ -197,6 +197,7 @@ export default function UserProfile() {
                         (post.report_count ?? 0) > 0 ? post.report_date : null
                       }
                       image={post.image}
+                      viewPath={`/admin/reports/market/${post.post_id}`}
                     />
                   ))
                 )}

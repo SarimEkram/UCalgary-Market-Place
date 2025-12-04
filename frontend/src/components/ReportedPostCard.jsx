@@ -21,7 +21,7 @@ export default function PostCard({
   reportDate,
   numReports,
   id,
-  type,
+  viewPath
 }) {
   const navigate = useNavigate();
   dayjs.extend(relativeTime);
@@ -57,14 +57,7 @@ export default function PostCard({
 
   // 🔹 NEW: go to actual event / market post
   const onView = () => {
-    if (type === "events") {
-      navigate(`/events/${id}`);
-    } else if (type === "market") {
-      navigate(`/market/${id}`);
-    } else {
-      // fallback for any other usage
-      navigate(`/reports/${type}/${id}`);
-    }
+      navigate(viewPath);
   };
 
   return (

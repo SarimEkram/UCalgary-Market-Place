@@ -38,7 +38,7 @@ export default function ReportedMarketItemPage() {
 
   //Delete post with popup  functions and state variables
   const confirmedDelete = async () => {
-                    // CHANGE THE ROUTE !!!
+    // CHANGE THE ROUTE !!!
     const response = await fetch(`/api/admin/posts/${id}`, {
       method: "DELETE",
       headers: {
@@ -102,7 +102,7 @@ export default function ReportedMarketItemPage() {
             ? dayjs(posted_date).format("MMM D YYYY")
             : "Unknown",
           description,
-          reportCategory : report_category
+          reportCategory: report_category,
         });
 
         setPhotos(
@@ -172,23 +172,26 @@ export default function ReportedMarketItemPage() {
             </Box>
           )}
 
-          <ConfirmationPopup
-            warningMessage={
-             ( <div>
-                <div>Do You Want To Proceed With Deleting The Post Named:</div>
-                <div>{item.title} ?</div>
-              </div>)
-            }
-            open={open}
-            handleClose={() => {
-              setOpen(false);
-            }}
-            executeFunction={confirmedDelete}
-            callBack={callBackDelete}
-          ></ConfirmationPopup>
-
           {!isLoading && listingDetails && (
             <>
+              {/* Confirm delete popup */}
+              <ConfirmationPopup
+                warningMessage={
+                  <div>
+                    <div>
+                      Do You Want To Proceed With Deleting The Post Named:
+                    </div>
+                    <div>{item.title} ?</div>
+                  </div>
+                }
+                open={open}
+                handleClose={() => {
+                  setOpen(false);
+                }}
+                executeFunction={confirmedDelete}
+                callBack={callBackDelete}
+              ></ConfirmationPopup>
+
               <Box sx={{ ...styles.rowGap, pt: 1, mb: 1.5 }}>
                 <IconButton size="small" onClick={() => navigate(-1)}>
                   <ArrowBackIosNewIcon sx={{ fontSize: 18 }} />
@@ -217,31 +220,30 @@ export default function ReportedMarketItemPage() {
               {/* info section */}
               <Box sx={styles.infoSection}>
                 {infoItems.map((info) =>
-                  info == "Seller" ? (
+                  info.label == "Seller" ? (
                     <Box key={info.label}>
                       <Box sx={styles.infoRow}>
                         <Typography color="text.secondary">
                           {info.label}
                         </Typography>
-                        <Typography sx={styles.rightText}>
-                          <RouterLink
-                            to={`/admin/profile/user/${item.sellerId}`}
+                        <RouterLink to={`/admin/profile/user/${item.sellerId}`}>
+                          <Link
+                            component="div"
+                            sx={{
+                              "& .MuiTypography-root": {
+                                textDecoration: "underline",
+                              },
+                              "& .MuiLink-root": {
+                                textDecoration: "underline",
+                              },
+                            }}
+                            color="primary"
                           >
-                            <Link
-                              component="div"
-                              sx={{
-                                "& .MuiTypography-root": {
-                                  textDecoration: "underline",
-                                },
-                                "& .MuiLink-root": {
-                                  textDecoration: "underline",
-                                },
-                              }}
-                              color="primary"
-                            ></Link>
-                          </RouterLink>
-                          {info.value}
-                        </Typography>
+                            <Typography sx={[styles.rightText, {color: "inherit"}]}>
+                              {info.value}
+                            </Typography>
+                          </Link>
+                        </RouterLink>
                       </Box>
                       <Box sx={styles.underline} />
                     </Box>
@@ -296,8 +298,7 @@ export default function ReportedMarketItemPage() {
                     color="text.primary"
                     variant={"body1"}
                   >
-                    Report Category:{" "}
-                    {item.reportCategory ?? "Not Reported"}
+                    Report Category: {item.reportCategory ?? "Not Reported"}
                   </Typography>
                 </Box>
               </Stack>

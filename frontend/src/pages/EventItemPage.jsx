@@ -422,6 +422,8 @@ export default function EventItemPage() {
 
   const item = eventDetails;
 
+  let priceDisplay = item?.price != null ? `$${item.price}` : "Free";
+
   const infoItems = [
     { label: "Location", value: item?.location },
     { label: "Start Date", value: item?.startDate },
@@ -517,7 +519,7 @@ export default function EventItemPage() {
                 <IconButton size="small" onClick={() => navigate(-1)}>
                   <ArrowBackIosNewIcon sx={{ fontSize: 18 }} />
                 </IconButton>
-                <Typography variant="body2">Back to events</Typography>
+                <Typography variant="body2">Back</Typography>
               </Box>
 
               {/* Images */}
@@ -532,6 +534,7 @@ export default function EventItemPage() {
                 </Typography>
 
                 <Box sx={styles.rowGap}>
+                  <Typography variant="h6">{priceDisplay}</Typography>
                   <IconButton
                     size="small"
                     onClick={handleSaveButtonClick}

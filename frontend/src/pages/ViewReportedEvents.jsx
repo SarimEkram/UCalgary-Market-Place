@@ -28,6 +28,7 @@ export default function ViewReportedEvents() {
         }
 
         let data = await response.json();
+        data = [...data.events];
         
         if (!Array.isArray(data)) {
           console.error("Expected array but got:", typeof data);
@@ -124,7 +125,7 @@ export default function ViewReportedEvents() {
                   reportDate={post.report_date}
                   numReports={post.report_count}
                   image={post.image}
-                  type="events"
+                  viewPath={`/admin/reports/events/${post.post_id}`}
                   id={post.id}
                 ></PostCard>
               );

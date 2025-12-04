@@ -28,12 +28,14 @@ export default function ViewReportedPosts() {
         }
 
         let data = await response.json();
+        data = [...data.posts];
         
         if (!Array.isArray(data)) {
           console.error("Expected array but got:", typeof data);
           return;
         }
         
+       
         data = data.map((item) => {
           if (item.thumbnail != null && item.thumbnail.data) {
             const blob = item.thumbnail.data.replace(/\s/g, "");
@@ -121,8 +123,8 @@ export default function ViewReportedPosts() {
                   reportDate={post.report_date}
                   numReports={post.report_count}
                   image={post.image}
-                  type="market"
                   id={post.id}
+                  viewPath={`/admin/reports/market/${post.id}`}
                 ></PostCard>
               );
             })}

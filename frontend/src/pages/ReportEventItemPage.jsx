@@ -6,11 +6,13 @@ import {
   IconButton,
   Stack,
   Typography,
+  Link
 } from "@mui/material";
 
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import {  useNavigate, useParams } from "react-router";
+import { Link as RouterLink } from "react-router";
 
 import DesktopNav from "../components/DesktopNav";
 import Header from "../components/Header";
@@ -22,7 +24,6 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import ConfirmationPopup from "../components/ConfirmationPopup.jsx";
 import CustomButton from "../components/CustomButton.jsx";
 import ErrorBoundary from "./ErrorBoundary.jsx";
-
 
 export default function EventItemPage() {
   const { id } = useParams();
@@ -84,11 +85,12 @@ export default function EventItemPage() {
           posted_date,
           start_date,
           end_date,
-          seller_fname,
-          seller_lname,
-          seller_id,
+          organizer_fname,
+          organizer_lname,
+          organizer_id,
           organization_name,
-          // report_category, 
+          report_category,
+          price,
           images: rawImages = [],
         } = data;
 
@@ -96,6 +98,8 @@ export default function EventItemPage() {
           title,
           location,
           description,
+          price,
+          seller: `${organizer_fname} ${organizer_lname}`,
           postedDate: posted_date
             ? dayjs(posted_date).format("MMM D YYYY")
             : "Unknown",
@@ -108,7 +112,9 @@ export default function EventItemPage() {
             (seller_fname && seller_lname
               ? `${seller_fname} ${seller_lname}`
               : null),
-          sellerId: seller_id ?? null,
+          sellerId: organizer_id ?? null,
+
+          reportCategory: report_category,
         });
 
         const images = rawImages.map((img, i) => ({
@@ -131,18 +137,18 @@ export default function EventItemPage() {
 
   const item = eventDetails;
 
+  let priceDisplay = item?.price != null ? `$${item.price}` : "Free";
+
   const infoItems = [
     { label: "Location", value: item?.location },
     { label: "Start Date", value: item?.startDate },
     { label: "End Date", value: item?.endDate },
     { label: "Posted", value: item?.postedDate },
+    { label: "Organizer Name", value: item?.seller },
     ...(item?.organizer ? [{ label: "Organizer", value: item.organizer }] : []),
   ];
 
-
-
   return (
-    <ErrorBoundary fallback={<p>Something went wrong</p>}>
     <Stack
       direction="row"
       sx={{ bgcolor: "background.paper", minHeight: "100vh" }}
@@ -180,29 +186,32 @@ export default function EventItemPage() {
             </Box>
           )}
 
-          <ConfirmationPopup
-            warningMessage={
-              <div>
-                <div>Do You Want To Proceed With Deleting The Post Named:</div>
-                <div>{item.title} ?</div>
-              </div>
-            }
-            open={true}
-            handleClose={() => {
-              setOpen(false);
-            }}
-            executeFunction={confirmedDelete}
-            callBack={callBackDelete}
-          ></ConfirmationPopup>
-
           {!isLoading && eventDetails && (
             <>
+              {/* Confirm delete popup */}
+              <ConfirmationPopup
+                warningMessage={
+                  <div>
+                    <div>
+                      Do You Want To Proceed With Deleting The Post Named:
+                    </div>
+                    <div>{item.title} ?</div>
+                  </div>
+                }
+                open={open}
+                handleClose={() => {
+                  setOpen(false);
+                }}
+                executeFunction={confirmedDelete}
+                callBack={callBackDelete}
+              ></ConfirmationPopup>
+
               {/* Back Arrow */}
               <Box sx={{ ...styles.rowGap, pt: 1, mb: 1.5 }}>
                 <IconButton size="small" onClick={() => navigate(-1)}>
                   <ArrowBackIosNewIcon sx={{ fontSize: 18 }} />
                 </IconButton>
-                <Typography variant="body2">Back to events</Typography>
+                <Typography variant="body2">Back</Typography>
               </Box>
 
               {/* Images */}
@@ -217,27 +226,60 @@ export default function EventItemPage() {
                 </Typography>
 
                 <Box sx={styles.rowGap}>
+                  <Typography variant="h6">{priceDisplay}</Typography>
+
                   <IconButton size="small" disabled={true}>
-                    <BookmarkBorderIcon />
+                    <BookmarkBorderIcon></BookmarkBorderIcon>
                   </IconButton>
                 </Box>
               </Box>
 
               {/* Info section */}
               <Box sx={styles.infoSection}>
-                {infoItems.map((info) => (
-                  <Box key={info.label}>
-                    <Box sx={styles.infoRow}>
-                      <Typography color="text.secondary">
-                        {info.label}
-                      </Typography>
-                      <Typography sx={styles.rightText}>
-                        {info.value}
-                      </Typography>
+                {infoItems.map((info) =>
+                  info.label == "Organizer Name" ? (
+                    <Box key={info.label}>
+                      <Box sx={styles.infoRow}>
+                        <Typography color="text.secondary">
+                          {info.label}
+                        </Typography>
+                        <RouterLink to={`/admin/profile/user/${item.sellerId}`}>
+                          <Link
+                            component="div"
+                            sx={{
+                              "& .MuiTypography-root": {
+                                textDecoration: "underline",
+                              },
+                              "& .MuiLink-root": {
+                                textDecoration: "underline",
+                              },
+                            }}
+                            color="primary"
+                          >
+                            <Typography
+                              sx={[styles.rightText, { color: "inherit" }]}
+                            >
+                              {info.value}
+                            </Typography>
+                          </Link>
+                        </RouterLink>
+                      </Box>
+                      <Box sx={styles.underline} />
                     </Box>
-                    <Box sx={styles.underline} />
-                  </Box>
-                ))}
+                  ) : (
+                    <Box key={info.label}>
+                      <Box sx={styles.infoRow}>
+                        <Typography color="text.secondary">
+                          {info.label}
+                        </Typography>
+                        <Typography sx={styles.rightText}>
+                          {info.value}
+                        </Typography>
+                      </Box>
+                      <Box sx={styles.underline} />
+                    </Box>
+                  )
+                )}
               </Box>
 
               <Divider sx={{ my: 1.5, borderColor: "transparent" }} />
@@ -258,7 +300,7 @@ export default function EventItemPage() {
                 </Typography>
               </Box>
               {/* Admin Delete button, and report information  */}
-              {/* <Stack
+              <Stack
                 direction="row"
                 sx={{ justifyContent: "flex-start", columnGap: 4 }}
               >
@@ -275,11 +317,10 @@ export default function EventItemPage() {
                     color="text.primary"
                     variant={"body1"}
                   >
-                    Report Category:{" "}
-                    {item.reportCategory ?? "Not Reported"}
+                    Report Category: {item.reportCategory ?? "Not Reported"}
                   </Typography>
                 </Box>
-              </Stack> */}
+              </Stack>
             </>
           )}
         </Container>
@@ -298,7 +339,6 @@ export default function EventItemPage() {
         <MobileNav />
       </Box>
     </Stack>
-    </ErrorBoundary>
   );
 }
 
