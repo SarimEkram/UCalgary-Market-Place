@@ -71,6 +71,7 @@ export default function MarketItemPage() {
       setCooldownRemaining(null);
       setCooldownMsg("");
       setSellerContacted(false);
+      setContactSellerMsg("");
       return;
     }
 
@@ -177,6 +178,14 @@ export default function MarketItemPage() {
       const { cooldownUntil: storedUntil } = parsed || {};
       if (!storedUntil) return;
 
+      const now = Date.now();
+      const timeDiff = storedUntil - now;
+
+      if (timeDiff <= 0) {
+        localStorage.removeItem(key);
+        calculateCooldown(null);
+        return;
+      }
       calculateCooldown(storedUntil);
       setContactSellerMsg("You already contacted this seller.");
     } catch (e) {
