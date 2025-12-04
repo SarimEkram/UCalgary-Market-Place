@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import {
     Box,
-    Button,
+    
     Container,
     Stack,
     Typography,
@@ -14,6 +14,7 @@ import Header from "../components/Header";
 import ReportedUserIconSVG from "../assets/ReportedUserIconSVG";
 import ConfirmationPopup from "../components/ConfirmationPopup";
 import { useNavigate } from "react-router";
+import Button from "../components/CustomButton";
 
 export default function ViewReportedUsers() {
     const [usersReported, setUsersReported] = useState([]);
@@ -301,15 +302,8 @@ function CustomButton({ children, color, onClick }) {
         <Button
             variant="contained"
             size="small"
+            color={ color === "red"  ? "red" : "black"}
             onClick={onClick}
-            sx={{
-                textTransform: "none",
-                fontSize: 15,
-                borderRadius: 5,
-                px: 2,
-                py: 0.5,
-                backgroundColor: bg,
-            }}
         >
             {children}
         </Button>
