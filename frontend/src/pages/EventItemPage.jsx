@@ -7,6 +7,7 @@ import {
   Divider,
   Tooltip,
   Container,
+  Button,
 } from "@mui/material";
 
 import { useState, useEffect } from "react";
@@ -515,11 +516,27 @@ export default function EventItemPage() {
           {!isLoading && eventDetails && (
             <>
               {/* Back Arrow */}
-              <Box sx={{ ...styles.rowGap, pt: 1, mb: 1.5 }}>
-                <IconButton size="small" onClick={() => navigate(-1)}>
-                  <ArrowBackIosNewIcon sx={{ fontSize: 18 }} />
-                </IconButton>
-                <Typography variant="body2">Back</Typography>
+               <Box sx={{ pt: 1, mb: 1 }}>
+                <Button
+                color="text.primary"
+                  onClick={() => navigate(-1)}
+                  sx={(theme) => ({
+                    display: "flex",
+                    columnGap: 2,
+                    padding: 0,
+                    margin: 0,
+                    "&.MuiButton-root": {
+                      textTransform: "none", // Overrides text transformation
+                    },
+                    "&.MuiButtonBase-root": {
+                      textTransform: "none", // Overrides text transformation
+                    },
+                   ...styles.rowGap,
+                  })}
+                >
+                  <ArrowBackIosNewIcon  sx={{ color: "#0000008a", fontSize: 18 }} />
+                  <Typography variant="body2">Back</Typography>
+                </Button>
               </Box>
 
               {/* Images */}
