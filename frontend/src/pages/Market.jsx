@@ -73,8 +73,8 @@ export default function Market() {
 
       const queryString = createQueryParams(filters, searchKey);
       const url = queryString
-        ? `${API_BASE}/api/posts/marketres?${queryString}`
-        : `${API_BASE}/api/posts/marketres`;
+        ? `/api/posts/marketres?${queryString}`
+        : `/api/posts/marketres`;
 
       const res = await fetch(url);
 

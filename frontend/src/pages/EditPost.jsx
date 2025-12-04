@@ -197,7 +197,7 @@ export default function EditPost() {
   };
 
   const confirmedDelete = async () => {
-    const resp = await fetch("http://localhost:8080/api/my-posts/delete", {
+    const resp = await fetch("/api/my-posts/delete", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
