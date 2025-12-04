@@ -103,7 +103,7 @@ export default function EditPost() {
     };
   }, []);
 
- 
+
   const onSubmit = async (data) => {
     data["condition"] = condition;
     data["deleted_images"] = deletedImages;
