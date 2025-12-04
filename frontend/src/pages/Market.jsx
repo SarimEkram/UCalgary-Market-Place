@@ -129,11 +129,10 @@ export default function Market() {
             placeholder="Search"
             variant="standard"
             value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                fetchMarketPosts(postFilters, e.target.value);
-              }
+            onChange={(e) => {
+              const value = e.target.value;
+              setSearchKeyword(value);
+              fetchMarketPosts(postFilters, value); 
             }}
             sx={styles.searchBoxField}
             slotProps={{
