@@ -404,7 +404,7 @@ export default function EditPost() {
                 { visibility: editFailed ? "visible" : "hidden" },
               ]}
             >
-              Failed to updat the post.<br></br>Please try again.
+              Failed to update the post.<br></br>Please try again.
             </FormHelperText>
           </Stack>
         </Container>
