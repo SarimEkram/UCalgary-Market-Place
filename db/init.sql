@@ -142,16 +142,17 @@ DO
 /** SEED DATA **/
 
 -- USERS
+-- All seeded users and admins have password A!123456
 INSERT INTO users (user_id, email, fname, lname, hashed_password) VALUES
-(1, 'john.doe@ucalgary.ca',  'John',  'Doe',  'jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI='),
-(2, 'sarah.lee@ucalgary.ca', 'Sarah', 'Lee',  '7WnZz7mI6aB9cE7qbtbW5EfnLx5VkbmHPZZwEtzGL7g='),
-(3, 'mike.chan@ucalgary.ca', 'Mike',  'Chan', 'bBDsWjY2P2N47hH5AcFZ6E+xvVKFx1uKQ8+7iMLP8Wk='),
-(4, 'nora.kim@ucalgary.ca',  'Nora',  'Kim',  'GfJzZK2f6FqjO9H5XoM5bz6ANBbA2zO3cMXE3UNgRQI=');
+(1, 'mike.wazowski@ucalgary.ca',  'Mike',  'Wazowski',  '$2b$10$45.nJod8kUsqyBpgntgGrOo4SkjRFwaB8dmQVtIaPS.t16UdIX8oa'),
+(2, 'chicken.little@ucalgary.ca', 'Chicken', 'Little',  '$2b$10$ALvZTIKPiGn5eGxJ9ai5.Od/F2SN7mKoLi6DSXsu.ASIN4qsBtFiS'),
+(3, 'buzz.lightyear@ucalgary.ca', 'Buzz',  'Lightyear', '$2b$10$5Vuzln9Thoyts5B5gXbgb.dbB.xjDWV8Z579KpRUXK3Zd3ya.DpGC'),
+(4, 'mary.poppins@ucalgary.ca',  'Mary',  'Poppins',  '$2b$10$a7o3wLmv74qWTf5Hw/XWPeDxMCaRIIRr8BsVzk85XR2kZL12UXelK');
 
 -- ADMINS
 INSERT INTO admins (admin_id, email, fname, lname, hashed_password) VALUES
-(1, 'alice.morgan@ucalgary.ca', 'Alice', 'Morgan', 'W2g0nlxR0R0wEq3dEUKdZmLQekUUEqkgmcnwcfmDKxY='),
-(2, 'david.nguyen@ucalgary.ca', 'David', 'Nguyen', 'V7Oxtb4UpvU0YUpkb9J3cQzU8D5Wspg3L07j1Dlm6yU=');
+(1, 'daffy.duck@ucalgary.ca', 'Daffy', 'Duck', '$2b$10$e9bZL94pm8QqYrFWVt0YPO.qAT.OCbBfhHFaELhrgQrbt7ZpK00lC'),
+(2, 'pink.panther@ucalgary.ca', 'Pink', 'Panther', '$2b$10$CysvUlEYyT4tbRRORuBoPejnQLAOlYgJ.0UZN1bWVeItPV/ru89Uy'); -- TODO: password needs to be updated still
 
 
 -- POSTS (market + events)
@@ -217,7 +218,7 @@ INSERT INTO posts (post_id, post_type, postal_code, price, posted_date, name, de
  'SU Event',
  'Student Union event with games and snacks.',
  1),
-(204, 'event', 'T2N1N4',  NULL, '2025-11-05 00:00:00',
+(204, 'event', 'T2N1N4',  0, '2025-11-05 00:00:00',
  'Math Review Night',
  'Free group review session for the upcoming Calculus midterm.',
  1),
@@ -227,7 +228,7 @@ INSERT INTO posts (post_id, post_type, postal_code, price, posted_date, name, de
  1),
 
 -- USER 2 (Sarah Lee) – EVENTS (3 Posts)
-(202, 'event', 'T3P2A6',  NULL, '2025-10-22 00:00:00',
+(202, 'event', 'T3P2A6',  0, '2025-10-22 00:00:00',
  'LOREN Club Night',
  'Club social night with music and food.',
  2),
@@ -235,13 +236,13 @@ INSERT INTO posts (post_id, post_type, postal_code, price, posted_date, name, de
  'LOREN Networking Mixer',
  'Networking mixer with club alumni and industry guests.',
  2),
-(207, 'event', 'T3P2A6',  NULL, '2025-11-25 00:00:00',
+(207, 'event', 'T3P2A6',  0, '2025-11-25 00:00:00',
  'Tutor Match-Up Fair',
  'Meet volunteer tutors for various first-year subjects.',
  2),
 
 -- USER 3 (Mike Chan) – EVENTS (3 Posts)
-(203, 'event', 'T2L2M3',  NULL, '2025-10-15 00:00:00',
+(203, 'event', 'T2L2M3',  0, '2025-10-15 00:00:00',
  'FSC Meetup',
  'FSC general meeting and introductions.',
  3),
@@ -255,7 +256,7 @@ INSERT INTO posts (post_id, post_type, postal_code, price, posted_date, name, de
  3),
 
 -- USER 4 (Nora Kim) – EVENTS (3 Posts)
-(210, 'event', 'T2P1K4',  NULL, '2025-11-01 00:00:00',
+(210, 'event', 'T2P1K4',  0, '2025-11-01 00:00:00',
  'Hackathon Weekend',
  '48-hour on-campus hackathon hosted by CSUS.',
  4),
@@ -263,7 +264,7 @@ INSERT INTO posts (post_id, post_type, postal_code, price, posted_date, name, de
  'Photography Workshop',
  'Photography club workshop covering camera basics and shooting tips.',
  4),
-(212, 'event', 'T2P1K4',  NULL, '2025-11-30 00:00:00',
+(212, 'event', 'T2P1K4',  0, '2025-11-30 00:00:00',
  'Algorithms Group Study',
  'Open study group for the algorithms course final exam.',
  4);
