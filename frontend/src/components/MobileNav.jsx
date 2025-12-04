@@ -6,11 +6,12 @@ import {
   useTheme,
 } from "@mui/material";
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { Link, useLocation } from "react-router";
 import Calendar from "../assets/CalendarSVG.jsx";
 import Home from "../assets/HomeSVG.jsx";
 import Shoppingbag from "../assets/ShoppingbagSVG.jsx";
 import User from "../assets/UserSVG.jsx";
+import Settings from "../assets/SettingsSVG.jsx";
 
 export default function Navigation() {
   // set the options based on the role of the user
@@ -18,7 +19,7 @@ export default function Navigation() {
     const userData = JSON.parse(localStorage.getItem("user"));
     let options = [];
     if (userData.isAdmin) {
-      options = ["Home", "Admin", "Market", "Events"];
+      options = ["Home", "Admin", "Market", "Events", "Settings"];
     } else {
       options = ["Home", "User", "Market", "Events"];
     }
@@ -31,32 +32,31 @@ export default function Navigation() {
   //the currently selected page in the navigation bar
   //which is initialized to the root path on the current page
   const [value, setValue] = useState(location.pathname.split("/")[1]);
-
-  //hook which handles navigating urls
-  const navigate = useNavigate();
-
-  // navigate urls, and change the current selected page, when a user clicks on an item in the nav bar
-  function handleChange(newValue) {
-    setValue(() => {
-      navigate("/" + newValue);
-      return newValue;
-    });
+ // navigate urls, and change the current selected page, when a user clicks on an item in the nav bar
+  function getURL(newValue) {
+    const url = newValue === "settings" ? "/admin/settings" : "/" + newValue;
+   
+    return url;
   }
+
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
   //render icon assocaited with a given value. ex: render Home icon
-  const Icon = function ({ value }) {
-    if (value == "home") {
-      return <Home></Home>;
-    } else if (value == "user") {
-      return <User></User>;
-    } else if (value == "events") {
-      return <Shoppingbag></Shoppingbag>;
-    } else {
-      return <Calendar></Calendar>;
-    }
-  };
+   //render icon assocaited with a given value. ex: render Home icon
+   const Icon = function ({ value }) {
+     if (value == "home") {
+       return <Home></Home>;
+     } else if (value == "user" || value == "admin") {
+       return <User></User>;
+     } else if (value == "market") {
+       return <Shoppingbag></Shoppingbag>;
+     } else if (value == "settings") {
+       return <Settings></Settings>;
+     } else {
+       return <Calendar></Calendar>;
+     }
+   };
 
   return (
     <Slide
@@ -66,11 +66,7 @@ export default function Navigation() {
       unmountOnExit
     >
       <BottomNavigation
-        showLabels
         id="nav-bar"
-        onChange={(event, newValue) => {
-          handleChange(newValue);
-        }}
         sx={(theme) => ({
           bgcolor: theme.palette.headerBackground,
           borderTop: theme.palette.dividerWidth,
@@ -82,8 +78,9 @@ export default function Navigation() {
         })}
       >
         {options.map((title) => (
+          <Link to={getURL(title.toLowerCase())} key={"nav-" + title.toLowerCase()} style={{display: "flex",  textDecoration :"none"} }>
           <BottomNavigationAction
-            key={"nav-" + title.toLowerCase()}
+            
             sx={(theme) => ({
               color:
                 value == title.toLowerCase()
@@ -92,10 +89,12 @@ export default function Navigation() {
             })}
             label={title}
             value={title.toLowerCase()}
+            showLabel
             icon={<Icon value={title.toLowerCase()}></Icon>}
           />
+          </Link>
         ))}
-      </BottomNavigation>
+        </BottomNavigation>
     </Slide>
   );
 }
