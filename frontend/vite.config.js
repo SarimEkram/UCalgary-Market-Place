@@ -11,7 +11,7 @@ export default defineConfig({
         watch: {
             usePolling: true,
         },
-        allowedHosts: ['wrinkleable-sherley-unsulkily.ngrok-free.dev'],
+        allowedHosts: true,
         proxy: {
             "/api": {
                 target: "http://backend:8080",  //  talk to backend container

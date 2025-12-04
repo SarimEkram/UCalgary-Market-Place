@@ -371,7 +371,7 @@ INSERT INTO user_report (report_id, reported_user_id) VALUES
 -- ADMIN ACTIONS (create actions first, then bans that reference them)
 INSERT INTO admin_actions (action_id, admin_id, action, action_timestamp) VALUES
 (601, 1, 'Deleted a market post "Flying Car" for kai.lee@ucalgary.ca', '2025-11-08 13:00:00'),
-(602, 2, `Deleted an event post "The Annual Upside-Down Umbrella Parade" for kai.lee@ucalgary.ca`, '2025-11-08 14:20:00'),
+(602, 2, 'Deleted an event post "The Annual Upside-Down Umbrella Parade" for kai.lee@ucalgary.ca', '2025-11-08 14:20:00'),
 (603, 1, 'Banned user: kai.lee@ucalgary.ca', '2025-11-08 14:10:00');
 
 INSERT INTO banned_users (action_id, user_email) VALUES
