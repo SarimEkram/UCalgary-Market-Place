@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Box,
@@ -6,11 +5,13 @@ import {
   Typography,
   IconButton,
   Divider,
-  Button,
   Paper,
   Slider,
 } from "@mui/material";
+import dayjs from "dayjs";
+
 import FilterIcon from "../assets/FilterIcon";
+import CloseIcon from "@mui/icons-material/Close";
 
 import DateRangeDialog from "./DateRangeDialog";
 import CustomButton from "../components/CustomButton";
@@ -26,7 +27,8 @@ export default function Filters({ onApply, onClear, showCond = true }) {
 
   const [isDateDialogOpen, setIsDateDialogOpen] = useState(false);
 
-  const [costRange, setCostRange] = useState([25, 50]);
+  // Price range
+  const [costRange, setCostRange] = useState([0, 1000]);
 
   const [condition, setCondition] = useState("");
 
@@ -34,34 +36,39 @@ export default function Filters({ onApply, onClear, showCond = true }) {
     const { start, end } = selectedDateRange;
 
     if (start && end) {
-      return `${start.format("MMM D, YYYY")} - ${end.format("MMM D, YYYY")}`;
+      return `${dayjs(start).format("MMM D, YYYY")} - ${dayjs(end).format(
+        "MMM D, YYYY"
+      )}`;
     }
     if (start) {
-      return start.format("MMM D, YYYY");
+      return dayjs(start).format("MMM D, YYYY");
     }
     return "Any time";
   };
 
-  const handleClear = () => {
+ const handleClear = () => {
     setSelectedDateRange({ start: null, end: null });
-    setCostRange([0, 50]);
+    setCostRange([0, 1000]);
+
     if (showCond) {
       setCondition("");
     }
+
     if (onClear) {
       onClear();
     } else if (onApply) {
       onApply(null);
     }
+    setFilterPanelOpen(false);
   };
 
-
+ 
   const applyFilters = () => {
     const isDefaultState =
       !selectedDateRange.start &&
       !selectedDateRange.end &&
       costRange[0] === 0 &&
-      costRange[1] === 50 &&
+      costRange[1] === 1000 &&
       (showCond ? !condition : true);
 
     if (isDefaultState) {
@@ -77,16 +84,23 @@ export default function Filters({ onApply, onClear, showCond = true }) {
         filtersToPass.condition = condition;
       }
 
-      onApply?.(filtersToSend);
-
+      onApply?.(filtersToPass);
     }
-
     setFilterPanelOpen(false);
   };
 
-
   const applyDate = (newRange) => {
-    setSelectedDateRange(newRange);
+    if (!newRange) {
+      setSelectedDateRange({ start: null, end: null });
+      return;
+    }
+
+  const { start, end, from, to, startDate, endDate } = newRange;
+
+    setSelectedDateRange({
+      start: start || from || startDate || null,
+      end: end || to || endDate || null,
+    });
   };
 
   return (
@@ -162,7 +176,6 @@ export default function Filters({ onApply, onClear, showCond = true }) {
               mt: 1,
               mb: 2,
               display: "block",
-
             }}
           >
             <CustomButton
@@ -206,12 +219,12 @@ export default function Filters({ onApply, onClear, showCond = true }) {
             </Typography>
           </Stack>
 
-          {/* Slider style*/}
+          {/* Slider */}
           <Slider
             value={costRange}
             min={0}
-            max={50}
-            step={5}
+            max={1000}
+            step={50} 
             onChange={(_, v) => setCostRange(v)}
             sx={{
               p: 0,
@@ -239,44 +252,47 @@ export default function Filters({ onApply, onClear, showCond = true }) {
             sx={{ mt: 0.5, mb: 0 }}
           >
             <Typography variant="caption">$0</Typography>
-            <Typography variant="caption">$50</Typography>
+            <Typography variant="caption">$1000</Typography>
           </Stack>
 
           <Divider sx={{ my: 1.5 }} />
-          
-          {showCond && (
-        <>
-          <Typography
-            variant="subtitle2"
-            sx={{ fontWeight: 600, fontSize: "0.8rem", mb: 1 }}
-          >
-            Condition
-          </Typography>
 
-          <Stack direction="row" spacing={1}>
-            {/* New */}
-            <CustomButton
-              onClick={() => setCondition("new")}
-              style={{
-                "&&": {
-                  width: condition === "new" ? 75 : 57,
-                  height: 32,
-                  minHeight: 32,
-                  borderRadius: 8,
-                  padding: 0,
-                  fontSize: "0.8rem",
-                  fontWeight: condition === "new" ? 600 : 500,
-                  bgcolor: condition === "new" ? "#221F1F" : "#F5F5F5",
-                  color: condition === "new" ? "#F5F5F5" : "#757575",
-                  boxShadow: "none",
-                },
-              }}
-            >
-              {condition === "new" && (
-                <ConditionCheckmark style={{ marginRight: 6 }} />
-              )}
-              New
-            </CustomButton>
+          {/* Condition only for market page */}
+          {showCond && (
+            <>
+              <Typography
+                variant="subtitle2"
+                sx={{ fontWeight: 600, fontSize: "0.8rem", mb: 1 }}
+              >
+                Condition
+              </Typography>
+
+              <Stack direction="row" spacing={1}>
+                {/* New */}
+                <CustomButton
+                  onClick={() => setCondition("new")}
+                  style={{
+                    "&&": {
+                      width: condition === "new" ? 75 : 57,
+                      height: 32,
+                      minHeight: 32,
+                      borderRadius: 8,
+                      padding: 0,
+                      fontSize: "0.8rem",
+                      fontWeight: condition === "new" ? 600 : 500,
+                      bgcolor:
+                        condition === "new" ? "#221F1F" : "#F5F5F5",
+                      color:
+                        condition === "new" ? "#F5F5F5" : "#757575",
+                      boxShadow: "none",
+                    },
+                  }}
+                >
+                  {condition === "new" && (
+                    <ConditionCheckmark style={{ marginRight: 6 }} />
+                  )}
+                  New
+                </CustomButton>
 
             {/* Good */}
             <CustomButton
@@ -302,92 +318,93 @@ export default function Filters({ onApply, onClear, showCond = true }) {
               Good
             </CustomButton>
 
-            {/* Fair */}
+                {/* Fair */}
+                <CustomButton
+                  onClick={() => setCondition("fair")}
+                  style={{
+                    "&&": {
+                      width: condition === "fair" ? 75 : 57,
+                      height: 32,
+                      minHeight: 32,
+                      borderRadius: 8,
+                      padding: 0,
+                      fontSize: "0.8rem",
+                      fontWeight: condition === "fair" ? 600 : 500,
+                      bgcolor:
+                        condition === "fair" ? "#221F1F" : "#F5F5F5",
+                      color:
+                        condition === "fair" ? "#F5F5F5" : "#757575",
+                      boxShadow: "none",
+                    },
+                  }}
+                >
+                  {condition === "fair" && (
+                    <ConditionCheckmark style={{ marginRight: 6 }} />
+                  )}
+                  Fair
+                </CustomButton>
+              </Stack>
+
+              <Divider sx={{ my: 1.5 }} />
+            </>
+          )}
+
+          {/* Clear and Apply */}
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            sx={{ mt: 3 }}
+          >
             <CustomButton
-              onClick={() => setCondition("fair")}
+              color="black"
+              onClick={handleClear}
               style={{
                 "&&": {
-                  width: condition === "fair" ? 75 : 57,
-                  height: 32,
-                  minHeight: 32,
+                  width: 87,
+                  height: 22,
+                  minHeight: 22,
                   borderRadius: 8,
                   padding: 0,
-                  fontSize: "0.8rem",
-                  fontWeight: condition === "fair" ? 600 : 500,
-                  bgcolor: condition === "fair" ? "#221F1F" : "#F5F5F5",
-                  color: condition === "fair" ? "#F5F5F5" : "#757575",
-                  boxShadow: "none",
+                  bgcolor: "#221F1F",
+                  fontSize: "0.75rem",
+                  fontWeight: 500,
+                  justifyContent: "center",
                 },
               }}
             >
-              {condition === "fair" && (
-                <ConditionCheckmark style={{ marginRight: 6 }} />
-              )}
-              Fair
+              Clear
+            </CustomButton>
+
+            <CustomButton
+              color="red"
+              onClick={applyFilters}
+              style={{
+                "&&": {
+                  width: 87,
+                  height: 22,
+                  minHeight: 22,
+                  borderRadius: 8,
+                  padding: 0,
+                  bgcolor: "#E53935",
+                  fontSize: "0.75rem",
+                  fontWeight: 500,
+                  justifyContent: "center",
+                },
+              }}
+            >
+              Apply
             </CustomButton>
           </Stack>
-
-          <Divider sx={{ my: 1.5 }} />
-        </>
+        </Paper>
       )}
 
-      {/* Clear and Apply */}
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        sx={{ mt: 3 }}
-      >
-        <CustomButton
-          color="black"
-          onClick={handleClear}
-          style={{
-            "&&": {
-              width: 87,
-              height: 22,
-              minHeight: 22,
-              borderRadius: 8,
-              padding: 0,
-              bgcolor: "#221F1F",
-              fontSize: "0.75rem",
-              fontWeight: 500,
-              justifyContent: "center",
-            },
-          }}
-        >
-          Clear
-        </CustomButton>
-
-        <CustomButton
-          color="red"
-          onClick={applyFilters}
-          style={{
-            "&&": {
-              width: 87,
-              height: 22,
-              minHeight: 22,
-              borderRadius: 8,
-              padding: 0,
-              bgcolor: "#E53935",
-              fontSize: "0.75rem",
-              fontWeight: 500,
-              justifyContent: "center",
-            },
-          }}
-        >
-          Apply
-        </CustomButton>
-      </Stack>
-
-      </Paper>
-    )}
-
-    {/* Date range dialog */}
-    <DateRangeDialog
-      open={isDateDialogOpen}
-      onClose={() => setIsDateDialogOpen(false)}
-      onApply={applyDate}
-      initialRange={selectedDateRange}
-    />
-  </Box>
-);
+      {/* Date range dialog */}
+      <DateRangeDialog
+        open={isDateDialogOpen}
+        onClose={() => setIsDateDialogOpen(false)}
+        onApply={applyDate}
+        initialRange={selectedDateRange}
+      />
+    </Box>
+  );
 }
