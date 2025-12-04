@@ -72,13 +72,14 @@ export default function Navigation() {
           borderTop: theme.palette.dividerWidth,
           borderColor: theme.palette.divider,
           padding: 2,
+          px: 0,
           position: "fixed", 
           bottom: 0, 
           width: "100%",
         })}
       >
         {options.map((title) => (
-          <Link to={getURL(title.toLowerCase())} key={"nav-" + title.toLowerCase()} style={{display: "flex",  textDecoration :"none"} }>
+          <Link to={getURL(title.toLowerCase())} key={"nav-" + title.toLowerCase()} style={{display: "flex",  textDecoration :"none", } }>
           <BottomNavigationAction
             
             sx={(theme) => ({
