@@ -38,7 +38,7 @@ export default function ReportedMarketItemPage() {
 
   //Delete post with popup  functions and state variables
   const confirmedDelete = async () => {
-    // CHANGE THE ROUTE !!!
+   
     const response = await fetch(`/api/admin/posts/${id}`, {
       method: "DELETE",
       headers: {
@@ -69,7 +69,9 @@ export default function ReportedMarketItemPage() {
       try {
         setIsLoading(true);
 
-        const response = await fetch(`/api/posts/itemdetails/${postId}`);
+        const response = await fetch(
+          `/api/posts/reported-itemdetails/${postId}`
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error status: ${response.status}`);
@@ -239,7 +241,9 @@ export default function ReportedMarketItemPage() {
                             }}
                             color="primary"
                           >
-                            <Typography sx={[styles.rightText, {color: "inherit"}]}>
+                            <Typography
+                              sx={[styles.rightText, { color: "inherit" }]}
+                            >
                               {info.value}
                             </Typography>
                           </Link>
@@ -294,7 +298,9 @@ export default function ReportedMarketItemPage() {
                         ? theme.palette.dullPrimary
                         : theme.palette.grey[300],
                       padding: 1,
+                      textTransform:"capitalize"
                     })}
+
                     color="text.primary"
                     variant={"body1"}
                   >

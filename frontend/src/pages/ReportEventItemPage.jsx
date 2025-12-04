@@ -39,7 +39,6 @@ export default function EventItemPage() {
 
   //Delete post with popup  functions and state variables
   const confirmedDelete = async () => {
-    // CHANGE THE ROUTE !!!
     const response = await fetch(`/api/admin/posts/${id}`, {
       method: "DELETE",
       headers: {
@@ -70,7 +69,7 @@ export default function EventItemPage() {
       try {
         setIsLoading(true);
 
-        const response = await fetch(`/api/posts/eventdetails/${postId}`);
+        const response = await fetch(`/api/posts/reported-eventdetails/${postId}`);
 
         if (!response.ok) {
           throw new Error(`HTTP error ${response.status}`);
@@ -313,6 +312,7 @@ export default function EventItemPage() {
                         ? theme.palette.dullPrimary
                         : theme.palette.grey[300],
                       padding: 1,
+                      textTransform:"capitalize"
                     })}
                     color="text.primary"
                     variant={"body1"}
