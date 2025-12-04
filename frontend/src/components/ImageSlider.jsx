@@ -10,6 +10,9 @@ import {
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import CustomButton from "../components/CustomButton";
 
+// Use a shared empty array so default props are stable across renders
+const EMPTY_ARRAY = [];
+
 // Sample input
 //-------------------------
 // images = [
@@ -27,58 +30,67 @@ import CustomButton from "../components/CustomButton";
 //   },
 // ];
 
-export default function ImageSlider({ images=[], uploadedImages =[], setDeletedImages, showDelete = false }) {
+export default function ImageSlider({
+  images = EMPTY_ARRAY,
+  uploadedImages = EMPTY_ARRAY,
+  setDeletedImages,
+  showDelete = false,
+}) {
   const [internalImages, setInternalImages] = useState([]);
-  const [currStep, setCurrStep] = useState(0); //Current step index of image
-  const [numberOfSteps, setNumberOfSteps]= useState(0); //Total number of images
-  
 
-  useEffect(()=>{ 
-      if ( images) {
-        const newImages = (uploadedImages).concat(images);
-        setInternalImages(newImages); 
-        setNumberOfSteps(newImages.length);
-        setCurrStep(0);
-      }
-    }
-    ,[images, uploadedImages]);
+  const [currStep, setCurrStep] = useState(0); // Current step index of image
+
+  useEffect(()=>{
+    const newImages = uploadedImages.concat(images);
+    setInternalImages(newImages);
+    setCurrStep(0);
+  }
+  ,[images, uploadedImages]);
 
   //handle deleted images
   function handleDeletedImage() {
-    if (internalImages.length !== 0) {
-      setDeletedImages((imgs) => {
-        let newImages = Array.from(imgs);
-        newImages.push(internalImages[currStep].image_id);
-        return newImages;
-      });
-      //this is necessary to avoid accessing an index that doesnt exist when updating internalimages
-      if (currStep != 0){
-        handleBackButton();
-      }
-      setInternalImages((imgs) =>
-        imgs.filter((item) => item.image_id != internalImages[currStep].image_id)
-      );
+    if (!internalImages.length || !setDeletedImages) return;
+    const current = internalImages[currStep];
+
+    if (!current || current.image_id == null) return;
+
+    // Inform parent which image_id to delete
+    setDeletedImages((imgs) => {
+      const next = Array.from(imgs);
+      next.push(current.image_id);
+      return next;
+    });
+    //this is necessary to avoid accessing an index that doesn't exist
+    if (currStep !== 0){
+      handleBackButton();
     }
+    setInternalImages((imgs) =>
+      imgs.filter((item) => item.image_id !== current.image_id)
+    );
   }
-  function handleNextButton() 
+  function handleNextButton()
     //Move to next image
     {
-      setCurrStep((prev) => {
-        const newStep = (prev + 1) % numberOfSteps;
-        return newStep;
-      });
-    };
+    if (!internalImages.length) return;
+    setCurrStep((prev) => {
+      const total = internalImages.length;
+      const newStep = (prev + 1) % total;
+      return newStep;
+    });
+  }
 
-  function handleBackButton ()
-    //Move to previous image
-    {
-      setCurrStep((prev) => {
-        const newStep = (prev - 1 + numberOfSteps) % numberOfSteps;
-        return newStep;
-      });
-    };
-
-  if (internalImages.length != 0) {
+  function handleBackButton () 
+      //Move to previous image
+  {
+    if (!internalImages.length) return;
+    setCurrStep((prev) => {
+      const total = internalImages.length;
+      const newStep = (prev - 1 + total) % total;
+      return newStep;
+    });
+  }
+  
+  if (internalImages.length !== 0) {
     return (
       <Box id="edit-images" sx={{ position: "relative" }}>
         <Card //Outer container
@@ -161,7 +173,7 @@ export default function ImageSlider({ images=[], uploadedImages =[], setDeletedI
           {/* Image Dots */}
           <MobileStepper
             variant="dots" //Dots type
-            steps={numberOfSteps} //Total dots
+            steps={internalImages.length} //Total dots
             activeStep={currStep} //Active dot
             position="static" //Static position
             sx={{
