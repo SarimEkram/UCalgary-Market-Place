@@ -84,7 +84,7 @@ export const adminDeletePost = (req, res) => {
 
                 if (logErr) {
                     logStatus = "failed";
-                    console.error("Error logging admin action (delete post):", logErr);
+
                 }
 
                 // 3) Send email to the user – do NOT fail the whole request if this breaks
