@@ -18,7 +18,7 @@ export default function Navigation() {
     const userData = JSON.parse(localStorage.getItem("user"));
     let options = [];
     if (userData.isAdmin) {
-      options = ["Home", "Admin", "Market", "Events"];
+      options = ["Home", "Admin", "Market", "Events", "Settings"];
     } else {
       options = ["Home", "User", "Market", "Events"];
     }
@@ -49,7 +49,7 @@ export default function Navigation() {
   const Icon = function ({ value }) {
     if (value == "home") {
       return <Home></Home>;
-    } else if (value == "user") {
+    } else if (value == "user" | value== "admin") {
       return <User></User>;
     } else if (value == "events") {
       return <Shoppingbag></Shoppingbag>;
