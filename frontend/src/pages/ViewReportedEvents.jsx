@@ -125,7 +125,7 @@ export default function ViewReportedEvents() {
                   reportDate={post.report_date}
                   numReports={post.report_count}
                   image={post.image}
-                  viewPath={`/admin/reports/events/${post.post_id}`}
+                  viewPath={`/admin/reports/events/${post.id}`}
                   id={post.id}
                 ></PostCard>
               );

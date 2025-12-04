@@ -37,15 +37,38 @@ export default function ImageSlider({
   showDelete = false,
 }) {
   const [internalImages, setInternalImages] = useState([]);
+  //keep track of number of images uploaded by user
+  const [uploadLength, setUploadLength]  = useState(0);
 
   const [currStep, setCurrStep] = useState(0); // Current step index of image
 
+
+
   useEffect(()=>{
-    const newImages = uploadedImages.concat(images);
+    // remove all previously uploaded images, from the front of the array 
+    let newImages = [...internalImages].slice(uploadLength); 
+    //add newly uploaded images to the front of the array 
+    newImages = uploadedImages.concat(newImages);
+    //update the internal images for the slider
     setInternalImages(newImages);
+    //update the length of the newly ulpaded images 
+    setUploadLength(uploadedImages.length);
+    //reset the current index shown in the slider
     setCurrStep(0);
+    console.log("uploaded images changed ", uploadedImages)
   }
-  ,[images, uploadedImages]);
+  ,[uploadedImages]);
+
+
+  useEffect(()=>{
+    setInternalImages(images);
+    setCurrStep(0);
+    console.log("images changed", images)
+  }
+  ,[images]);
+
+
+
 
   //handle deleted images
   function handleDeletedImage() {
@@ -210,7 +233,7 @@ export default function ImageSlider({
               position: "absolute",
               top: 0,
               right: 0,
-              margin: 2,
+              margin: 2, //hide delete button for uploaded images
               display: currStep < uploadedImages.length ?"none" : "initial",
             }}
             color={"red"}

@@ -6,7 +6,8 @@ import {
   IconButton,
   Stack,
   Typography,
-  Link
+  Link,
+  Button
 } from "@mui/material";
 
 import dayjs from "dayjs";
@@ -39,7 +40,6 @@ export default function EventItemPage() {
 
   //Delete post with popup  functions and state variables
   const confirmedDelete = async () => {
-    // CHANGE THE ROUTE !!!
     const response = await fetch(`/api/admin/posts/${id}`, {
       method: "DELETE",
       headers: {
@@ -70,7 +70,7 @@ export default function EventItemPage() {
       try {
         setIsLoading(true);
 
-        const response = await fetch(`/api/posts/eventdetails/${postId}`);
+        const response = await fetch(`/api/posts/reported-eventdetails/${postId}`);
 
         if (!response.ok) {
           throw new Error(`HTTP error ${response.status}`);
@@ -207,11 +207,27 @@ export default function EventItemPage() {
               ></ConfirmationPopup>
 
               {/* Back Arrow */}
-              <Box sx={{ ...styles.rowGap, pt: 1, mb: 1.5 }}>
-                <IconButton size="small" onClick={() => navigate(-1)}>
-                  <ArrowBackIosNewIcon sx={{ fontSize: 18 }} />
-                </IconButton>
-                <Typography variant="body2">Back</Typography>
+               <Box sx={{ pt: 1, mb: 1 }}>
+                <Button
+                color="text.primary"
+                  onClick={() => navigate(-1)}
+                  sx={(theme) => ({
+                    display: "flex",
+                    columnGap: 2,
+                    padding: 0,
+                    margin: 0,
+                    "&.MuiButton-root": {
+                      textTransform: "none", // Overrides text transformation
+                    },
+                    "&.MuiButtonBase-root": {
+                      textTransform: "none", // Overrides text transformation
+                    },
+                   ...styles.rowGap,
+                  })}
+                >
+                  <ArrowBackIosNewIcon  sx={{ color: "#0000008a", fontSize: 18 }} />
+                  <Typography variant="body2">Back</Typography>
+                </Button>
               </Box>
 
               {/* Images */}
@@ -313,6 +329,7 @@ export default function EventItemPage() {
                         ? theme.palette.dullPrimary
                         : theme.palette.grey[300],
                       padding: 1,
+                      textTransform:"capitalize"
                     })}
                     color="text.primary"
                     variant={"body1"}
