@@ -19,7 +19,7 @@ import reportRoutes from "./routes/reportRoutes/reportRoutes.js";
 import findUserRoutes from "./routes/adminRoutes/findUserRoute.js";
 import deleteUserRoutes from "./routes/adminRoutes/deleteUserRoute.js";
 import deletePostRoutes from "./routes/adminRoutes/deletePostRoute.js";
-import viewReportedUserRoutes from "./routes/adminRoutes/viewReportedUserRoute.js";
+import viewReportedUserRoutes from "./routes/adminRoutes/ViewReportedUserRoute.js";
 import findReportedEventRoutes from "./routes/adminRoutes/findReportedEventRoute.js";
 import findReportedMarketPostRoutes from "./routes/adminRoutes/findReportedMarketPostRoute.js";
 import getRecentActionsRoutes from "./routes/adminRoutes/getRecentActionsRoute.js";

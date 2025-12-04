@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { viewReportedUsers } from "../../controller/adminController/viewReportedUserController.js";
+import { viewReportedUsers } from "../../controller/adminController/ViewReportedUserController.js";
 
 const router = Router();
 
