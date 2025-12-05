@@ -1,6 +1,8 @@
 import {
   Box,
   Dialog,
+  DialogContent,
+  DialogContentText,
   DialogTitle,
   Divider,
   Stack
@@ -55,7 +57,10 @@ const FirstPage = ({ callBack, handleClose,  warningMessage, executeFunction }) 
         setSubmitStatus(status);
       }
     } catch (error) {
-      alert("An error occurred. Please try again later.");
+      const status = { ...submitStatus };
+      status.success = false;
+      status.msg = "Failed to delete the post.";
+      setSubmitStatus(status);
     }
   };
   return (
@@ -73,6 +78,20 @@ const FirstPage = ({ callBack, handleClose,  warningMessage, executeFunction }) 
           marginBottom: 3,
         })}
       ></Divider>
+      <DialogContent sx={[
+          {
+            display:
+               submitStatus.success != null ? "initial" : "none",
+          },
+        ]}
+      >
+      <DialogContentText
+        error={true}
+        sx={[{  fontSize: "1rem"},]}
+      >
+        {submitStatus.msg} Please try again.
+      </DialogContentText>
+      </DialogContent>
       <Stack direction="row" sx={{justifyContent: "space-between", alignItems: "center"}}>
         <CustomButton color="black" onClick={handleClose}>Exit</CustomButton>
         <CustomButton onClick={onSubmit}>Confirm</CustomButton>

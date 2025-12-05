@@ -71,6 +71,7 @@ export default function EditEvent() {
   useEffect(() => {
     let isMounted = true;
     async function fetchData() {
+      try{
       const response = await fetch(
         `/api/posts/eventdetails/${id}`,
         {
@@ -110,6 +111,10 @@ export default function EditEvent() {
         location: data.postal_code,
         price: data.price ?? "",
       });
+    }
+      catch(error){
+        console.error(error);
+      }
     }
     fetchData();
     return () => {
@@ -484,7 +489,7 @@ export default function EditEvent() {
                 { visibility: editFailed ? "visible" : "hidden" },
               ]}
             >
-              Failed to updat the post.<br></br>Please try again.
+              Failed to update the post.<br></br>Please try again.
             </FormHelperText>
           </Stack>
         </Container>

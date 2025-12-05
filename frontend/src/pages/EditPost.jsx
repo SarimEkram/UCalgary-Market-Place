@@ -64,6 +64,7 @@ export default function EditPost() {
   useEffect(() => {
     let isMounted = true;
     async function fetchData() {
+    try {
       const response = await fetch(
         `/api/posts/itemdetails/${id}`,
         {
@@ -95,6 +96,8 @@ export default function EditPost() {
         location: data.postal_code,
         price: data.price,
       });
+    }
+      catch(error){console.error(error)}
     }
     fetchData();
 
