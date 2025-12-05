@@ -29,7 +29,7 @@ export const searchUsers = (req, res) => {
 
         return db.query(sql, [like, like, like, limit, offset], (err, rows) => {
             if (err) {
-                console.error("DB error (searchUsers with query):", err);
+
                 return res.status(500).json({ error: "Failed to search users" });
             }
 
@@ -46,7 +46,7 @@ export const searchUsers = (req, res) => {
 
     db.query(sql, [limit, offset], (err, rows) => {
         if (err) {
-            console.error("DB error (searchUsers default list):", err);
+
             return res.status(500).json({ error: "Failed to load users" });
         }
 
@@ -65,7 +65,7 @@ export const getUserProfileForAdmin = (req, res) => {
 
     db.query(userSql, [id], (userErr, userRows) => {
         if (userErr) {
-            console.error("DB error (user):", userErr);
+
             return res.status(500).json({ error: "Database error" });
         }
 
@@ -153,13 +153,13 @@ export const getUserProfileForAdmin = (req, res) => {
 
         db.query(eventPostsSql, [id], (eventErr, eventRows) => {
             if (eventErr) {
-                console.error("DB error (event posts):", eventErr);
+
                 return res.status(500).json({ error: "Failed to load event posts" });
             }
 
             db.query(marketPostsSql, [id], (marketErr, marketRows) => {
                 if (marketErr) {
-                    console.error("DB error (market posts):", marketErr);
+
                     return res.status(500).json({ error: "Failed to load market posts" });
                 }
 
