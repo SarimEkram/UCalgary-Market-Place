@@ -109,8 +109,8 @@ export default function EventItemPage() {
           endDate: end_date ? dayjs(end_date).format("MMM D YYYY") : "TBA",
           organizer:
             organization_name ||
-            (seller_fname && seller_lname
-              ? `${seller_fname} ${seller_lname}`
+            (organizer_fname && organizer_lname
+              ? `${organizer_fname} ${organizer_lname}`
               : null),
           sellerId: organizer_id ?? null,
 

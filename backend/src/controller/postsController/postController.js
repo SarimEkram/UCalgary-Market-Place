@@ -358,29 +358,29 @@ export function getEventById(req, res) {
     return res.status(400).json({ error: "Invalid event id" });
   }
 
-    const sql = `
-    SELECT
+  const sql = `
+      SELECT
         p.post_id           AS id,
         p.name              AS title,
         p.description       AS description,
         p.price             AS price,
         p.post_type         AS type,
-        p.postal_code       AS postal_code,
+        p.postal_code       AS location,
         p.posted_date       AS posted_date,
         p.user_id           AS organizer_id,
         u.fname             AS organizer_fname,
         u.lname             AS organizer_lname,
         u.email             AS organizer_email,
         e.organization_name AS organization_name,
-        e.event_start       AS event_start,
-        e.event_end         AS event_end,
+        e.event_start       AS start_date,
+        e.event_end         AS end_date,
         i.image_id,
         i.image_text_data   AS image_data
-    FROM posts p
-    JOIN event_posts e ON e.event_id = p.post_id
-    JOIN users u       ON u.user_id = p.user_id
-    LEFT JOIN images i ON i.post_id = p.post_id
-    WHERE p.post_id = ? AND p.post_type = 'event'
+      FROM posts p
+      JOIN event_posts e ON e.event_id = p.post_id
+      JOIN users u       ON u.user_id = p.user_id
+      LEFT JOIN images i ON i.post_id = p.post_id
+      WHERE p.post_id = ? AND p.post_type = 'event'
     `;
 
 
@@ -398,20 +398,20 @@ export function getEventById(req, res) {
 
     // Base event data (all non-image fields)
     const base = {
-        id: first.id,
-        title: first.title,
-        description: first.description,
-        price: first.price,
-        type: first.type,
-        postal_code: first.postal_code,
-        posted_date: first.posted_date,
-        organizer_id: first.organizer_id,
-        organizer_fname: first.organizer_fname,
-        organizer_lname: first.organizer_lname,
-        organizer_email: first.organizer_email,
-        organization_name: first.organization_name,
-        event_start: first.event_start,
-        event_end: first.event_end,
+      id: first.id,
+      title: first.title,
+      description: first.description,
+      price: first.price,
+      type: first.type,
+      location: first.location,
+      posted_date: first.posted_date,
+      seller_id: first.seller_id,
+      seller_fname: first.seller_fname,
+      seller_lname: first.seller_lname,
+      seller_email: first.seller_email,
+      organization_name: first.organization_name,
+      start_date: first.start_date,
+      end_date: first.end_date,
     };
 
     // Collect & normalize images into base64
@@ -589,9 +589,6 @@ export function getReportedMarketItemById(req, res) {
   });
 }
 
-// --------------------------------------------
-// Get full details for a single event listing with report category
-// --------------------------------------------
 export function getReportedEventById(req, res) {
   const { id } = req.params;
 
@@ -600,38 +597,38 @@ export function getReportedEventById(req, res) {
     return res.status(400).json({ error: "Invalid event id" });
   }
 
-    const sql = `
+  const sql = `
     SELECT
-        p.post_id           AS id,
-        p.name              AS title,
-        p.description       AS description,
-        p.price             AS price,
-        p.post_type         AS type,
-        p.postal_code       AS postal_code,
-        p.posted_date       AS posted_date,
-        p.user_id           AS organizer_id,
-        u.fname             AS organizer_fname,
-        u.lname             AS organizer_lname,
-        u.email             AS organizer_email,
-        e.organization_name AS organization_name,
-        e.event_start       AS event_start,
-        e.event_end         AS event_end,
-        i.image_id,
-        i.image_text_data   AS image_data,
-        (
-          SELECT r.reason
-          FROM post_report pr
-          JOIN reports r ON r.report_id = pr.report_id
-          WHERE pr.post_id = p.post_id
-          ORDER BY r.report_id DESC
-          LIMIT 1
-        ) AS report_category
+      p.post_id           AS id,
+      p.name              AS title,
+      p.description       AS description,
+      p.price             AS price,
+      p.post_type         AS type,
+      p.postal_code       AS location,
+      p.posted_date       AS posted_date,
+      p.user_id           AS organizer_id,
+      u.fname             AS organizer_fname,
+      u.lname             AS organizer_lname,
+      u.email             AS organizer_email,
+      e.organization_name AS organization_name,
+      e.event_start       AS start_date,
+      e.event_end         AS end_date,
+      i.image_id,
+      i.image_text_data   AS image_data,
+      (
+        SELECT r.reason
+        FROM post_report pr
+        JOIN reports r ON r.report_id = pr.report_id
+        WHERE pr.post_id = p.post_id
+        ORDER BY r.report_id DESC
+        LIMIT 1
+      ) AS report_category
     FROM posts p
     JOIN event_posts e ON e.event_id = p.post_id
     JOIN users u       ON u.user_id = p.user_id
     LEFT JOIN images i ON i.post_id = p.post_id
     WHERE p.post_id = ? AND p.post_type = 'event'
-    `;
+  `;
 
 
   db.query(sql, [eventId], (err, rows) => {
@@ -648,21 +645,21 @@ export function getReportedEventById(req, res) {
 
     // Base event data (all non-image fields)
     const base = {
-        id: first.id,
-        title: first.title,
-        description: first.description,
-        price: first.price,
-        type: first.type,
-        postal_code: first.postal_code,
-        posted_date: first.posted_date,
-        organizer_id: first.organizer_id,
-        organizer_fname: first.organizer_fname,
-        organizer_lname: first.organizer_lname,
-        organizer_email: first.organizer_email,
-        organization_name: first.organization_name,
-        event_start: first.event_start,
-        event_end: first.event_end,
-        report_category: first.report_category || null,
+      id: first.id,
+      title: first.title,
+      description: first.description,
+      price: first.price,
+      type: first.type,
+      location: first.location,
+      posted_date: first.posted_date,
+      organizer_id: first.organizer_id,
+      organizer_fname: first.organizer_fname,
+      organizer_lname: first.organizer_lname,
+      organizer_email: first.organizer_email,
+      organization_name: first.organization_name,
+      start_date: first.start_date,
+      end_date: first.end_date,
+      report_category: first.report_category || null,
     };
 
     // Collect & normalize images into base64
