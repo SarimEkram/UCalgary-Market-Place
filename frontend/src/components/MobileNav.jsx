@@ -103,7 +103,7 @@ export default function Navigation() {
             })}
             label={title}
             value={title.toLowerCase()}
-            showLabel
+            showLabel={true}
             icon={<Icon value={title.toLowerCase()}></Icon>}
           />
           </Link>
