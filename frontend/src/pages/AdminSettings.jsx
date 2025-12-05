@@ -49,6 +49,8 @@ export default function MySettings() {
   const onSubmit = async (formData) => {
     delete formData["password"];
 
+
+    try {
     const response = await fetch(`/api/settings/update`, {
       method: "POST",
       headers: {
@@ -77,6 +79,9 @@ export default function MySettings() {
     } else {
       //set status of
       setSubmitStatus({ success: false, msg: data.error });
+    }}
+    catch(error){
+       setSubmitStatus({ success: false, msg: "Failed to update database." });
     }
   };
 

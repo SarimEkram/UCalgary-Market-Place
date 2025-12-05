@@ -63,7 +63,7 @@ export default function ImageSlider({
   useEffect(()=>{
     setInternalImages(images);
     setCurrStep(0);
-    
+   
   }
   ,[images]);
 

@@ -19,6 +19,7 @@ export default function MyPosts() {
   useEffect(() => {
     let isMounted = true;
     async function fetchData() {
+      try{
        const response = await fetch(
          `/api/my-posts/list`,
          {
@@ -45,6 +46,8 @@ export default function MyPosts() {
       });
 
       setItems(data);
+    }
+    catch(error){console.error(error)}
     }
     fetchData();
     return () => {

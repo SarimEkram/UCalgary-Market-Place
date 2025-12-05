@@ -50,34 +50,6 @@ curl localhost:8080
 ```bash
  docker exec -it db mysql -u root -p
 ```
-
-To access the app on your phone while on the same Wi-Fi as your computer:
-
-Make sure `docker compose up -d` is running and `http://localhost:3000` works on your computer.
-
-Find your computer’s IP address:
-
-**For Mac:**
-```bash
-ipconfig getifaddr en0
-```
-
-**For Linux:**
-```bash
-hostname -I
-```
-or
-```bash
-ip addr show
-```
-
-**For Windows (Command Prompt or PowerShell):**
-```bash
-ipconfig
-```
-**Then on your phone’s browser (same Wi-Fi), go to:**
-http://your-computer-ip:3000
-**and paste your IP address into the link instead of your-computer-ip.**
     
 
 

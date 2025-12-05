@@ -26,6 +26,9 @@ export default function Events() {
   const [loading, setLoading] = useState(true);
   const [errorText, setErrorText] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [isAdmin, setIsAdmin] = useState(()=>{
+      return JSON.parse(localStorage.getItem("user")).isAdmin;
+    });
 
   const createQueryParams = (filters, searchKey) => {
     const params = new URLSearchParams();
@@ -158,7 +161,7 @@ export default function Events() {
 
             {!loading &&
               !errorText &&
-              events.map((event) => <EventCard key={event.id} event={event} />)}
+              events.map((event) => <EventCard key={event.id} event={event} isAdmin={isAdmin} />)}
           </Box>
         </Container>
 
@@ -171,7 +174,7 @@ export default function Events() {
   );
 }
 
-function EventCard({ event }) {
+function EventCard({ event, isAdmin }) {
   const navigate = useNavigate();
 
   const {
@@ -196,7 +199,7 @@ function EventCard({ event }) {
       direction={{ xs: "row", md: "column" }}
       spacing={{ xs: 2, md: 1.5 }}
       sx={cardStyles.root}
-      onClick={() => navigate(`/events/${id}`)}
+      onClick={() => (isAdmin) ? navigate(`/admin/reports/events/${id}`) : navigate(`/events/${id}`)}
     >
       <Box component="img" src={imageUrl} alt={title} sx={cardStyles.image} />
 

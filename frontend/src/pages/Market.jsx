@@ -25,6 +25,9 @@ export default function Market() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [isAdmin, setIsAdmin] = useState(()=>{
+      return JSON.parse(localStorage.getItem("user")).isAdmin;
+  });
 
   const createQueryParams = (filters, searchKey) => {
     const params = new URLSearchParams();
@@ -191,7 +194,7 @@ export default function Market() {
             {!loading &&
               !error &&
               posts.map((marketPost) => (
-                <PostCard key={marketPost.id} marketPost={marketPost} />
+                <PostCard key={marketPost.id} isAdmin={isAdmin} marketPost={marketPost} />
               ))}
           </Box>
         </Container>
@@ -202,7 +205,7 @@ export default function Market() {
   );
 }
 
-function PostCard({ marketPost }) {
+function PostCard({ marketPost, isAdmin }) {
   const navigate = useNavigate();
 
   const { id, title, posted_date, price, item_condition, thumbnail } =
@@ -218,7 +221,7 @@ function PostCard({ marketPost }) {
       alignItems="flex-start"
       spacing={{ xs: 2, md: 1.5 }}
       sx={cardStyles.root}
-      onClick={() => navigate(`/market/${id}`)}
+      onClick={() => isAdmin ? navigate(`/admin/reports/market/${id}`) : navigate(`/market/${id}`)}
     >
       <Box
         component="img"

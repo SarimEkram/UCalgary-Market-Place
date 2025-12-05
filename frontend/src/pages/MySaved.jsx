@@ -17,6 +17,7 @@ export default function MySaved() {
   useEffect(() => {
     let isMounted = true;
     async function fetchData() {
+      try{
        const response = await fetch(
          `/api/getSavedPosts`,
          {
@@ -47,6 +48,7 @@ export default function MySaved() {
       });
 
       setItems(data);
+    }catch(error){console.error(error)}
     }
     fetchData();
     return () => {

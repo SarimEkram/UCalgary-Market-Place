@@ -94,7 +94,11 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
         setSubmitStatus(status);
       }
     } catch (error) {
-      alert("An error occurred. Please try again later.");
+      const status = { ...submitStatus };
+      status.success = false;
+      status.msg = "Failed to submit this form.";
+      setSubmitStatus(status);
+     
     }
 
   };
@@ -197,7 +201,10 @@ const SecondPage = ({ setPage, handleClose, setCode }) => {
         setSubmitStatus(status);
       }
     } catch (error) {
-      alert("An error occurred. Please try again later.");
+      const status = { ...submitStatus };
+      status.success = false;
+      status.msg = "Failed to submit this form.";
+      setSubmitStatus(status);
     }
   };
 
@@ -310,7 +317,10 @@ const ThirdPage = ({ setPage, handleClose, email, code }) => {
         setSubmitStatus(status);
       }
     } catch (error) {
-      alert("An error occurred. Please try again later.");
+      const status = { ...submitStatus };
+      status.success = false;
+      status.msg = "Failed to submit this form.";
+      setSubmitStatus(status);
     }  
   };
 

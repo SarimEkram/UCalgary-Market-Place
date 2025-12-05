@@ -71,7 +71,10 @@ const FirstPage = ({ handleClose, setVerified }) => {
         setSubmitStatus(status);
       }
     } catch (error) {
-      alert("An error occurred. Please try again later.");
+      const status = { ...submitStatus };
+      status.success = false;
+      status.msg = "Failed to submit this form.";
+      setSubmitStatus(status);;
     }
   };
   return (
