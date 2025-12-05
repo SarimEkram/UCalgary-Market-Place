@@ -39,7 +39,7 @@ export const getContactedPosts = (req, res) => {
 
     db.query(sql, [userId], (err, rows) => {
         if (err) {
-            console.error("DB error (getContactedPosts):", err);
+
             return res.status(500).json({ error: "Database error" });
         }
 
