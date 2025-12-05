@@ -73,7 +73,7 @@ export const getReportedEvents = (req, res) => {
                     postal_code: row.postal_code,
                     posted_date: row.posted_date,
                     report_count: row.report_count,
-                    report_date: row.posted_date, // fallback until reports have timestamps
+                    report_date: row.posted_date,
                     organization_name: row.organization_name,
                     event_start: row.event_start,
                     event_end: row.event_end,

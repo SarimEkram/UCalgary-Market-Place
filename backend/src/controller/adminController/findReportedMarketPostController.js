@@ -72,7 +72,7 @@ export const getReportedMarketPosts = (req, res) => {
                     postal_code: row.postal_code,
                     posted_date: row.posted_date,
                     report_count: row.report_count,
-                    report_date: row.posted_date, // same behaviour as before
+                    report_date: row.posted_date,
                     item_condition: row.item_condition,
                     thumbnail: thumb,
                 };
