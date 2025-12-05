@@ -36,7 +36,7 @@ export const forgotPassword = (req, res) => {
 
         db.query(insertQuery, [code, expirationTime], (err) => {
             if (err) {
-                console.error("DB error (insert reset code):", err);
+
                 return res
                     .status(500)
                     .json({ success: false, error: "Failed to generate reset code" });
@@ -51,7 +51,7 @@ export const forgotPassword = (req, res) => {
 
             transporter.sendMail(mailOptions, (mailErr, info) => {
                 if (mailErr) {
-                    console.error("Error sending reset email:", mailErr);
+
                     return res.status(500).json({
                         success: false,
                         error: "Failed to send password reset email",
@@ -72,7 +72,7 @@ export const forgotPassword = (req, res) => {
     const adminQuery = "SELECT admin_id FROM admins WHERE email = ?";
     db.query(adminQuery, [email], (err, adminRows) => {
         if (err) {
-            console.error("DB error (forgot/admin):", err);
+
             return res
                 .status(500)
                 .json({ success: false, error: "Database error" });
@@ -85,7 +85,7 @@ export const forgotPassword = (req, res) => {
         const userQuery = "SELECT user_id FROM users WHERE email = ?";
         db.query(userQuery, [email], (err2, userRows) => {
             if (err2) {
-                console.error("DB error (forgot/users):", err2);
+
                 return res
                     .status(500)
                     .json({ success: false, error: "Database error" });
@@ -124,7 +124,7 @@ export const verifyResetCode = (req, res) => {
 
     db.query(verifyQuery, [normalizedCode], (err, rows) => {
         if (err) {
-            console.error("DB error (verify reset code):", err);
+
             return res
                 .status(500)
                 .json({ success: false, isValid: false, error: "Database error" });
@@ -168,7 +168,7 @@ export const resetPassword = (req, res) => {
         const deleteQuery = "DELETE FROM verification_codes WHERE randomCode = ?";
         db.query(deleteQuery, [normalizedCode], (err) => {
             if (err) {
-                console.error("DB error (delete reset code):", err);
+
             }
         });
     };
@@ -176,7 +176,7 @@ export const resetPassword = (req, res) => {
     const updateAdminPassword = () => {
         bcrypt.hash(newPassword, 10, (hashErr, hashed) => {
             if (hashErr) {
-                console.error("bcrypt error (reset/admin):", hashErr);
+
                 return res
                     .status(500)
                     .json({ success: false, error: "Password hashing failed" });
@@ -187,7 +187,7 @@ export const resetPassword = (req, res) => {
 
             db.query(updateQuery, [hashed, email], (err) => {
                 if (err) {
-                    console.error("DB error (update admin password):", err);
+
                     return res
                         .status(500)
                         .json({ success: false, error: "Failed to update password" });
@@ -205,7 +205,7 @@ export const resetPassword = (req, res) => {
     const updateUserPassword = () => {
         bcrypt.hash(newPassword, 10, (hashErr, hashed) => {
             if (hashErr) {
-                console.error("bcrypt error (reset/user):", hashErr);
+
                 return res
                     .status(500)
                     .json({ success: false, error: "Password hashing failed" });
@@ -216,7 +216,7 @@ export const resetPassword = (req, res) => {
 
             db.query(updateQuery, [hashed, email], (err) => {
                 if (err) {
-                    console.error("DB error (update user password):", err);
+
                     return res
                         .status(500)
                         .json({ success: false, error: "Failed to update password" });
@@ -233,7 +233,7 @@ export const resetPassword = (req, res) => {
 
     db.query(verifyQuery, [normalizedCode], (err, codeRows) => {
         if (err) {
-            console.error("DB error (reset/verify code):", err);
+
             return res
                 .status(500)
                 .json({ success: false, error: "Database error" });
@@ -249,7 +249,7 @@ export const resetPassword = (req, res) => {
         const adminQuery = "SELECT admin_id FROM admins WHERE email = ?";
         db.query(adminQuery, [email], (err2, adminRows) => {
             if (err2) {
-                console.error("DB error (reset/admin lookup):", err2);
+
                 return res
                     .status(500)
                     .json({ success: false, error: "Database error" });
@@ -262,7 +262,7 @@ export const resetPassword = (req, res) => {
             const userQuery = "SELECT user_id FROM users WHERE email = ?";
             db.query(userQuery, [email], (err3, userRows) => {
                 if (err3) {
-                    console.error("DB error (reset/user lookup):", err3);
+
                     return res
                         .status(500)
                         .json({ success: false, error: "Database error" });
