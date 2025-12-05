@@ -104,7 +104,10 @@ export default function Home() {
 // Wrapper to fetch posts of a given type and render the Section.
 function DynamicSection({ title, typeFilter }) {
   const [items, setItems] = useState([]);
-  const navigate = useNavigate();                    // ⬅️ use navigate here
+  const navigate = useNavigate(); 
+  const [isAdmin, setIsAdmin] = useState(()=>{
+      return JSON.parse(localStorage.getItem("user")).isAdmin;
+  });                  
 
   useEffect(() => {
     let mounted = true;
@@ -163,7 +166,19 @@ function DynamicSection({ title, typeFilter }) {
       }
       // Card click -> item details pages
       onItemClick={(id) =>
-        navigate(typeFilter === "event" ? `/events/${id}` : `/market/${id}`)
+        navigate((()=>{
+            let ans = "";
+            if (typeFilter === "event" ){
+              ans = isAdmin ? `/admin/reports/events/${id}` :`/events/${id}` ;
+              console.log(ans);
+            }
+            else{
+              ans = isAdmin ? `/admin/reports/market/${id}` : `/market/${id}`;
+              console.log(ans);
+            }
+            
+            return ans;
+          })())
       }
     />
   );
@@ -225,6 +240,7 @@ function Section({ title, items, onSeeAll, onItemClick }) {
 
 /* ===== SINGLE CARD ===== */
 function ItemCard({ title, subtitle, price, thumbnailBase64, onClick }) {
+
   const cleanedThumb = thumbnailBase64
     ? thumbnailBase64.replace(/\s/g, "")
     : null;

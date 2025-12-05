@@ -55,7 +55,7 @@ export default function ImageSlider({
     setUploadLength(uploadedImages.length);
     //reset the current index shown in the slider
     setCurrStep(0);
-    console.log("uploaded images changed ", uploadedImages)
+    
   }
   ,[uploadedImages]);
 
@@ -63,7 +63,7 @@ export default function ImageSlider({
   useEffect(()=>{
     setInternalImages(images);
     setCurrStep(0);
-    console.log("images changed", images)
+   
   }
   ,[images]);
 

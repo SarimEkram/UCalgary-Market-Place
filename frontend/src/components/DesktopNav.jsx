@@ -50,7 +50,7 @@ export default function DesktopNav() {
         ans = "settings";
        }
     } 
-    console.log(ans, pathComposition);
+   
     return ans;
   });
 

@@ -41,7 +41,7 @@ export default function Navigation() {
         ans = "settings";
        }
     } 
-    console.log(ans, pathComposition);
+    
     return ans;
   });
 
