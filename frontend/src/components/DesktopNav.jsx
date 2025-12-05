@@ -28,6 +28,8 @@ export default function DesktopNav() {
     return options;
   });
 
+
+
   // navigate urls, and change the current selected page, when a user clicks on an item in the nav bar
   function getURL(newValue) {
     const url = newValue === "settings" ? "/admin/settings" : "/" + newValue;
@@ -40,7 +42,17 @@ export default function DesktopNav() {
 
   //the currently selected page in the navigation bar
   //which is initialized to the root path on the current page
-  const [value, setValue] = useState(location.pathname.split("/")[1]);
+  const [value, setValue] = useState(()=>{
+    const pathComposition =  location.pathname.split("/");
+    let ans = pathComposition[1];
+    if (pathComposition[1] == "admin"){
+       if (pathComposition[2] && pathComposition[2] == "settings"){
+        ans = "settings";
+       }
+    } 
+    console.log(ans, pathComposition);
+    return ans;
+  });
 
   //constant width of the navigation bar
   const drawerWidth = 180;
