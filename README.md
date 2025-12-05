@@ -13,21 +13,13 @@ git clone git@csgit.ucalgary.ca:enioluwafe.balogun/seng513-202401-group-15.git
 3. Move into to the folder: seng513-202401-group-15
 4. Make a file called '.env' inside the current directory (seng513-202401-group-15). 
 5. Copy the contents of the .env.sample file into your .env, and change the password as needed.
-6. Move into the "backend" folder and run: 
-```bash
-npm install
-```
-7.  Move into the "frontend" folder and run: 
-```bash
-npm install
-```
-8. Move back into the root folder (seng513-202401-group-15)
-9. Run the following command. Note that the -d option prevents you from being bombarded with logs when creating the containers:
+5b.But you must leave the `EMAIL_USER and EMAIL_PASS` as is so you have access to our gmail account. In order to share our project, we were unable to keep these secrets a secret. 
+6. Run the following command. Note that the -d option prevents you from being bombarded with logs when creating the containers:
 ```bash
 docker compose up -d
 ```
 
-10.  Once the containers are set up you should see something like this in the terminal. It will take around 30s for the Database to set up so please wait until you see this screen. 
+7.  Once the containers are set up you should see something like this in the terminal. It will take around 30s for the Database to set up so please wait until you see this screen. 
 ```bash
 $ docker compose up -d
 [+] Running 4/4
@@ -37,7 +29,7 @@ $ docker compose up -d
  ✔ Container seng513-202401-group-15-frontend-1  Started                  13.8s
 ```
 
-11. Navigate to the following link in your browser to access the frontend: 
+8. Navigate to the following link in your browser to access the frontend: 
 ```bash
 http://localhost:3000/
 ```
