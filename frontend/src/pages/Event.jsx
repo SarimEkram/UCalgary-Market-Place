@@ -109,7 +109,7 @@ export default function Events() {
       >
         <Header />
 
-        <Container sx={styles.container} maxWidth="lg">
+        <Container sx={{...styles.container, pb:8, mb:10}} maxWidth="lg">
           {/* Search bar */}
           <TextField
             size="medium"
