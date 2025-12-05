@@ -11,7 +11,7 @@ export const login = (req, res) => {
     const verifyPasswordAndRespond = (row, roleLabel) => {
         bcrypt.compare(password, row.hashed_password, (err, isMatch) => {
             if (err) {
-                console.error("bcrypt error (login):", err);
+
                 return res.status(500).json({ error: "Password check failed" });
             }
 
@@ -36,7 +36,7 @@ export const login = (req, res) => {
     const adminQuery = "SELECT * FROM admins WHERE email = ?";
     db.query(adminQuery, [email], (err, adminRows) => {
         if (err) {
-            console.error("DB error (login/admin):", err);
+
             return res.status(500).json({ error: "Database error" });
         }
 
@@ -47,7 +47,7 @@ export const login = (req, res) => {
         const userQuery = "SELECT * FROM users WHERE email = ?";
         db.query(userQuery, [email], (err2, userRows) => {
             if (err2) {
-                console.error("DB error (login/users):", err2);
+
                 return res.status(500).json({ error: "Database error" });
             }
 
