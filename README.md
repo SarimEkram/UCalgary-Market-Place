@@ -50,6 +50,19 @@ curl localhost:8080
 ```bash
  docker exec -it db mysql -u root -p
 ```
-    
+## Login Access/Seeding
 
+- The database will have seeded data by default for viewing puposes.
+- To login as a user, use any of the following emails:
+   - mike.wazowski@ucalgary.ca
+   - chicken.little@ucalgary.ca
+   - buzz.lightyear@ucalgary.ca
+   - mary.poppins@ucalgary.ca
 
+- To login as an administrator, use any of the following emails:
+   - daffy.duck@ucalgary.ca
+   - pink.panther@ucalgary.ca
+
+- The default passowrd for all seeded users is: "A!123456".
+
+- Or, feel free to make your own account if you have access to a ucalgary email.
