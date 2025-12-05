@@ -133,11 +133,12 @@ export default function EventItemPage() {
           posted_date,
           start_date,
           end_date,
-          seller_fname,
-          seller_lname,
-          seller_id,
+          organizer_fname,
+          organizer_lname,
+          organizer_id,
           organization_name,
           images: rawImages = [],
+          price,
         } = data;
 
         setEvent({
@@ -155,10 +156,11 @@ export default function EventItemPage() {
             : "TBA",
           organizer:
             organization_name ||
-            (seller_fname && seller_lname
-              ? `${seller_fname} ${seller_lname}`
+            (organizer_fname && organizer_lname
+              ? `${organizer_fname} ${organizer_lname}`
               : null),
-          sellerId: seller_id ?? null,
+          organizerId: organizer_id ?? null,
+          price,
         });
 
         const images = rawImages.map((img, i) => ({
@@ -196,7 +198,7 @@ export default function EventItemPage() {
       if (!storedUntil) return;
 
       calculateCooldown(storedUntil);
-      setContactMessage("You already contacted this seller.");
+      setContactMessage("You already contacted this orgainzer.");
     } catch (e) {
       console.error("There was an error restoring cooldown:", e);
     }
@@ -284,7 +286,7 @@ export default function EventItemPage() {
   // Contact seller 
   const handleContactSellerClick = async () => {
     if (!userId) {
-      setContactMessage("Please log in to contact the seller.");
+      setContactMessage("Please log in to contact the organizer.");
       return;
     }
 
@@ -326,7 +328,7 @@ export default function EventItemPage() {
         localStorage.setItem(key, JSON.stringify({ cooldownUntil: until }));
         calculateCooldown(until);
         setContactMessage(
-          "The seller has been emailed. Thank you for contacting!"
+          "The organzier has been emailed. Thank you for contacting!"
         );
         return;
       }
@@ -338,19 +340,19 @@ export default function EventItemPage() {
         localStorage.setItem(key, JSON.stringify({ cooldownUntil: until }));
         calculateCooldown(until);
         setContactMessage(
-          data?.error || "You already contacted this seller."
+          data?.error || "You already contacted this organzier."
         );
         return;
       }
 
       if (!response.ok) {
         setContactMessage(
-          data?.error || "Failed to contact seller. Please try again."
+          data?.error || "Failed to contact organizer. Please try again."
         );
         return;
       }
     } catch (err) {
-      console.error("There was an error contacting seller:", err);
+      console.error("There was an error contacting organizer:", err);
       setContactMessage("Network error. Please try again.");
     } finally {
       setIsContacting(false);
@@ -380,8 +382,8 @@ export default function EventItemPage() {
         postId,
       };
 
-      if (type === "user" && currentItem?.sellerId) {
-        body.reportedUserId = currentItem.sellerId;
+      if (type === "user" && currentItem?.organizerId) {
+        body.reportedUserId = currentItem.organzierId;
       }
 
       const response = await fetch(`/api/report`, {
@@ -470,7 +472,7 @@ export default function EventItemPage() {
         onClick={handleContactSellerClick}
         disabled={isContacting}
       >
-        {isContacting ? "Contacting..." : "Contact Seller"}
+        {isContacting ? "Contacting..." : "Contact Organizer"}
       </CustomButton>
     );
   }
@@ -607,7 +609,7 @@ export default function EventItemPage() {
                   <Tooltip
                     arrow
                     placement="top"
-                    title="Clicking contact seller button will send an email to the seller with your contact info."
+                    title="Clicking contact organizer button will send an email to the organzier with your contact info."
                     slotProps={{
                       tooltip: {
                         sx: {
@@ -656,7 +658,7 @@ export default function EventItemPage() {
                       fontWeight: 500,
                     }}
                   >
-                    You can contact this seller again in {cooldownText}.
+                    You can contact this organzier again in {cooldownText}.
                   </Typography>
                 )}
 

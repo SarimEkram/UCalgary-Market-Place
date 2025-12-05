@@ -152,7 +152,7 @@ INSERT INTO users (user_id, email, fname, lname, hashed_password) VALUES
 -- ADMINS
 INSERT INTO admins (admin_id, email, fname, lname, hashed_password) VALUES
 (1, 'daffy.duck@ucalgary.ca', 'Daffy', 'Duck', '$2b$10$e9bZL94pm8QqYrFWVt0YPO.qAT.OCbBfhHFaELhrgQrbt7ZpK00lC'),
-(2, 'pink.panther@ucalgary.ca', 'Pink', 'Panther', '$2b$10$CysvUlEYyT4tbRRORuBoPejnQLAOlYgJ.0UZN1bWVeItPV/ru89Uy'); -- TODO: password needs to be updated still
+(2, 'pink.panther@ucalgary.ca', 'Pink', 'Panther', '$2b$10$J8qa7ZgriqJnhCNNVL7Gju0i/SnXcpuM2U0p25C.WXSoDkLNG/U3O');
 
 
 -- POSTS (market + events)
@@ -357,9 +357,9 @@ INSERT INTO contacted_seller (user_id, post_id) VALUES
 
 -- REPORTS
 INSERT INTO reports (report_id, reporter_id, report_type, reason) VALUES
-(501, 2, 'post', 'Misleading description.'),
-(502, 3, 'user', 'User spammed multiple listings.'),
-(503, 1, 'post', 'Item sold but not updated.');
+(501, 2, 'post', 'Inappropriate'),
+(502, 3, 'user', 'Criminal Behavior'),
+(503, 1, 'post', 'Scam');
 
 INSERT INTO post_report (report_id, post_id) VALUES
 (501, 102),

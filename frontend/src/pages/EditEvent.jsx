@@ -108,7 +108,7 @@ export default function EditEvent() {
         title: data.title,
         description: data.description,
         organization_name: data.organization_name,
-        location: data.postal_code,
+        location: data.location,
         price: data.price ?? "",
       });
     }
