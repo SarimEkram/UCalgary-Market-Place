@@ -21,7 +21,7 @@ export default function PostCard({
   reportDate,
   numReports,
   id,
-  viewPath
+  viewPath,
 }) {
   const navigate = useNavigate();
   dayjs.extend(relativeTime);
@@ -57,7 +57,7 @@ export default function PostCard({
 
   // 🔹 NEW: go to actual event / market post
   const onView = () => {
-      navigate(viewPath);
+    navigate(viewPath);
   };
 
   return (
@@ -158,13 +158,19 @@ export default function PostCard({
         >
           <Stack
             direction={"column"}
-            sx={{ height: "100%", justifyContent: "space-between" }}
+            sx={{ height: "100%", justifyContent: "space-between", rowGap: 2 }}
           >
             <Box>
               <Typography
                 variant="body1"
                 sx={{
                   mt: 0,
+                  maxHeight: "94px",
+                  display: "-webkit-box",               
+                  WebkitBoxOrient: "vertical",       
+                  WebkitLineClamp: 4,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
                 }}
               >
                 {primaryText}
