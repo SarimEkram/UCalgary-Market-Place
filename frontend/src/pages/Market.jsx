@@ -123,7 +123,7 @@ export default function Market() {
       >
         <Header />
 
-        <Container sx={styles.container} maxWidth="lg">
+        <Container sx={{...styles.container, pb:8, mb:10}} maxWidth="lg">
           <TextField
             size="medium"
             placeholder="Search"
