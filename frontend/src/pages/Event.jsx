@@ -92,7 +92,7 @@ export default function Events() {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", width: "100%" }}>
       {/* Desktop left nav */}
       <Box sx={{ display: { xs: "none", md: "block" } }}>
         <DesktopNav />
@@ -105,6 +105,7 @@ export default function Events() {
           minHeight: "100vh",
           bgcolor: theme.palette.background.default,
           justifyContent: "space-between",
+          flex:1
         })}
       >
         <Header />
