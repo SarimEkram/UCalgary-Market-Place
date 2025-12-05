@@ -46,7 +46,7 @@ export const sendVerificationEmail = (req, res) => {
     const checkUserQuery = "SELECT user_id FROM users WHERE email = ?";
     db.query(checkUserQuery, [email], (err, userResults) => {
         if (err) {
-            console.error("Error checking existing user:", err);
+
             return res.status(500).json({ error: "Database error" });
         }
 
@@ -64,7 +64,7 @@ export const sendVerificationEmail = (req, res) => {
                 "SELECT randomCode FROM verification_codes WHERE randomCode = ?";
             db.query(checkCodeQuery, [code], (err2, codeResults) => {
                 if (err2) {
-                    console.error("Error checking verification code:", err2);
+
                     return callback(err2, null);
                 }
 
@@ -99,7 +99,7 @@ export const sendVerificationEmail = (req, res) => {
                 [verificationCode, expirationTime],
                 (insertErr) => {
                     if (insertErr) {
-                        console.error("Error storing verification code:", insertErr);
+
                         return res
                             .status(500)
                             .json({ error: "Failed to generate verification code" });
@@ -115,13 +115,13 @@ export const sendVerificationEmail = (req, res) => {
 
                     transporter.sendMail(mailOptions, (mailErr, info) => {
                         if (mailErr) {
-                            console.error("Error sending verification email:", mailErr);
+
                             return res.status(500).json({
                                 error: "Failed to send verification email",
                             });
                         }
 
-                        console.log("Verification email sent:", info.response);
+
                         return res.status(200).json({
                             message: "Verification code sent successfully",
                         });
@@ -155,7 +155,7 @@ export const verifyCode = (req, res) => {
 
     db.query(verifyQuery, [normalizedCode], (err, results) => {
         if (err) {
-            console.error("Error verifying code:", err);
+
             return res
                 .status(500)
                 .json({ error: "Database error", isValid: false });
@@ -204,7 +204,7 @@ export const createAccount = (req, res) => {
 
     db.query(verifyQuery, [normalizedCode], (err, codeResults) => {
         if (err) {
-            console.error("Error verifying code:", err);
+
             return res.status(500).json({ error: "Database error" });
         }
 
@@ -218,7 +218,7 @@ export const createAccount = (req, res) => {
         const checkUserQuery = "SELECT user_id FROM users WHERE email = ?";
         db.query(checkUserQuery, [email], (err2, userResults) => {
             if (err2) {
-                console.error("Error checking existing user:", err2);
+
                 return res.status(500).json({ error: "Database error" });
             }
 
@@ -242,7 +242,7 @@ export const createAccount = (req, res) => {
                 [email, firstName, lastName, hashedPassword],
                 (insertErr, result) => {
                     if (insertErr) {
-                        console.error("Error creating user:", insertErr);
+
 
                         if (insertErr.code === "ER_DUP_ENTRY") {
                             return res
