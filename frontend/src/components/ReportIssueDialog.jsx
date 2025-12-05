@@ -157,7 +157,7 @@ export default function ReportIssueDialog({
         >
           <ToggleButton value="inappropriate">Inappropriate</ToggleButton>
           <ToggleButton value="scam">Scam</ToggleButton>
-          <ToggleButton value="criminal">Criminal Behavior</ToggleButton>
+          <ToggleButton value="criminal" sx={{lineHeight:1 }} >Criminal Behavior</ToggleButton>
         </ToggleButtonGroup>
 
         {/* Bottom buttons */}
