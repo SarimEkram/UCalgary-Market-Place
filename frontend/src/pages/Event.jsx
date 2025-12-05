@@ -128,7 +128,8 @@ export default function Events() {
               input: {
                 endAdornment: (
                   <InputAdornment position="end">
-                    <SearchIcon fontSize="medium" />
+                    <SearchIcon fontSize="medium" sx={{ cursor: "pointer" }}
+                    onClick={() => fetchEvents(eventFilters, searchKeyword)} />
                   </InputAdornment>
                 ),
               },
