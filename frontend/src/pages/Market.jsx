@@ -139,7 +139,8 @@ export default function Market() {
               input: {
                 endAdornment: (
                   <InputAdornment position="end">
-                    <SearchIcon fontSize="medium" />
+                    <SearchIcon fontSize="medium" sx={{ cursor: "pointer" }}
+                    onClick={() => fetchEvents(postFilters, searchKeyword)} />
                   </InputAdornment>
                 ),
               },
