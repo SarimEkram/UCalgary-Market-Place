@@ -87,8 +87,9 @@ export const sendVerificationEmail = (req, res) => {
             const expirationDate = new Date();
             expirationDate.setMinutes(expirationDate.getMinutes() + 5);
             const expirationTime = expirationDate
-                .toTimeString()
-                .substring(0, 8); // HH:MM:SS
+                .toISOString()
+                .slice(0, 19)
+                .replace("T", " "); // YYYY-MM-DD HH:MM:SS
 
             const insertCodeQuery =
                 "INSERT INTO verification_codes (randomCode, email, expiration_date) VALUES (?, ?, ?)";

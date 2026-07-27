@@ -127,10 +127,10 @@ CREATE TABLE images (
 
 -- VERIFICATION CODES
 CREATE TABLE IF NOT EXISTS verification_codes (
-                    randomCode      VARCHAR(8) PRIMARY KEY,
-                    email           VARCHAR(255) NOT NULL,
-                    expiration_date TIME,
-                    INDEX idx_expiration_date (expiration_date)
+    randomCode      VARCHAR(8) PRIMARY KEY,
+    email           VARCHAR(255) NOT NULL,
+    expiration_date DATETIME,
+    INDEX idx_expiration_date (expiration_date)
 );
 
 -- CREATE AN EVENT HANDLER which deletes expired verification codes every 4 minutes
@@ -138,7 +138,7 @@ CREATE EVENT IF NOT EXISTS expire_codes_event
 ON SCHEDULE EVERY 5 MINUTE
 DO
     DELETE FROM verification_codes
-    WHERE expiration_date < CURTIME();
+    WHERE expiration_date < NOW();
 
 /** SEED DATA **/
 

@@ -14,7 +14,7 @@ const generateVerificationCode = () => {
 const getExpirationTime = () => {
     const expirationDate = new Date();
     expirationDate.setMinutes(expirationDate.getMinutes() + 5);
-    return expirationDate.toTimeString().substring(0, 8); // HH:MM:SS
+    return expirationDate.toISOString().slice(0, 19).replace("T", " ");
 };
 
 export const forgotPassword = (req, res) => {
