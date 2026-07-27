@@ -397,22 +397,22 @@ export function getEventById(req, res) {
     const first = rows[0];
 
     // Base event data (all non-image fields)
-    const base = {
-      id: first.id,
-      title: first.title,
-      description: first.description,
-      price: first.price,
-      type: first.type,
-      location: first.location,
-      posted_date: first.posted_date,
-      seller_id: first.seller_id,
-      seller_fname: first.seller_fname,
-      seller_lname: first.seller_lname,
-      seller_email: first.seller_email,
-      organization_name: first.organization_name,
-      start_date: first.start_date,
-      end_date: first.end_date,
-    };
+      const base = {
+          id: first.id,
+          title: first.title,
+          description: first.description,
+          price: first.price,
+          type: first.type,
+          location: first.location,
+          posted_date: first.posted_date,
+          organizer_id: first.organizer_id,
+          organizer_fname: first.organizer_fname,
+          organizer_lname: first.organizer_lname,
+          organizer_email: first.organizer_email,
+          organization_name: first.organization_name,
+          start_date: first.start_date,
+          end_date: first.end_date,
+      };
 
     // Collect & normalize images into base64
     const images = rows
