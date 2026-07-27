@@ -241,6 +241,7 @@ export default function SignUp() {
           open={open}
           handleClose={handleClose}
           setVerified={setVerified}
+          getEmail={() => getValues("email")}
         ></VerifyNewUser>
       </Container>
     </Stack>

@@ -91,13 +91,9 @@ export const sendVerificationEmail = (req, res) => {
                 .substring(0, 8); // HH:MM:SS
 
             const insertCodeQuery =
-                "INSERT INTO verification_codes (randomCode, expiration_date) VALUES (?, ?)";
+                "INSERT INTO verification_codes (randomCode, email, expiration_date) VALUES (?, ?, ?)";
 
-            // 5) Store code in DB
-            db.query(
-                insertCodeQuery,
-                [verificationCode, expirationTime],
-                (insertErr) => {
+            db.query(insertCodeQuery, [verificationCode, email, expirationTime], (insertErr) => {
                     if (insertErr) {
 
                         return res
@@ -137,23 +133,23 @@ export const sendVerificationEmail = (req, res) => {
  * Body: { code }
  */
 export const verifyCode = (req, res) => {
-    const { code } = req.body;
+    const { code, email } = req.body;
 
-    if (!code) {
+    if (!code || !email) {
         return res
             .status(400)
-            .json({ error: "Verification code is required", isValid: false });
+            .json({ error: "Verification code and email are required", isValid: false });
     }
 
     const normalizedCode = code.toUpperCase();
 
     const verifyQuery = `
-    SELECT randomCode
-    FROM verification_codes
-    WHERE randomCode = ? AND expiration_date > CURTIME()
-  `;
+        SELECT randomCode
+        FROM verification_codes
+        WHERE randomCode = ? AND email = ? AND expiration_date > CURTIME()
+    `;
 
-    db.query(verifyQuery, [normalizedCode], (err, results) => {
+    db.query(verifyQuery, [normalizedCode, email], (err, results) => {
         if (err) {
 
             return res
@@ -197,12 +193,12 @@ export const createAccount = (req, res) => {
 
     // 2) Check that code exists and not expired
     const verifyQuery = `
-    SELECT randomCode
-    FROM verification_codes
-    WHERE randomCode = ? AND expiration_date > CURTIME()
-  `;
+        SELECT randomCode
+        FROM verification_codes
+        WHERE randomCode = ? AND email = ? AND expiration_date > CURTIME()
+    `;
 
-    db.query(verifyQuery, [normalizedCode], (err, codeResults) => {
+    db.query(verifyQuery, [normalizedCode, email], (err, codeResults) => {
         if (err) {
 
             return res.status(500).json({ error: "Database error" });

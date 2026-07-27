@@ -37,9 +37,9 @@ export default function ResetPassword({ open, handleClose }) {
             setEmail={setEmail}
           ></FirstPage>
         )}
-        {page == 2 && (
-          <SecondPage handleClose={closeDialog} setPage={setPage} setCode={setCode}></SecondPage>
-        )}
+          {page == 2 && (
+              <SecondPage handleClose={closeDialog} setPage={setPage} setCode={setCode} email={email} />
+          )}
         {page == 3 && (
           <ThirdPage
             handleClose={closeDialog}
@@ -160,7 +160,7 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
   );
 };
 
-const SecondPage = ({ setPage, handleClose, setCode }) => {
+const SecondPage = ({ setPage, handleClose, setCode, email }) => {
   const {
     register,
     handleSubmit,
@@ -173,18 +173,13 @@ const SecondPage = ({ setPage, handleClose, setCode }) => {
     msg: "No message.",
   });
 
-  const onSubmit = async (formData) => {
-    try {
-      const response = await fetch(
-        "/api/password/verify",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+    const onSubmit = async (formData) => {
+        try {
+            const response = await fetch("/api/password/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code: formData.code, email }),
+            });
 
       const data = await response.json();
 

@@ -127,10 +127,11 @@ CREATE TABLE images (
 
 -- VERIFICATION CODES
 CREATE TABLE IF NOT EXISTS verification_codes (
-                    randomCode VARCHAR(8) PRIMARY KEY,
+                    randomCode      VARCHAR(8) PRIMARY KEY,
+                    email           VARCHAR(255) NOT NULL,
                     expiration_date TIME,
                     INDEX idx_expiration_date (expiration_date)
-    );
+);
 
 -- CREATE AN EVENT HANDLER which deletes expired verification codes every 4 minutes
 CREATE EVENT IF NOT EXISTS expire_codes_event
@@ -376,10 +377,3 @@ INSERT INTO admin_actions (action_id, admin_id, action, action_timestamp) VALUES
 
 INSERT INTO banned_users (action_id, user_email) VALUES
 (601, 'kai.lee@ucalgary.ca');
-
---  VERIFICATION CODES ( insert some sample data, which will expire in 5 minutes ) 
-INSERT INTO verification_codes (randomCode, expiration_date) VALUES
-(  UPPER(LEFT( UUID(), 8)), DATE_ADD(CURTIME(), INTERVAL 5 MINUTE) ); 
-
-INSERT INTO verification_codes (randomCode, expiration_date) VALUES
-( UPPER(LEFT( UUID(), 8)) , DATE_ADD(CURTIME(), INTERVAL 5 MINUTE) ); 

@@ -11,27 +11,28 @@ import { useForm } from "react-hook-form";
 import CustomButton from "./CustomButton";
 import InputField from "./InputField";
 
-export default function VerifyNewUser({ open, handleClose, setVerified }) {
-  return (
-    <Dialog
-      onClose={handleClose}
-      open={open}
-      sx={{
-        "& .MuiDialog-paper": { overflowX: "hidden" },
-        "& .MuiDialog-root": { overflowX: "hidden" },
-      }}
-    >
-      <Box sx={{ padding: 3, paddingBottom: 6 }}>
-        <FirstPage
-          setVerified={setVerified}
-          handleClose={handleClose}
-        ></FirstPage>
-      </Box>
-    </Dialog>
-  );
+export default function VerifyNewUser({ open, handleClose, setVerified, getEmail }) {
+    return (
+        <Dialog
+            onClose={handleClose}
+            open={open}
+            sx={{
+                "& .MuiDialog-paper": { overflowX: "hidden" },
+                "& .MuiDialog-root": { overflowX: "hidden" },
+            }}
+        >
+            <Box sx={{ padding: 3, paddingBottom: 6 }}>
+                <FirstPage
+                    setVerified={setVerified}
+                    handleClose={handleClose}
+                    getEmail={getEmail}
+                ></FirstPage>
+            </Box>
+        </Dialog>
+    );
 }
 
-const FirstPage = ({ handleClose, setVerified }) => {
+const FirstPage = ({ handleClose, setVerified, getEmail }) => {
   const {
     register,
     handleSubmit,
@@ -43,18 +44,13 @@ const FirstPage = ({ handleClose, setVerified }) => {
     msg: "No message.",
   });
 
-  const onSubmit = async (formData) => {
-    try {
-      const response = await fetch(
-        "/api/registration/verify-code",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+    const onSubmit = async (formData) => {
+        try {
+            const response = await fetch("/api/registration/verify-code", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code: formData.code, email: getEmail() }),
+            });
 
       const data = await response.json();
 

@@ -28,13 +28,12 @@ export const forgotPassword = (req, res) => {
 
     const createAndStoreCode = () => {
         const code = generateVerificationCode();
-        console.log(code)
         const expirationTime = getExpirationTime();
 
         const insertQuery =
-            "INSERT INTO verification_codes (randomCode, expiration_date) VALUES (?, ?)";
+            "INSERT INTO verification_codes (randomCode, email, expiration_date) VALUES (?, ?, ?)";
 
-        db.query(insertQuery, [code, expirationTime], (err) => {
+        db.query(insertQuery, [code, email, expirationTime], (err) => {
             if (err) {
 
                 return res
@@ -104,25 +103,25 @@ export const forgotPassword = (req, res) => {
 };
 
 export const verifyResetCode = (req, res) => {
-    const { code } = req.body;
+    const { code, email } = req.body;
 
-    if (!code) {
+    if (!code || !email) {
         return res.status(400).json({
             success: false,
             isValid: false,
-            error: "Verification code is required",
+            error: "Verification code and email are required",
         });
     }
 
     const normalizedCode = code.toUpperCase();
 
     const verifyQuery = `
-    SELECT randomCode
-    FROM verification_codes
-    WHERE randomCode = ? AND expiration_date > CURTIME()
-  `;
+        SELECT randomCode
+        FROM verification_codes
+        WHERE randomCode = ? AND email = ? AND expiration_date > CURTIME()
+    `;
 
-    db.query(verifyQuery, [normalizedCode], (err, rows) => {
+    db.query(verifyQuery, [normalizedCode, email], (err, rows) => {
         if (err) {
 
             return res
@@ -161,14 +160,14 @@ export const resetPassword = (req, res) => {
     const verifyQuery = `
         SELECT randomCode
         FROM verification_codes
-        WHERE randomCode = ? AND expiration_date > CURTIME()
+        WHERE randomCode = ? AND email = ? AND expiration_date > CURTIME()
     `;
 
     const deleteCode = () => {
-        const deleteQuery = "DELETE FROM verification_codes WHERE randomCode = ?";
-        db.query(deleteQuery, [normalizedCode], (err) => {
+        const deleteQuery = "DELETE FROM verification_codes WHERE randomCode = ? AND email = ?";
+        db.query(deleteQuery, [normalizedCode, email], (err) => {
             if (err) {
-
+                console.error("Error deleting verification code:", err);
             }
         });
     };
