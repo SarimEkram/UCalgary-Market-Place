@@ -1,6 +1,7 @@
 import db from "../../config/db.js";
 import bcrypt from "bcryptjs";
 import transporter from "../../config/mail.js";
+const PASSWORD_REGEX = /^(?=.*\d)(?=.*[!@#$%^&*(),.?:{}|<>]).{8,20}$/;
 
 const generateVerificationCode = () => {
     const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -152,6 +153,12 @@ export const resetPassword = (req, res) => {
         return res.status(400).json({
             success: false,
             error: "Email, code and new password are required",
+        });
+    }
+
+    if (!PASSWORD_REGEX.test(password)) {
+        return res.status(400).json({
+            error: "Password must be 8-20 characters with at least one number and one special character",
         });
     }
 

@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import transporter from "../../config/mail.js";
 
 const ALLOWED_DOMAIN = "@ucalgary.ca";
+const PASSWORD_REGEX = /^(?=.*\d)(?=.*[!@#$%^&*(),.?:{}|<>]).{8,20}$/;
 
 
 /**
@@ -178,6 +179,12 @@ export const createAccount = (req, res) => {
 
     if (!email || !password || !firstName || !lastName || !code) {
         return res.status(400).json({ error: "All fields are required" });
+    }
+
+    if (!PASSWORD_REGEX.test(password)) {
+        return res.status(400).json({
+            error: "Password must be 8-20 characters with at least one number and one special character",
+        });
     }
 
     if (!email.endsWith(ALLOWED_DOMAIN)) {

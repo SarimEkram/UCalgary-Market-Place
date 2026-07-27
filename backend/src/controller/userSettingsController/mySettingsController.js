@@ -1,5 +1,6 @@
 import db from "../../config/db.js";
 import bcrypt from "bcryptjs";
+const PASSWORD_REGEX = /^(?=.*\d)(?=.*[!@#$%^&*(),.?:{}|<>]).{8,20}$/;
 
 export const updateUserInfo = (req, res) => {
     const {fname, lname, newPassword } = req.body;
@@ -84,8 +85,14 @@ export const updateUserInfo = (req, res) => {
         });
     };
 
-    // If password is provided, hash it first, then run updates
     if (newPassword && newPassword.trim() !== "") {
+        if (!PASSWORD_REGEX.test(newPassword.trim())) {
+            return res.status(400).json({
+                success: false,
+                error: "Password must be 8-20 characters with at least one number and one special character",
+            });
+        }
+
         bcrypt.hash(newPassword.trim(), 10, (hashErr, hashed) => {
             if (hashErr) {
                 console.error("bcrypt error (settings):", hashErr);
