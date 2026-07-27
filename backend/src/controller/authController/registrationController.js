@@ -31,7 +31,6 @@ function hashPassword(password) {
 export const sendVerificationEmail = (req, res) => {
     const { email } = req.body;
 
-    // 1) Basic checks
     if (!email) {
         return res.status(400).json({ error: "Email is required" });
     }
@@ -42,11 +41,9 @@ export const sendVerificationEmail = (req, res) => {
             .json({ error: `Email must be from ${ALLOWED_DOMAIN} domain` });
     }
 
-    // 2) Check if user already exists
     const checkUserQuery = "SELECT user_id FROM users WHERE email = ?";
     db.query(checkUserQuery, [email], (err, userResults) => {
         if (err) {
-
             return res.status(500).json({ error: "Database error" });
         }
 
@@ -56,53 +53,56 @@ export const sendVerificationEmail = (req, res) => {
                 .json({ error: "User with this email already exists" });
         }
 
-        // 3) Generate a unique verification code
-        const generateUniqueCode = (callback) => {
-            const code = generateVerificationCode();
-
-            const checkCodeQuery =
-                "SELECT randomCode FROM verification_codes WHERE randomCode = ?";
-            db.query(checkCodeQuery, [code], (err2, codeResults) => {
-                if (err2) {
-
-                    return callback(err2, null);
-                }
-
-                if (codeResults.length > 0) {
-                    // Code already in use, try again
-                    return generateUniqueCode(callback);
-                }
-
-                // Code is unique
-                callback(null, code);
-            });
-        };
-
-        generateUniqueCode((codeErr, verificationCode) => {
-            if (codeErr) {
+        const checkBanQuery = "SELECT user_email FROM banned_users WHERE user_email = ?";
+        db.query(checkBanQuery, [email], (banErr, banResults) => {
+            if (banErr) {
                 return res.status(500).json({ error: "Database error" });
             }
 
-            // 4) Compute expiration time (5 minutes from now)
-            const expirationDate = new Date();
-            expirationDate.setMinutes(expirationDate.getMinutes() + 5);
-            const expirationTime = expirationDate
-                .toISOString()
-                .slice(0, 19)
-                .replace("T", " "); // YYYY-MM-DD HH:MM:SS
+            if (banResults.length > 0) {
+                return res.status(403).json({ error: "This account has been banned" });
+            }
 
-            const insertCodeQuery =
-                "INSERT INTO verification_codes (randomCode, email, expiration_date) VALUES (?, ?, ?)";
+            const generateUniqueCode = (callback) => {
+                const code = generateVerificationCode();
 
-            db.query(insertCodeQuery, [verificationCode, email, expirationTime], (insertErr) => {
+                const checkCodeQuery =
+                    "SELECT randomCode FROM verification_codes WHERE randomCode = ?";
+                db.query(checkCodeQuery, [code], (err2, codeResults) => {
+                    if (err2) {
+                        return callback(err2, null);
+                    }
+
+                    if (codeResults.length > 0) {
+                        return generateUniqueCode(callback);
+                    }
+
+                    callback(null, code);
+                });
+            };
+
+            generateUniqueCode((codeErr, verificationCode) => {
+                if (codeErr) {
+                    return res.status(500).json({ error: "Database error" });
+                }
+
+                const expirationDate = new Date();
+                expirationDate.setMinutes(expirationDate.getMinutes() + 5);
+                const expirationTime = expirationDate
+                    .toISOString()
+                    .slice(0, 19)
+                    .replace("T", " ");
+
+                const insertCodeQuery =
+                    "INSERT INTO verification_codes (randomCode, email, expiration_date) VALUES (?, ?, ?)";
+
+                db.query(insertCodeQuery, [verificationCode, email, expirationTime], (insertErr) => {
                     if (insertErr) {
-
                         return res
                             .status(500)
                             .json({ error: "Failed to generate verification code" });
                     }
 
-                    // 6) Send email with code
                     const mailOptions = {
                         from: process.env.EMAIL_USER,
                         to: email,
@@ -112,23 +112,20 @@ export const sendVerificationEmail = (req, res) => {
 
                     transporter.sendMail(mailOptions, (mailErr, info) => {
                         if (mailErr) {
-
                             return res.status(500).json({
                                 error: "Failed to send verification email",
                             });
                         }
 
-
                         return res.status(200).json({
                             message: "Verification code sent successfully",
                         });
                     });
-                }
-            );
+                });
+            });
         });
     });
 };
-
 /**
  * POST /api/registration/verify-code
  * Body: { code }
@@ -179,7 +176,6 @@ export const verifyCode = (req, res) => {
 export const createAccount = (req, res) => {
     const { email, password, firstName, lastName, code } = req.body;
 
-    // 1) Basic checks
     if (!email || !password || !firstName || !lastName || !code) {
         return res.status(400).json({ error: "All fields are required" });
     }
@@ -192,16 +188,14 @@ export const createAccount = (req, res) => {
 
     const normalizedCode = code.toUpperCase();
 
-    // 2) Check that code exists and not expired
     const verifyQuery = `
         SELECT randomCode
         FROM verification_codes
-        WHERE randomCode = ? AND email = ? AND expiration_date > CURTIME()
+        WHERE randomCode = ? AND email = ? AND expiration_date > NOW()
     `;
 
     db.query(verifyQuery, [normalizedCode, email], (err, codeResults) => {
         if (err) {
-
             return res.status(500).json({ error: "Database error" });
         }
 
@@ -211,11 +205,9 @@ export const createAccount = (req, res) => {
                 .json({ error: "Invalid or expired verification code" });
         }
 
-        // 3) Check if user already exists
         const checkUserQuery = "SELECT user_id FROM users WHERE email = ?";
         db.query(checkUserQuery, [email], (err2, userResults) => {
             if (err2) {
-
                 return res.status(500).json({ error: "Database error" });
             }
 
@@ -225,51 +217,57 @@ export const createAccount = (req, res) => {
                     .json({ error: "User with this email already exists" });
             }
 
-            // 4) Hash password
-            const hashedPassword = hashPassword(password);
-
-            // 5) Insert new user
-            const insertUserQuery = `
-        INSERT INTO users (email, fname, lname, hashed_password)
-        VALUES (?, ?, ?, ?)
-      `;
-
-            db.query(
-                insertUserQuery,
-                [email, firstName, lastName, hashedPassword],
-                (insertErr, result) => {
-                    if (insertErr) {
-
-
-                        if (insertErr.code === "ER_DUP_ENTRY") {
-                            return res
-                                .status(409)
-                                .json({ error: "User with this email already exists" });
-                        }
-
-                        return res
-                            .status(500)
-                            .json({ error: "Failed to create user account" });
-                    }
-
-                    // 6) Delete used verification code (best-effort)
-                    const deleteCodeQuery =
-                        "DELETE FROM verification_codes WHERE randomCode = ?";
-                    db.query(deleteCodeQuery, [normalizedCode], (deleteErr) => {
-                        if (deleteErr) {
-                            console.error(
-                                "Error deleting verification code (non-fatal):",
-                                deleteErr
-                            );
-                        }
-                    });
-
-                    return res.status(201).json({
-                        message: "User account created successfully",
-                        userId: result.insertId,
-                    });
+            const checkBanQuery = "SELECT user_email FROM banned_users WHERE user_email = ?";
+            db.query(checkBanQuery, [email], (banErr, banResults) => {
+                if (banErr) {
+                    return res.status(500).json({ error: "Database error" });
                 }
-            );
+
+                if (banResults.length > 0) {
+                    return res.status(403).json({ error: "This account has been banned" });
+                }
+
+                const hashedPassword = hashPassword(password);
+
+                const insertUserQuery = `
+                    INSERT INTO users (email, fname, lname, hashed_password)
+                    VALUES (?, ?, ?, ?)
+                `;
+
+                db.query(
+                    insertUserQuery,
+                    [email, firstName, lastName, hashedPassword],
+                    (insertErr, result) => {
+                        if (insertErr) {
+                            if (insertErr.code === "ER_DUP_ENTRY") {
+                                return res
+                                    .status(409)
+                                    .json({ error: "User with this email already exists" });
+                            }
+
+                            return res
+                                .status(500)
+                                .json({ error: "Failed to create user account" });
+                        }
+
+                        const deleteCodeQuery =
+                            "DELETE FROM verification_codes WHERE randomCode = ? AND email = ?";
+                        db.query(deleteCodeQuery, [normalizedCode, email], (deleteErr) => {
+                            if (deleteErr) {
+                                console.error(
+                                    "Error deleting verification code (non-fatal):",
+                                    deleteErr
+                                );
+                            }
+                        });
+
+                        return res.status(201).json({
+                            message: "User account created successfully",
+                            userId: result.insertId,
+                        });
+                    }
+                );
+            });
         });
     });
 };
