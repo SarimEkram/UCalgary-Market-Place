@@ -2,7 +2,7 @@ import db from "../../config/db.js";
 
 
 export const getSavedPosts = (req, res) => {
-    const { userId } = req.body;
+    const userId = req.user.id;
 
     if (!userId) {
         return res.status(400).json({ error: "userId is required" });
@@ -68,7 +68,8 @@ export const getSavedPosts = (req, res) => {
 
 // 2) Save (add) a post for this user
 export const savePost = (req, res) => {
-    const { userId, postId } = req.body;
+    const { postId } = req.body;
+    const userId = req.user.id;
 
     if (!userId || !postId) {
         return res
@@ -111,7 +112,8 @@ export const savePost = (req, res) => {
 
 // 3) Unsave (remove) a post for this user
 export const unsavePost = (req, res) => {
-    const { userId, postId } = req.body;
+    const { postId } = req.body;
+    const userId = req.user.id;
 
     if (!userId || !postId) {
         return res

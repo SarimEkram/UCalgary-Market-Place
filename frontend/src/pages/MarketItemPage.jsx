@@ -216,7 +216,8 @@ export default function MarketItemPage() {
         const resp = await fetch(`/api/getSavedPosts`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId }),
+            credentials: "include",
+            body: JSON.stringify({}),
         });
 
         if (!resp.ok) return;
@@ -247,11 +248,13 @@ export default function MarketItemPage() {
         ? `/api/getSavedPosts/unsave`
         : `/api/getSavedPosts/save`;
 
-      const resp = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, postId }),
-      });
+        const resp = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ postId }),
+        });
+
 
       if (!resp.ok) return;
 
@@ -281,14 +284,12 @@ export default function MarketItemPage() {
       setIsContactingSeller(true);
       setContactSellerMsg("");
 
-      const resp = await fetch(`/api/contactSeller`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          buyerId: userId,
-          postId,
-        }),
-      });
+        const resp = await fetch("/api/contactSeller", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ postId }),
+        });
 
       const text = await resp.text();
       let data = null;
@@ -350,20 +351,20 @@ export default function MarketItemPage() {
       setIsReporting(true);
       setReportMessage("");
 
-      let body = {
-        reporterId: userId,
-        reportType: type,
-        reason,
-      };
+        let body = {
+            reportType: type,
+            reason,
+        };
 
-      if (type === "post") body.postId = postId;
-      if (type === "user") body.reportedUserId = currentItem?.sellerId;
+        if (type === "post") body.postId = postId;
+        if (type === "user") body.reportedUserId = currentItem?.sellerId;
 
-      const resp = await fetch(`/api/report`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+        const resp = await fetch("/api/report", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(body),
+        });
 
       if (!resp.ok) {
         console.error("Report submission failed:", resp.status);

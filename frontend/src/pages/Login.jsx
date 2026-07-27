@@ -32,13 +32,12 @@ export default function Login() {
   const onSubmit = async (formData) => {
 
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+        const response = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(formData),
+        });
 
       const data = await response.json();
       if (response.ok) {

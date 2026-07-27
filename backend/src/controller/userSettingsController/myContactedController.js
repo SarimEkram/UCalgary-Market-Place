@@ -2,7 +2,7 @@ import db from "../../config/db.js";
 
 // 2) Get all contacted posts for a user (with thumbnail + seller/organization)
 export const getContactedPosts = (req, res) => {
-    const { userId } = req.body;
+    const userId = req.user.id;
 
     if (!userId) {
         return res.status(400).json({ error: "userId is required" });

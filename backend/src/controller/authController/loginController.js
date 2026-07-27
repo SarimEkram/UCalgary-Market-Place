@@ -1,5 +1,6 @@
 import db from "../../config/db.js";
 import bcrypt from "bcryptjs";
+import { signToken } from "../../utils/token.js";
 
 export const login = (req, res) => {
     const { email, password } = req.body;
@@ -11,7 +12,6 @@ export const login = (req, res) => {
     const verifyPasswordAndRespond = (row, roleLabel) => {
         bcrypt.compare(password, row.hashed_password, (err, isMatch) => {
             if (err) {
-
                 return res.status(500).json({ error: "Password check failed" });
             }
 
@@ -19,12 +19,27 @@ export const login = (req, res) => {
                 return res.status(401).json({ error: "Email or password is wrong" });
             }
 
+            const userId = roleLabel === "admin" ? row.admin_id : row.user_id;
+
+            const token = signToken({
+                id: userId,
+                email: row.email,
+                role: roleLabel,
+            });
+
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: false,       // set true in production with HTTPS
+                sameSite: "lax",
+                maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            });
+
             return res.json({
                 success: true,
                 role: roleLabel,
                 isAdmin: roleLabel === "admin",
                 user: {
-                    id: roleLabel === "admin" ? row.admin_id : row.user_id,
+                    id: userId,
                     email: row.email,
                     fname: row.fname,
                     lname: row.lname,
@@ -36,7 +51,6 @@ export const login = (req, res) => {
     const adminQuery = "SELECT * FROM admins WHERE email = ?";
     db.query(adminQuery, [email], (err, adminRows) => {
         if (err) {
-
             return res.status(500).json({ error: "Database error" });
         }
 
@@ -47,12 +61,11 @@ export const login = (req, res) => {
         const userQuery = "SELECT * FROM users WHERE email = ?";
         db.query(userQuery, [email], (err2, userRows) => {
             if (err2) {
-
                 return res.status(500).json({ error: "Database error" });
             }
 
             if (userRows.length === 0) {
-                return res.status(404).json({ error: "User does not exist" });
+                return res.status(401).json({ error: "Email or password is wrong" });
             }
 
             return verifyPasswordAndRespond(userRows[0], "user");

@@ -7,7 +7,8 @@ import db from "../../config/db.js";
  * Creates a report entry in the database
  */
 export const createReport = (req, res) => {
-    let { reporterId, reportType, reason, postId, reportedUserId } = req.body;
+    const reporterId = req.user.id;
+    let { reportType, reason, postId, reportedUserId } = req.body;
 
     // Validation
     if (!reporterId || !reportType || !reason) {

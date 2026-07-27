@@ -4,7 +4,7 @@ import db from "../../config/db.js";
 // POST /api/my-posts/list
 // Body: { userId }
 export const getUserMarketPosts = (req, res) => {
-    const { userId } = req.body;
+    const userId = req.user.id;
 
     if (!userId) {
         return res.status(400).json({ error: "userId is required" });
@@ -62,7 +62,8 @@ export const getUserMarketPosts = (req, res) => {
 // DELETE /api/my-posts/delete
 // Body: { userId, postId }
 export const deleteMarketPost = (req, res) => {
-    const { userId, postId } = req.body;
+    const userId = req.user.id;
+    const { postId } = req.body;
 
     if (!userId || !postId) {
         return res
@@ -117,13 +118,14 @@ export const deleteMarketPost = (req, res) => {
 
 export const createMarketPost = (req, res) => {
   const {
-    userId,
     title,
     description,
     location,
     price,
     condition,
   } = req.body;
+
+  const userId = req.user.id;
 
   if (!userId || !title || !description || !location || typeof price === "undefined") {
     return res.status(400).json({
@@ -240,7 +242,6 @@ export const createMarketPost = (req, res) => {
 export const updateMarketPost = (req, res) => {
 
   const {
-    userId,
     postId,
     title,
     description,
@@ -249,6 +250,8 @@ export const updateMarketPost = (req, res) => {
     condition,
     deleted_images,
   } = req.body;
+
+  const userId = req.user.id;
 
   // Basic validation
   if (!userId || !postId) {

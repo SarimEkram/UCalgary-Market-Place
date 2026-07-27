@@ -6,7 +6,7 @@ import db from "../../config/db.js";
  * Returns admin profile (fname, lname, email) and actions array
  */
 export const getRecentAdminActions = (req, res) => {
-    const { adminId } = req.query;
+    const adminId = req.user.id;
 
     if (!adminId) {
         return res.status(400).json({ error: "Admin ID is required" });

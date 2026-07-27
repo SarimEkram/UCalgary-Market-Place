@@ -19,15 +19,11 @@ export default function AdminProfile() {
     let isMounted = true;
     async function fetchData() {
       try {
-        const response = await fetch(
-          `/api/admin/recent-actions?adminId=${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+          const response = await fetch(`/api/admin/recent-actions?adminId=${id}`, {
+              method: "GET",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+          });
 
         if (!response.ok) {
           console.error("Failed to fetch admin data");

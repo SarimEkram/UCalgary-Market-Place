@@ -20,13 +20,12 @@ export default function MyEvents() {
     let isMounted = true;
     async function fetchData() {
       try {
-        const response = await fetch("/api/my-events/list", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId: userID }),
-        });
+          const response = await fetch("/api/my-events/list", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({}),
+          });
 
         if (!response.ok) {
           console.error("Failed to fetch events:", response.status);

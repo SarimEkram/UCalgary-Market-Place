@@ -18,16 +18,12 @@ export default function MySaved() {
     let isMounted = true;
     async function fetchData() {
       try{
-       const response = await fetch(
-         `/api/getSavedPosts`,
-         {
-           method: "POST",
-           headers: {
-             "Content-Type": "application/json",
-           },
-           body : JSON.stringify({userId : userID}),
-         }
-       );
+          const response = await fetch("/api/getSavedPosts", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({}),
+          });
 
       let data = await response.json();
       data = data.savedPosts;

@@ -106,7 +106,6 @@ const onSubmit = async (data) => {
   const imagesArray = Array.from(newImages);
 
   const formData = new FormData();
-  formData.append("userId", userId);
   formData.append("title", data.title);
   formData.append("description", data.description);
   formData.append("location", data.location);
@@ -120,13 +119,11 @@ const onSubmit = async (data) => {
   });
 
     try {
-      const resp = await fetch(
-        "/api/my-events/create",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+        const resp = await fetch("/api/my-events/create", {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+        });
 
       if (!resp.ok) {
         console.error("Create event failed:", resp.status);

@@ -16,6 +16,7 @@ services:
       - NODE_ENV=development 
       - EMAIL_USER=$EMAIL_USER
       - EMAIL_PASS=$EMAIL_PASS
+      - JWT_SECRET=$JWT_SECRET
 
     ports:
       - 8080:8080

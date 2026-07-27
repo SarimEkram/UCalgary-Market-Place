@@ -3,7 +3,7 @@ import { sendPostRemovalEmail } from "./adminEmailHelpers.js";
 
 export const adminDeletePost = (req, res) => {
     const { postId } = req.params;
-    const { adminId } = req.body;
+    const adminId = req.user.id;
 
     if (!postId || !adminId) {
         return res

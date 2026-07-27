@@ -2,7 +2,8 @@ import db from "../../config/db.js";
 import bcrypt from "bcryptjs";
 
 export const updateUserInfo = (req, res) => {
-    const { email, fname, lname, newPassword } = req.body;
+    const {fname, lname, newPassword } = req.body;
+    const email = req.user.email;
 
     if (!email) {
         return res

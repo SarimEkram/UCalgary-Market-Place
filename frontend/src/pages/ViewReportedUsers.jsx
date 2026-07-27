@@ -30,7 +30,9 @@ export default function ViewReportedUsers() {
             try {
                 setErrorMsg("");
 
-                const res = await fetch(`/api/admin/reported-users`);
+                const res = await fetch("/api/admin/reported-users", {
+                    credentials: "include",
+                });
 
                 if (!res.ok) {
                     const data = await res.json().catch(() => ({}));
@@ -76,17 +78,11 @@ export default function ViewReportedUsers() {
             return Promise.reject(new Error("No user selected for deletion"));
         }
 
-        const storedUser = JSON.parse(localStorage.getItem("user"));
-        const adminId = storedUser?.id;
-
-        console.log("DELETE REQUEST STARTED:", selectedUser.email);
-
-        const res = await fetch(`/api/admin/users/ban`, {
+        const res = await fetch("/api/admin/users/ban", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ adminId, email: selectedUser.email }),
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ email: selectedUser.email }),
         });
 
         const clone = res.clone();

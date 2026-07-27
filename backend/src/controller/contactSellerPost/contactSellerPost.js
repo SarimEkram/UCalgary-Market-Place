@@ -7,7 +7,8 @@ import transporter from "../../config/mail.js";
  * Inserts into contacted_seller table and sends automated email to seller/organizer
  */
 export const contactSeller = (req, res) => {
-    const { buyerId, postId } = req.body;
+    const buyerId = req.user.id;
+    const { postId } = req.body;
 
     // Validation
     if (!buyerId || !postId) {

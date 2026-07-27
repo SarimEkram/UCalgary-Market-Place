@@ -34,20 +34,14 @@ export default function FindUser() {
 
     //  Delete request used by ConfirmationPopup
     const executeDelete = async () => {
-        // const adminId = 1; // replace with real admin ID
-        const storedUser = JSON.parse(localStorage.getItem("user"));
-        const adminId = storedUser?.id;   // real admin ID from login
-
         console.log("DELETE REQUEST STARTED:", selectedEmail);
 
-        const res = await fetch(`/api/admin/users/ban`, {
+        const res = await fetch("/api/admin/users/ban", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ adminId, email: selectedEmail }),
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ email: selectedEmail }),
         });
-
 
         // Debug log backend response without breaking popup json() call
         const clone = res.clone();

@@ -2,7 +2,8 @@ import db from "../../config/db.js";
 import { sendBanNotificationEmail } from "./adminEmailHelpers.js";
 
 export const adminBanUser = (req, res) => {
-    const { adminId, email } = req.body;
+    const adminId = req.user.id;
+    const { email } = req.body;
 
     if (!adminId || !email) {
         return res

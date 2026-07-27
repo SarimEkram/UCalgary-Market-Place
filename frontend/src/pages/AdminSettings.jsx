@@ -51,13 +51,12 @@ export default function MySettings() {
 
 
     try {
-    const response = await fetch(`/api/settings/update`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+        const response = await fetch("/api/settings/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(formData),
+        });
     const data = await response.json();
 
     if (response.ok) {
@@ -86,10 +85,11 @@ export default function MySettings() {
   };
 
   //handle logging out
-  const onLogOut = () => {
-    navigate("/");
-    localStorage.removeItem("user");
-  };
+    const onLogOut = async () => {
+        await fetch("/api/logout", { method: "POST", credentials: "include" });
+        localStorage.removeItem("user");
+        navigate("/");
+    };
 
   //component that renders the password rules
   const PassHelpText = () => {

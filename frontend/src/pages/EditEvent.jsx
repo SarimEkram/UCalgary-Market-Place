@@ -171,7 +171,6 @@ export default function EditEvent() {
         : end.format("YYYY-MM-DD HH:mm:ss");
 
     const formData = new FormData();
-    formData.append("userId", userData.id); // from localStorage
     formData.append("postId", id); // from useParams
 
     formData.append("title", data.title);
@@ -197,11 +196,11 @@ export default function EditEvent() {
     });
 
     try {
-      const resp = await fetch("/api/my-events/edit", {
-        method: "PUT",
-        body: formData,
-      });
-
+        const resp = await fetch("/api/my-events/edit", {
+            method: "PUT",
+            credentials: "include",
+            body: formData,
+        });
       if (!resp.ok) {
         console.error("Edit event failed:", resp.status);
         setEditFailed(true);
@@ -253,16 +252,12 @@ export default function EditEvent() {
   };
 
   const confirmedDelete = async()=>{
-    const resp =   await fetch(
-        "/api/my-events/delete",
-        {
+      const resp = await fetch("/api/my-events/delete", {
           method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId: userData.id, postId: id }),
-        }
-      );
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ postId: id }),
+      });
 
       return resp; 
 

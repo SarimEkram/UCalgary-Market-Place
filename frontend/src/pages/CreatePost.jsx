@@ -57,7 +57,6 @@ export default function CreatePost() {
     }
 
     const formData = new FormData();
-    formData.append("userId", userId); // from localStorage
 
     formData.append("title", data.title);
     formData.append("description", data.description);
@@ -71,13 +70,11 @@ export default function CreatePost() {
     });
 
     try {
-      const resp = await fetch(
-        "/api/my-posts/create-market",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+        const resp = await fetch("/api/my-posts/create-market", {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+        });
 
       if (!resp.ok) {
         console.error("Create failed:", resp.status);

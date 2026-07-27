@@ -113,7 +113,6 @@ export default function EditPost() {
     data["new_images"] = Array.from(newImages);
 
     const formData = new FormData();
-    formData.append("userId", userData.id); // from localStorage
     formData.append("postId", id); // from useParams
 
     formData.append("title", data.title);
@@ -134,13 +133,11 @@ export default function EditPost() {
     });
 
     try {
-      const resp = await fetch(
-        "/api/my-posts/edit-market",
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
+        const resp = await fetch("/api/my-posts/edit-market", {
+            method: "PUT",
+            credentials: "include",
+            body: formData,
+        });
 
       if (!resp.ok) {
         console.error("Edit failed:", resp.status);
@@ -200,13 +197,12 @@ export default function EditPost() {
   };
 
   const confirmedDelete = async () => {
-    const resp = await fetch("/api/my-posts/delete", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId: userData.id, postId: id }),
-    });
+      const resp = await fetch("/api/my-posts/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ postId: id }),
+      });
 
     return resp;
   };

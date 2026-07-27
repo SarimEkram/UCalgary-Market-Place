@@ -223,11 +223,12 @@ export default function EventItemPage() {
       if (!userId || !postId) return;
 
       try {
-        const response = await fetch(`/api/getSavedPosts`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId }),
-        });
+          const response = await fetch("/api/getSavedPosts", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({}),
+          });
 
         if (!response.ok) return;
 
@@ -261,14 +262,12 @@ export default function EventItemPage() {
         ? `/api/getSavedPosts/unsave`
         : `/api/getSavedPosts/save`;
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId,
-          postId,
-        }),
-      });
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ postId }),
+        });
 
       if (!response.ok) {
         console.error("Failed to save or unsave event:", response.status);
@@ -301,14 +300,12 @@ export default function EventItemPage() {
       setIsContacting(true);
       setContactMessage("");
 
-      const response = await fetch(`/api/contactSeller`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          buyerId: userId,
-          postId,
-        }),
-      });
+        const response = await fetch("/api/contactSeller", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ postId }),
+        });
 
       const text = await response.text();
       let data = null;
@@ -375,22 +372,22 @@ export default function EventItemPage() {
       setIsReporting(true);
       setReportMessage("");
 
-      let body = {
-        reporterId: userId,
-        reportType: type,
-        reason,
-        postId,
-      };
+        let body = {
+            reportType: type,
+            reason,
+            postId,
+        };
 
-      if (type === "user" && currentItem?.organizerId) {
-        body.reportedUserId = currentItem.organzierId;
-      }
+        if (type === "user" && currentItem?.organizerId) {
+            body.reportedUserId = currentItem.organizerId;
+        }
 
-      const response = await fetch(`/api/report`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+        const response = await fetch("/api/report", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(body),
+        });
 
       const text = await response.text();
       let data = null;

@@ -4,7 +4,7 @@ import db from "../../config/db.js";
 // POST /api/my-events/list
 // Body: { userId }
 export const getUserEventPosts = (req, res) => {
-  const { userId } = req.body;
+    const userId = req.user.id;
 
   if (!userId) {
     return res.status(400).json({ error: "userId is required" });
@@ -66,7 +66,8 @@ export const getUserEventPosts = (req, res) => {
 // DELETE /api/my-events/delete
 // Body: { userId, postId }
 export const deleteEventPost = (req, res) => {
-    const { userId, postId } = req.body;
+    const userId = req.user.id;
+    const { postId } = req.body;
 
     if (!userId || !postId) {
         return res
@@ -120,8 +121,9 @@ export const deleteEventPost = (req, res) => {
 // Files (req.files via Multer):
 //   - images[]          (optional) : image files to store in `images.image_text_data`.
 export const createEventPost = (req, res) => {
+
+  const userId = req.user.id;
   const {
-    userId,
     title,
     description,
     location,
@@ -271,7 +273,6 @@ export const createEventPost = (req, res) => {
 //   - new_images[]      (optional) : One or more image files to append to this post
 export const updateEventPost = (req, res) => {
   const {
-    userId,
     postId,
     title,
     description,
@@ -282,6 +283,8 @@ export const updateEventPost = (req, res) => {
     event_end,
     deleted_images,
   } = req.body;
+
+  const userId = req.user.id;
 
   // Basic validation
   if (!userId || !postId) {

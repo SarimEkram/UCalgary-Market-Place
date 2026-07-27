@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
+import { requireAuth, requireAdmin } from "./middleware/auth.js";
 import loginRoutes from "./routes/authRoutes/loginRoutes.js";
 import registrationRoutes from "./routes/authRoutes/registrationRoutes.js";
 import postRoutes from "./routes/postRoutes/postRoutes.js";
@@ -14,6 +16,7 @@ import contactUserPostRoute from "./routes/contactSellerPostRoute/contactSellerP
 import myPostsRoutes from "./routes/userSettingsRoute/myPostsRoute.js";
 import myEventsRoute from "./routes/userSettingsRoute/myEventsRoute.js";
 import reportRoutes from "./routes/reportRoutes/reportRoutes.js";
+import logoutRoutes from "./routes/authRoutes/logoutRoutes.js";
 
 // Admin routes:
 import findUserRoutes from "./routes/adminRoutes/findUserRoute.js";
@@ -28,56 +31,37 @@ import getRecentActionsRoutes from "./routes/adminRoutes/getRecentActionsRoute.j
 const app = express();
 
 app.use(express.json());
-app.use(cors()); // Allow Vite frontend
+app.use(cookieParser());
 
-app.get("/", (req, res) => {
-    res.json({ message: "Backend is running" });
-});
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+}));
 
-
-//login route
+// Public routes (no auth needed)
 app.use("/api/login", loginRoutes);
-
-//password route
 app.use("/api/password", passwordRoutes);
-
-// Registration routes
 app.use("/api/registration", registrationRoutes);
 
-// Post routes
+// Protected routes (logged-in users)
 app.use("/api/posts", postRoutes);
+app.use("/api/getSavedPosts", requireAuth, savedPostRoutes);
+app.use("/api/settings", requireAuth, mySettingsRoutes);
+app.use("/api/contacted", requireAuth, myContactedRoutes);
+app.use("/api/contactSeller", requireAuth, contactUserPostRoute);
+app.use("/api/my-posts", requireAuth, myPostsRoutes);
+app.use("/api/my-events", requireAuth, myEventsRoute);
+app.use("/api/report", requireAuth, reportRoutes);
 
-
-// Post routes to get saved posts
-app.use("/api/getSavedPosts", savedPostRoutes)
-
-// Post route for settings updates
-app.use("/api/settings", mySettingsRoutes);
-
-// Post route to view all contacted posts
-app.use("/api/contacted", myContactedRoutes);
-
-// Post route to contact a user
-app.use("/api/contactSeller", contactUserPostRoute);
-
-
-// My posts route
-app.use("/api/my-posts", myPostsRoutes);
-
-// My events post route
-app.use("/api/my-events", myEventsRoute);
-
-// Report route
-app.use("/api/report", reportRoutes);
-
-
-app.use("/api/admin/users", findUserRoutes);   // GET /api/admin/users?q=...
-app.use("/api/admin/users", deleteUserRoutes); // DELETE /api/admin/users/ban
-app.use("/api/admin/posts", deletePostRoutes); // DELETE /api/admin/posts/:postId
-app.use("/api/admin/reported-users", viewReportedUserRoutes);
-app.use("/api/admin/reported-events", findReportedEventRoutes); // GET /api/admin/reported-events
-app.use("/api/admin/reported-market-posts", findReportedMarketPostRoutes); // GET /api/admin/reported-market-posts
-app.use("/api/admin/recent-actions", getRecentActionsRoutes); // GET /api/admin/recent-actions?adminId=1
+// Admin routes
+app.use("/api/admin/users", requireAdmin, findUserRoutes);
+app.use("/api/admin/users", requireAdmin, deleteUserRoutes);
+app.use("/api/admin/posts", requireAdmin, deletePostRoutes);
+app.use("/api/admin/reported-users", requireAdmin, viewReportedUserRoutes);
+app.use("/api/admin/reported-events", requireAdmin, findReportedEventRoutes);
+app.use("/api/admin/reported-market-posts", requireAdmin, findReportedMarketPostRoutes);
+app.use("/api/admin/recent-actions", requireAdmin, getRecentActionsRoutes);
+app.use("/api/logout", logoutRoutes);
 
 
 export default app;
