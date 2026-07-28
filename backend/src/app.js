@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
+import { authLimiter, emailLimiter } from "./middleware/rateLimiter.js";
 
 import { requireAuth, requireAdmin } from "./middleware/auth.js";
 import loginRoutes from "./routes/authRoutes/loginRoutes.js";
@@ -42,9 +43,9 @@ app.use(cors({
 }));
 
 // Public routes (no auth needed)
-app.use("/api/login", loginRoutes);
-app.use("/api/password", passwordRoutes);
-app.use("/api/registration", registrationRoutes);
+app.use("/api/login", authLimiter, loginRoutes);
+app.use("/api/password", emailLimiter, passwordRoutes);
+app.use("/api/registration", emailLimiter, registrationRoutes);
 
 // Protected routes (logged-in users)
 app.use("/api/posts", postRoutes);
