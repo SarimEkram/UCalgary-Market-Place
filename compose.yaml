@@ -2,8 +2,8 @@ services:
   backend:
     build:
       args:
-      - NODE_ENV=development
-      - PORT=8080
+        - NODE_ENV=development
+        - PORT=8080
       context: backend
       target: development
     command: npm run start-watch
@@ -13,11 +13,11 @@ services:
       - DB_HOST=db
       - DB_USER=root
       - DB_PASSWORD=$DB_PASSWORD
-      - NODE_ENV=development 
+      - NODE_ENV=development
       - EMAIL_USER=$EMAIL_USER
       - EMAIL_PASS=$EMAIL_PASS
       - JWT_SECRET=$JWT_SECRET
-
+      - REDIS_HOST=redis
     ports:
       - 8080:8080
       - 9229:9229
@@ -29,10 +29,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
-       
+      redis:
+        condition: service_healthy
+
   db:
     image: mysql:8.0
-    container_name: db 
+    container_name: db
     command: '--default-authentication-plugin=mysql_native_password --secure-file-priv=/docker-entrypoint-initdb.d/seeding_imgs'
     volumes:
       - db-data:/var/lib/mysql
@@ -46,11 +48,22 @@ services:
       timeout: 3s
       retries: 2
       start_period: 30s
-    
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 2
+
   frontend:
     build:
       args:
-      - PORT=3000
+        - PORT=3000
       context: frontend
       target: development
     ports:
@@ -60,5 +73,6 @@ services:
       - ./frontend/src:/code/src
     depends_on:
       - backend
+
 volumes:
-   db-data:
+  db-data:
