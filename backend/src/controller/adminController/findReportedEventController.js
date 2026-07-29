@@ -23,6 +23,7 @@ export const getReportedEvents = (req, res) => {
         FROM posts p
                  INNER JOIN post_report pr ON pr.post_id = p.post_id
                  INNER JOIN reports r ON r.report_id = pr.report_id
+                 AND r.status = 'pending'
                  LEFT JOIN event_posts ep ON ep.event_id = p.post_id
                  LEFT JOIN images i ON i.post_id = p.post_id
         WHERE p.post_type = 'event'

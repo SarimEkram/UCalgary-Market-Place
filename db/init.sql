@@ -81,6 +81,7 @@ CREATE TABLE reports (
                  reporter_id INT NOT NULL,
                  report_type ENUM('user','post') NOT NULL,
                  reason      TEXT NOT NULL,
+                 status      ENUM('pending','dismissed') NOT NULL DEFAULT 'pending',
                  FOREIGN KEY (reporter_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
@@ -355,19 +356,6 @@ INSERT INTO saved_posts (user_id, post_id) VALUES
 INSERT INTO contacted_seller (user_id, post_id) VALUES
 (1, 103),
 (3, 102);
-
--- REPORTS
-INSERT INTO reports (report_id, reporter_id, report_type, reason) VALUES
-(501, 2, 'post', 'Inappropriate'),
-(502, 3, 'user', 'Criminal Behavior'),
-(503, 1, 'post', 'Scam');
-
-INSERT INTO post_report (report_id, post_id) VALUES
-(501, 102),
-(503, 103);
-
-INSERT INTO user_report (report_id, reported_user_id) VALUES
-(502, 2);
 
 -- ADMIN ACTIONS (create actions first, then bans that reference them)
 INSERT INTO admin_actions (action_id, admin_id, action, action_timestamp) VALUES

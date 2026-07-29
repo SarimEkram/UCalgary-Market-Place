@@ -12,9 +12,10 @@ export const viewReportedUsers = (req, res) => {
       COUNT(r.report_id) AS reportCount,
       MAX(r.reason)      AS latestReason
     FROM user_report ur
-    JOIN reports r 
-      ON r.report_id = ur.report_id
-     AND r.report_type = 'user'
+     JOIN reports r
+          ON r.report_id = ur.report_id
+              AND r.report_type = 'user'
+              AND r.status = 'pending'
     JOIN users u 
       ON u.user_id = ur.reported_user_id
     GROUP BY u.user_id, u.fname, u.lname, u.email

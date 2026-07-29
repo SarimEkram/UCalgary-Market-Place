@@ -28,6 +28,7 @@ import viewReportedUserRoutes from "./routes/adminRoutes/ViewReportedUserRoute.j
 import findReportedEventRoutes from "./routes/adminRoutes/findReportedEventRoute.js";
 import findReportedMarketPostRoutes from "./routes/adminRoutes/findReportedMarketPostRoute.js";
 import getRecentActionsRoutes from "./routes/adminRoutes/getRecentActionsRoute.js";
+import dismissReportRoutes from "./routes/adminRoutes/dismissReportRoute.js";
 
 
 const app = express();
@@ -66,6 +67,7 @@ app.use("/api/admin/reported-events", requireAdmin, findReportedEventRoutes);
 app.use("/api/admin/reported-market-posts", requireAdmin, findReportedMarketPostRoutes);
 app.use("/api/admin/recent-actions", requireAdmin, getRecentActionsRoutes);
 app.use("/api/logout", logoutRoutes);
+app.use("/api/admin/reports", requireAdmin, dismissReportRoutes);
 
 
 export default app;

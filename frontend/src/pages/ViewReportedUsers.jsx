@@ -123,6 +123,22 @@ export default function ViewReportedUsers() {
         setDeletePopupOpen(true);
     };
 
+    const handleDismiss = async (userId) => {
+        try {
+            const res = await fetch(`/api/admin/reports/user/${userId}/dismiss`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+            });
+
+            if (res.ok) {
+                setUsersReported((prev) => prev.filter((u) => u.id !== userId));
+            }
+        } catch (err) {
+            console.error("Dismiss error:", err);
+        }
+    };
+
     return (
         <Stack
             direction="row"
@@ -183,6 +199,7 @@ export default function ViewReportedUsers() {
                                 user={user}
                                 onView={() => handleView(user.id)}
                                 onMessage={() => handleMessage(user.email)}
+                                onDismiss={() => handleDismiss(user.id)}
                                 onDelete={() => handleDelete(user.id)}
                             />
                         ))}
@@ -226,7 +243,7 @@ export default function ViewReportedUsers() {
 }
 
 // Reported User Card
-function ReportedUserCard({ user, onView, onMessage, onDelete }) {
+function ReportedUserCard({ user, onView, onMessage, onDelete, onDismiss }) {
     return (
         <Box
             sx={{
@@ -280,6 +297,9 @@ function ReportedUserCard({ user, onView, onMessage, onDelete }) {
                         </CustomButton>
                         <CustomButton onClick={onMessage} color="black">
                             Message
+                        </CustomButton>
+                        <CustomButton onClick={onDismiss} color="black">
+                            Dismiss
                         </CustomButton>
                         <CustomButton onClick={onDelete} color="red">
                             Delete

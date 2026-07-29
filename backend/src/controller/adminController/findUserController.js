@@ -86,7 +86,7 @@ export const getUserProfileForAdmin = (req, res) => {
                 ep.organization_name,
                 ep.event_start,
                 ep.event_end,
-                COUNT(pr.report_id)        AS report_count,
+                COUNT(r.report_id)         AS report_count,
                 p.posted_date              AS report_date,
                 i.image_text_data          AS thumbnail_blob
             FROM posts p
@@ -94,6 +94,7 @@ export const getUserProfileForAdmin = (req, res) => {
                      LEFT JOIN post_report pr ON pr.post_id = p.post_id
                      LEFT JOIN reports r ON r.report_id = pr.report_id
                 AND r.report_type = 'post'
+                AND r.status = 'pending'
                      LEFT JOIN images i
                                ON i.image_id = (
                                    SELECT MIN(image_id)
@@ -124,7 +125,7 @@ export const getUserProfileForAdmin = (req, res) => {
                 p.price,
                 p.postal_code,
                 mp.item_condition,
-                COUNT(pr.report_id)        AS report_count,
+                COUNT(r.report_id)         AS report_count,
                 p.posted_date              AS report_date,
                 i.image_text_data          AS thumbnail_blob
             FROM posts p
@@ -132,6 +133,7 @@ export const getUserProfileForAdmin = (req, res) => {
                      LEFT JOIN post_report pr ON pr.post_id = p.post_id
                      LEFT JOIN reports r ON r.report_id = pr.report_id
                 AND r.report_type = 'post'
+                AND r.status = 'pending'
                      LEFT JOIN images i
                                ON i.image_id = (
                                    SELECT MIN(image_id)

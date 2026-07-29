@@ -559,6 +559,7 @@ export function getReportedMarketItemById(req, res) {
         FROM post_report pr
         JOIN reports r ON r.report_id = pr.report_id
         WHERE pr.post_id = p.post_id
+        AND r.status = 'pending'
         ORDER BY r.report_id DESC
         LIMIT 1
       ) AS report_category
@@ -641,6 +642,7 @@ export function getReportedEventById(req, res) {
         FROM post_report pr
         JOIN reports r ON r.report_id = pr.report_id
         WHERE pr.post_id = p.post_id
+        AND r.status = 'pending'
         ORDER BY r.report_id DESC
         LIMIT 1
       ) AS report_category

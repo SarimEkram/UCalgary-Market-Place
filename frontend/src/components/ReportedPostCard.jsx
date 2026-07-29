@@ -41,6 +41,29 @@ export default function PostCard({
     return response;
   };
 
+    const [dismissing, setDismissing] = useState(false);
+
+    const handleDismiss = async () => {
+        try {
+            setDismissing(true);
+
+            // Get all report IDs for this post to dismiss them
+            const response = await fetch(`/api/admin/reports/post/${id}/dismiss`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+            });
+
+            if (response.ok) {
+                window.location.reload();
+            }
+        } catch (err) {
+            console.error("Dismiss error:", err);
+        } finally {
+            setDismissing(false);
+        }
+    };
+
   const [open, setOpen] = useState(false);
 
   const onDelete = () => {
@@ -175,35 +198,37 @@ export default function PostCard({
                 {primaryText}
               </Typography>
             </Box>
-            <Stack
-              sx={(theme) => ({
-                p: 0,
-                display: "flex",
-                [theme.breakpoints.down("sm")]: {
-                  flexDirection: "row",
-                },
-                [theme.breakpoints.between("980", "1300")]: {
-                  flexDirection: "column",
-                },
-                [theme.breakpoints.up("1300")]: {
-                  flexDirection: "row",
-                },
-                gap: 2,
-                justifyContent: "center",
-                alignItems: "stretch",
-                alignContent: "center",
-              })}
-            >
-              <CustomButton onClick={onView} color="black">
-                View
-              </CustomButton>
-              <CustomButton
-                onClick={onDelete}
-                style={{ "& .MuiCardActions-root": { margin: 0 } }}
+              <Stack
+                  sx={(theme) => ({
+                      p: 0,
+                      display: "flex",
+                      [theme.breakpoints.down("sm")]: {
+                          flexDirection: "row",
+                      },
+                      [theme.breakpoints.between("980", "1300")]: {
+                          flexDirection: "column",
+                      },
+                      [theme.breakpoints.up("1300")]: {
+                          flexDirection: "row",
+                      },
+                      gap: 2,
+                      justifyContent: "center",
+                      alignItems: "stretch",
+                      alignContent: "center",
+                  })}
               >
-                Delete
-              </CustomButton>
-            </Stack>
+                  <CustomButton onClick={onView} color="black">
+                      View
+                  </CustomButton>
+                  {numReports > 0 && (
+                      <CustomButton onClick={handleDismiss} color="black" disabled={dismissing}>
+                          {dismissing ? "Dismissing..." : "Dismiss"}
+                      </CustomButton>
+                  )}
+                  <CustomButton onClick={onDelete}>
+                      Delete
+                  </CustomButton>
+              </Stack>
           </Stack>
         </CardContent>
       </Stack>
