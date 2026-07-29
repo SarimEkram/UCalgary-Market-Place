@@ -377,3 +377,6 @@ INSERT INTO admin_actions (action_id, admin_id, action, action_timestamp) VALUES
 
 INSERT INTO banned_users (action_id, user_email) VALUES
 (601, 'kai.lee@ucalgary.ca');
+
+
+ALTER TABLE posts ADD FULLTEXT INDEX ft_posts_search (name, description);

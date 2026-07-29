@@ -16,6 +16,8 @@ import MobileNav from "../components/MobileNav";
 import DesktopNav from "../components/DesktopNav";
 import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
+import Autocomplete from "@mui/material/Autocomplete";
+
 
 const PAGE_SIZE = 20;
 
@@ -27,6 +29,7 @@ export default function Market() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
   const [isAdmin, setIsAdmin] = useState(() => {
     return JSON.parse(localStorage.getItem("user")).isAdmin;
   });
@@ -115,6 +118,25 @@ export default function Market() {
     fetchMarketPosts(postFilters, searchKeyword, newOffset, true);
   };
 
+  const fetchSuggestions = async (value) => {
+    if (!value || !value.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+          `/api/posts/suggestions?q=${encodeURIComponent(value)}&type=market`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setSuggestions(data);
+      }
+    } catch (err) {
+      console.error("Suggestions error:", err);
+    }
+  };
+
   const hasMore = posts.length < total;
 
   const keywordOptions = ["textbook", "tutor", "desk", "equipment"];
@@ -132,32 +154,52 @@ export default function Market() {
           <Header />
 
           <Container sx={{ ...styles.container, pb: 8, mb: 10 }} maxWidth="lg">
-            <TextField
-                size="medium"
-                placeholder="Search"
-                variant="standard"
-                value={searchKeyword}
-                onChange={(e) => {
-                  const value = e.target.value;
+            <Autocomplete
+                freeSolo
+                options={suggestions}
+                inputValue={searchKeyword}
+                onInputChange={(e, value, reason) => {
                   setSearchKeyword(value);
-                  fetchMarketPosts(postFilters, value, 0, false);
+                  if (reason === "input") {
+                    fetchSuggestions(value);
+                    fetchMarketPosts(postFilters, value, 0, false);
+                  }
                 }}
-                sx={styles.searchBoxField}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                        <InputAdornment position="end">
-                          <SearchIcon
-                              fontSize="medium"
-                              sx={{ cursor: "pointer" }}
-                              onClick={() =>
-                                  fetchMarketPosts(postFilters, searchKeyword, 0, false)
-                              }
-                          />
-                        </InputAdornment>
-                    ),
-                  },
+                onChange={(e, value) => {
+                  if (value) {
+                    setSearchKeyword(value);
+                    setSuggestions([]);
+                    fetchMarketPosts(postFilters, value, 0, false);
+                  }
                 }}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        size="medium"
+                        placeholder="Search"
+                        variant="standard"
+                        sx={styles.searchBoxField}
+                        slotProps={{
+                          input: {
+                            ...params.InputProps,
+                            endAdornment: (
+                                <>
+                                  {params.InputProps.endAdornment}
+                                  <InputAdornment position="end">
+                                    <SearchIcon
+                                        fontSize="medium"
+                                        sx={{ cursor: "pointer" }}
+                                        onClick={() =>
+                                            fetchMarketPosts(postFilters, searchKeyword, 0, false)
+                                        }
+                                    />
+                                  </InputAdornment>
+                                </>
+                            ),
+                          },
+                        }}
+                    />
+                )}
             />
 
             <Filters onApply={handleApplyFilters} onClear={handleClearFilters} />

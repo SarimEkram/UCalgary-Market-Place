@@ -16,6 +16,7 @@ import MobileNav from "../components/MobileNav";
 import DesktopNav from "../components/DesktopNav";
 import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
+import Autocomplete from "@mui/material/Autocomplete";
 
 const PAGE_SIZE = 20;
 
@@ -26,7 +27,9 @@ export default function Events() {
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
   const [errorText, setErrorText] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
+
   const [isAdmin, setIsAdmin] = useState(() => {
     return JSON.parse(localStorage.getItem("user")).isAdmin;
   });
@@ -111,6 +114,25 @@ export default function Events() {
     fetchEvents(eventFilters, searchKeyword, newOffset, true);
   };
 
+  const fetchSuggestions = async (value) => {
+    if (!value || !value.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+          `/api/posts/suggestions?q=${encodeURIComponent(value)}&type=event`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setSuggestions(data);
+      }
+    } catch (err) {
+      console.error("Suggestions error:", err);
+    }
+  };
+
   const hasMore = events.length < total;
 
   return (
@@ -132,32 +154,52 @@ export default function Events() {
           <Header />
 
           <Container sx={{ ...styles.container, pb: 8, mb: 10 }} maxWidth="lg">
-            <TextField
-                size="medium"
-                placeholder="Search events"
-                variant="standard"
-                value={searchKeyword}
-                onChange={(e) => {
-                  const value = e.target.value;
+            <Autocomplete
+                freeSolo
+                options={suggestions}
+                inputValue={searchKeyword}
+                onInputChange={(e, value, reason) => {
                   setSearchKeyword(value);
-                  fetchEvents(eventFilters, value, 0, false);
+                  if (reason === "input") {
+                    fetchSuggestions(value);
+                    fetchEvents(eventFilters, value, 0, false);
+                  }
                 }}
-                sx={styles.searchBoxField}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                        <InputAdornment position="end">
-                          <SearchIcon
-                              fontSize="medium"
-                              sx={{ cursor: "pointer" }}
-                              onClick={() =>
-                                  fetchEvents(eventFilters, searchKeyword, 0, false)
-                              }
-                          />
-                        </InputAdornment>
-                    ),
-                  },
+                onChange={(e, value) => {
+                  if (value) {
+                    setSearchKeyword(value);
+                    setSuggestions([]);
+                    fetchEvents(eventFilters, value, 0, false);
+                  }
                 }}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        size="medium"
+                        placeholder="Search events"
+                        variant="standard"
+                        sx={styles.searchBoxField}
+                        slotProps={{
+                          input: {
+                            ...params.InputProps,
+                            endAdornment: (
+                                <>
+                                  {params.InputProps.endAdornment}
+                                  <InputAdornment position="end">
+                                    <SearchIcon
+                                        fontSize="medium"
+                                        sx={{ cursor: "pointer" }}
+                                        onClick={() =>
+                                            fetchEvents(eventFilters, searchKeyword, 0, false)
+                                        }
+                                    />
+                                  </InputAdornment>
+                                </>
+                            ),
+                          },
+                        }}
+                    />
+                )}
             />
 
             <Filters

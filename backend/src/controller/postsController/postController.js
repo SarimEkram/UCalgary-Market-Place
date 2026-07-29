@@ -127,16 +127,20 @@ export function getMarketResults(req, res) {
             ? searchTerms.join(" ")
             : String(searchTerms);
 
-        const terms = raw.trim().split(/\s+/).filter(Boolean).slice(0, 10);
+        const trimmed = raw.trim();
+        if (trimmed) {
+            const booleanQuery = trimmed
+                .split(/\s+/)
+                .filter(Boolean)
+                .map((word) => word.replace(/[^a-zA-Z0-9]/g, ""))
+                .filter((word) => word.length >= 3)
+                .map((word) => `+${word}`)
+                .join(" ");
 
-        if (terms.length) {
-            const likeClauses = [];
-            for (const t of terms) {
-                const pat = `%${t}%`;
-                likeClauses.push("(p.name LIKE ? OR p.description LIKE ?)");
-                params.push(pat, pat);
+            if (booleanQuery) {
+                where.push("MATCH(p.name, p.description) AGAINST(? IN BOOLEAN MODE)");
+                params.push(booleanQuery);
             }
-            where.push(`(${likeClauses.join(" OR ")})`);
         }
     }
 
@@ -268,16 +272,21 @@ export function getEventResults(req, res) {
             ? searchTerms.join(" ")
             : String(searchTerms);
 
-        const terms = raw.trim().split(/\s+/).filter(Boolean).slice(0, 10);
+        const trimmed = raw.trim();
+        if (trimmed) {
+            const booleanQuery = trimmed
+                .split(/\s+/)
+                .filter(Boolean)
+                .map((word) => word.replace(/[^a-zA-Z0-9]/g, ""))
+                .filter((word) => word.length >= 3)
+                .map((word) => `+${word}*`)
+                .join(" ");
 
-        if (terms.length) {
-            const likeClauses = [];
-            for (const t of terms) {
-                const pat = `%${t}%`;
-                likeClauses.push("(p.name LIKE ? OR p.description LIKE ?)");
-                params.push(pat, pat);
+            if (!booleanQuery) {
+                return res.json([]);
             }
-            where.push(`(${likeClauses.join(" OR ")})`);
+            where.push("MATCH(p.name, p.description) AGAINST(? IN BOOLEAN MODE)");
+            params.push(booleanQuery);
         }
     }
 
@@ -687,4 +696,41 @@ export function getReportedEventById(req, res) {
 
     res.json({ ...base, images });
   });
+}
+
+export function getSuggestions(req, res) {
+    const { q, type } = req.query;
+
+    if (!q || !q.trim()) {
+        return res.json([]);
+    }
+
+    const trimmed = q.trim();
+
+    // Add * to each word for prefix matching: "text" -> "text*", "org chem" -> "org* chem*"
+    const booleanQuery = trimmed
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((word) => `+${word}*`)
+        .join(" ");
+
+    const postType = type === "event" ? "event" : "market";
+
+    const sql = `
+        SELECT DISTINCT p.name
+        FROM posts p
+        WHERE p.post_type = ?
+        AND MATCH(p.name, p.description) AGAINST(? IN BOOLEAN MODE)
+        LIMIT 8
+    `;
+
+    db.query(sql, [postType, booleanQuery], (err, rows) => {
+        if (err) {
+            console.error("getSuggestions error:", err);
+            return res.json([]);
+        }
+
+        const suggestions = rows.map((r) => r.name);
+        res.json(suggestions);
+    });
 }
