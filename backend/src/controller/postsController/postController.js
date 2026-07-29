@@ -82,21 +82,21 @@ export function getMarketResults(req, res) {
         endDate,
         condition,
         limit = 20,
+        offset = 0,
     } = req.query;
 
-    // Validate limit
     let lim = parseInt(limit, 10);
     if (isNaN(lim) || lim <= 0) lim = 20;
-    const MAX_LIMIT = 100;
-    if (lim > MAX_LIMIT) lim = MAX_LIMIT;
+    if (lim > 100) lim = 100;
+
+    let off = parseInt(offset, 10);
+    if (isNaN(off) || off < 0) off = 0;
 
     const where = [];
     const params = [];
 
-    // Only market posts
     where.push("p.post_type = 'market'");
 
-    // Condition comes from market_posts.item_condition
     if (condition) {
         where.push("mp.item_condition = ?");
         params.push(condition);
@@ -122,86 +122,95 @@ export function getMarketResults(req, res) {
         params.push(maxPrice);
     }
 
-    // Keyword search on name + description
     if (searchTerms) {
         const raw = Array.isArray(searchTerms)
             ? searchTerms.join(" ")
             : String(searchTerms);
 
-        const terms = raw
-            .trim()
-            .split(/\s+/)
-            .filter(Boolean)
-            .slice(0, 10); // cap terms
+        const terms = raw.trim().split(/\s+/).filter(Boolean).slice(0, 10);
 
         if (terms.length) {
             const likeClauses = [];
             for (const t of terms) {
-            const pat = `%${t}%`; // simple "contains" pattern
-            likeClauses.push("(p.name LIKE ? OR p.description LIKE ?)");
-            params.push(pat, pat);
+                const pat = `%${t}%`;
+                likeClauses.push("(p.name LIKE ? OR p.description LIKE ?)");
+                params.push(pat, pat);
             }
-            // Any term can match
             where.push(`(${likeClauses.join(" OR ")})`);
         }
     }
 
-    const sql = `
-        SELECT
-        p.post_id         AS id,
-        p.name            AS title,
-        p.description     AS description,
-        p.price           AS price,
-        p.posted_date     AS posted_date,
-        p.postal_code     AS postal_code,
-        p.user_id         AS seller_id,
-        mp.item_condition AS item_condition,
-        i.image_id,
-        i.image_text_data AS thumbnail_data
+    const whereClause = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+    // Count total matching rows
+    const countSql = `
+        SELECT COUNT(*) AS total
         FROM posts p
-        JOIN market_posts mp
-        ON mp.market_id = p.post_id
-        LEFT JOIN images i
-        ON i.post_id = p.post_id
-        AND i.image_id = (
-        SELECT MIN(i2.image_id)
-        FROM images i2
-        WHERE i2.post_id = p.post_id
-        )
-        ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
-        ORDER BY p.posted_date DESC
-        LIMIT ?
+        JOIN market_posts mp ON mp.market_id = p.post_id
+        ${whereClause}
     `;
 
-    params.push(lim);
-
-    db.query(sql, params, (err, rows) => {
-        if (err) {
-        console.error("getMarketResults sql error:", err);
-        return res.status(500).json({ error: "Failed to fetch marketplace posts" });
+    db.query(countSql, [...params], (countErr, countRows) => {
+        if (countErr) {
+            console.error("getMarketResults count error:", countErr);
+            return res.status(500).json({ error: "Failed to count marketplace posts" });
         }
 
-    const normalized = rows.map((row) => ({
-    id: row.id,
-    title: row.title,
-    description: row.description,
-    price: row.price,
-    posted_date: row.posted_date,
-    postal_code: row.postal_code,
-    seller_id: row.seller_id,
-    item_condition: row.item_condition,
-    thumbnail: row.image_id
-        ? {
-            image_id: row.image_id,
-            data:
-            row.thumbnail_data && Buffer.isBuffer(row.thumbnail_data)
-                ? row.thumbnail_data.toString("base64")
-                : row.thumbnail_data || null,
-        }
-        : null,
-    }));
+        const total = countRows[0].total;
 
-    res.json(normalized);
+        const sql = `
+            SELECT
+                p.post_id         AS id,
+                p.name            AS title,
+                p.description     AS description,
+                p.price           AS price,
+                p.posted_date     AS posted_date,
+                p.postal_code     AS postal_code,
+                p.user_id         AS seller_id,
+                mp.item_condition AS item_condition,
+                i.image_id,
+                i.image_text_data AS thumbnail_data
+            FROM posts p
+            JOIN market_posts mp ON mp.market_id = p.post_id
+            LEFT JOIN images i
+                ON i.post_id = p.post_id
+                AND i.image_id = (
+                    SELECT MIN(i2.image_id)
+                    FROM images i2
+                    WHERE i2.post_id = p.post_id
+                )
+            ${whereClause}
+            ORDER BY p.posted_date DESC
+            LIMIT ? OFFSET ?
+        `;
+
+        db.query(sql, [...params, lim, off], (err, rows) => {
+            if (err) {
+                console.error("getMarketResults sql error:", err);
+                return res.status(500).json({ error: "Failed to fetch marketplace posts" });
+            }
+
+            const results = rows.map((row) => ({
+                id: row.id,
+                title: row.title,
+                description: row.description,
+                price: row.price,
+                posted_date: row.posted_date,
+                postal_code: row.postal_code,
+                seller_id: row.seller_id,
+                item_condition: row.item_condition,
+                thumbnail: row.image_id
+                    ? {
+                        image_id: row.image_id,
+                        data: row.thumbnail_data && Buffer.isBuffer(row.thumbnail_data)
+                            ? row.thumbnail_data.toString("base64")
+                            : row.thumbnail_data || null,
+                    }
+                    : null,
+            }));
+
+            res.json({ results, total, offset: off, limit: lim });
+        });
     });
 }
 
@@ -219,34 +228,31 @@ export function getEventResults(req, res) {
         startDate,
         endDate,
         limit = 20,
+        offset = 0,
     } = req.query;
 
-    // Validate limit
     let lim = parseInt(limit, 10);
     if (isNaN(lim) || lim <= 0) lim = 20;
-    const MAX_LIMIT = 100;
-    if (lim > MAX_LIMIT) lim = MAX_LIMIT;
+    if (lim > 100) lim = 100;
+
+    let off = parseInt(offset, 10);
+    if (isNaN(off) || off < 0) off = 0;
 
     const where = [];
     const params = [];
 
-    // Only event posts
     where.push("p.post_type = 'event'");
 
-    // Date range on event period (overlap with [startDate, endDate])
     if (startDate !== undefined && startDate !== "") {
-    // event ends on/after the filter start
-    where.push("e.event_end >= ?");
-    params.push(startDate);
+        where.push("e.event_end >= ?");
+        params.push(startDate);
     }
 
     if (endDate !== undefined && endDate !== "") {
-    // event starts on/before the filter end
-    where.push("e.event_start <= ?");
-    params.push(endDate);
+        where.push("e.event_start <= ?");
+        params.push(endDate);
     }
 
-    // Price range on ticket/entry price
     if (minPrice !== undefined && minPrice !== "") {
         where.push("p.price >= ?");
         params.push(minPrice);
@@ -257,92 +263,99 @@ export function getEventResults(req, res) {
         params.push(maxPrice);
     }
 
-  // Keyword search on name + description
     if (searchTerms) {
         const raw = Array.isArray(searchTerms)
             ? searchTerms.join(" ")
             : String(searchTerms);
 
-        const terms = raw
-            .trim()
-            .split(/\s+/)
-            .filter(Boolean)
-            .slice(0, 10); // cap terms
+        const terms = raw.trim().split(/\s+/).filter(Boolean).slice(0, 10);
 
         if (terms.length) {
             const likeClauses = [];
             for (const t of terms) {
-            const pat = `%${t}%`; // simple "contains" pattern
-            likeClauses.push("(p.name LIKE ? OR p.description LIKE ?)");
-            params.push(pat, pat);
+                const pat = `%${t}%`;
+                likeClauses.push("(p.name LIKE ? OR p.description LIKE ?)");
+                params.push(pat, pat);
             }
-            // Any term can match
             where.push(`(${likeClauses.join(" OR ")})`);
         }
     }
 
-    const sql = `
-    SELECT
-        p.post_id           AS id,
-        p.name              AS title,
-        p.description       AS description,
-        p.price             AS price,
-        p.posted_date       AS posted_date,
-        p.postal_code       AS postal_code,
-        p.user_id           AS organizer_id,
-        e.organization_name AS organization_name,
-        e.event_start       AS event_start,
-        e.event_end         AS event_end,
-        i.image_id,
-        i.image_text_data   AS thumbnail_data
-    FROM posts p
-    JOIN event_posts e
-        ON e.event_id = p.post_id
-    LEFT JOIN images i
-        ON i.post_id = p.post_id
-    AND i.image_id = (
-        SELECT MIN(i2.image_id)
-        FROM images i2
-        WHERE i2.post_id = p.post_id
-    )
-    ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
-    ORDER BY e.event_start ASC
-    LIMIT ?
+    const whereClause = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+    const countSql = `
+        SELECT COUNT(*) AS total
+        FROM posts p
+        JOIN event_posts e ON e.event_id = p.post_id
+        ${whereClause}
     `;
 
-  params.push(lim);
+    db.query(countSql, [...params], (countErr, countRows) => {
+        if (countErr) {
+            console.error("getEventResults count error:", countErr);
+            return res.status(500).json({ error: "Failed to count event posts" });
+        }
 
-  db.query(sql, params, (err, rows) => {
-    if (err) {
-      console.error("getEventResults sql error:", err);
-      return res.status(500).json({ error: "Failed to fetch event posts" });
-    }
+        const total = countRows[0].total;
 
-    const normalized = rows.map((r) => ({
-        id: r.id,
-        title: r.title,
-        description: r.description,
-        price: r.price,
-        posted_date: r.posted_date,
-        postal_code: r.postal_code,
-        organizer_id: r.organizer_id,
-        organization_name: r.organization_name,
-        event_start: r.event_start,
-        event_end: r.event_end,
-        thumbnail: r.image_id
-            ? {
-                image_id: r.image_id,
-                data:
-                r.thumbnail_data && Buffer.isBuffer(r.thumbnail_data)
-                    ? r.thumbnail_data.toString("base64")
-                    : r.thumbnail_data || null,
+        const sql = `
+            SELECT
+                p.post_id           AS id,
+                p.name              AS title,
+                p.description       AS description,
+                p.price             AS price,
+                p.posted_date       AS posted_date,
+                p.postal_code       AS postal_code,
+                p.user_id           AS organizer_id,
+                e.organization_name AS organization_name,
+                e.event_start       AS event_start,
+                e.event_end         AS event_end,
+                i.image_id,
+                i.image_text_data   AS thumbnail_data
+            FROM posts p
+            JOIN event_posts e ON e.event_id = p.post_id
+            LEFT JOIN images i
+                ON i.post_id = p.post_id
+                AND i.image_id = (
+                    SELECT MIN(i2.image_id)
+                    FROM images i2
+                    WHERE i2.post_id = p.post_id
+                )
+            ${whereClause}
+            ORDER BY e.event_start ASC
+            LIMIT ? OFFSET ?
+        `;
+
+        db.query(sql, [...params, lim, off], (err, rows) => {
+            if (err) {
+                console.error("getEventResults sql error:", err);
+                return res.status(500).json({ error: "Failed to fetch event posts" });
             }
-            : null,
-    }));
 
+            const results = rows.map((r) => ({
+                id: r.id,
+                title: r.title,
+                description: r.description,
+                price: r.price,
+                posted_date: r.posted_date,
+                postal_code: r.postal_code,
+                organizer_id: r.organizer_id,
+                organization_name: r.organization_name,
+                event_start: r.event_start,
+                event_end: r.event_end,
+                thumbnail: r.image_id
+                    ? {
+                        image_id: r.image_id,
+                        data: r.thumbnail_data && Buffer.isBuffer(r.thumbnail_data)
+                            ? r.thumbnail_data.toString("base64")
+                            : r.thumbnail_data || null,
+                    }
+                    : null,
+            }));
 
-    res.json(normalized);
-  });
+            res.json({ results, total, offset: off, limit: lim });
+        });
+    });
 }
 
 

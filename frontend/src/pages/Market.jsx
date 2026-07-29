@@ -1,4 +1,3 @@
-// Market.jsx
 import {
   Box,
   Container,
@@ -15,50 +14,47 @@ import Filters from "../components/Filters";
 import Header from "../components/Header";
 import MobileNav from "../components/MobileNav";
 import DesktopNav from "../components/DesktopNav";
+import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = "";
+const PAGE_SIZE = 20;
 
 export default function Market() {
   const [postFilters, setPostFilters] = useState(null);
   const [posts, setPosts] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [isAdmin, setIsAdmin] = useState(()=>{
-      return JSON.parse(localStorage.getItem("user")).isAdmin;
+  const [isAdmin, setIsAdmin] = useState(() => {
+    return JSON.parse(localStorage.getItem("user")).isAdmin;
   });
 
-  const createQueryParams = (filters, searchKey) => {
+  const createQueryParams = (filters, searchKey, currentOffset) => {
     const params = new URLSearchParams();
+
+    params.append("limit", PAGE_SIZE);
+    params.append("offset", currentOffset);
 
     const trimmedSearch = searchKey && searchKey.trim();
     if (trimmedSearch) {
       params.append("searchTerms", trimmedSearch);
     }
 
-    if (!filters) {
-      return params.toString();
-    }
+    if (!filters) return params.toString();
 
     const { dateRange, minCost, maxCost, condition } = filters;
 
-    if (typeof minCost === "number") {
-      params.append("minPrice", minCost);
-    }
-
-    if (typeof maxCost === "number") {
-      params.append("maxPrice", maxCost);
-    }
+    if (typeof minCost === "number") params.append("minPrice", minCost);
+    if (typeof maxCost === "number") params.append("maxPrice", maxCost);
 
     if (dateRange?.start) {
       params.append("startDate", dayjs(dateRange.start).format("YYYY-MM-DD"));
     }
-
     if (dateRange?.end) {
       params.append("endDate", dayjs(dateRange.end).format("YYYY-MM-DD"));
     }
-
     if (condition) {
       params.append("condition", condition);
     }
@@ -67,29 +63,33 @@ export default function Market() {
   };
 
   const fetchMarketPosts = async (
-    filters = postFilters,
-    searchKey = searchKeyword
+      filters = postFilters,
+      searchKey = searchKeyword,
+      currentOffset = 0,
+      append = false
   ) => {
     try {
       setLoading(true);
       setError(null);
 
-      const queryString = createQueryParams(filters, searchKey);
-      const url = queryString
-        ? `/api/posts/marketres?${queryString}`
-        : `/api/posts/marketres`;
+      const queryString = createQueryParams(filters, searchKey, currentOffset);
+      const url = `/api/posts/marketres?${queryString}`;
 
       const res = await fetch(url);
-
-      if (!res.ok) {
-        throw new Error(`Request failed with status ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
 
       const data = await res.json();
-      setPosts(data);
+
+      if (append) {
+        setPosts((prev) => [...prev, ...data.results]);
+      } else {
+        setPosts(data.results);
+      }
+      setTotal(data.total);
+      setOffset(currentOffset);
     } catch (err) {
       console.error("Failed to fetch market posts:", err);
-      setError("Couldn’t load market posts. Please try again.");
+      setError("Couldn't load market posts. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -97,111 +97,138 @@ export default function Market() {
 
   useEffect(() => {
     fetchMarketPosts();
-
   }, []);
 
   const handleApplyFilters = (filters) => {
     setPostFilters(filters);
-    fetchMarketPosts(filters, searchKeyword);
+    fetchMarketPosts(filters, searchKeyword, 0, false);
   };
 
   const handleClearFilters = () => {
     setPostFilters(null);
     setSearchKeyword("");
-    fetchMarketPosts(null, "");
+    fetchMarketPosts(null, "", 0, false);
   };
+
+  const handleLoadMore = () => {
+    const newOffset = offset + PAGE_SIZE;
+    fetchMarketPosts(postFilters, searchKeyword, newOffset, true);
+  };
+
+  const hasMore = posts.length < total;
 
   const keywordOptions = ["textbook", "tutor", "desk", "equipment"];
 
   return (
-    <Box sx={{ display: "flex", width: "100%" }}>
-      {/* Desktop left nav */}
-      <Box sx={{ display: { xs: "none", md: "block" } }}>
-        <DesktopNav />
-      </Box>
-      <Stack
-        id="market-initial-page"
-        direction="column"
-        sx={{...styles.page, flex:1}}
-      >
-        <Header />
+      <Box sx={{ display: "flex", width: "100%" }}>
+        <Box sx={{ display: { xs: "none", md: "block" } }}>
+          <DesktopNav />
+        </Box>
+        <Stack
+            id="market-initial-page"
+            direction="column"
+            sx={{ ...styles.page, flex: 1 }}
+        >
+          <Header />
 
-        <Container sx={{...styles.container, pb:8, mb:10}} maxWidth="lg">
-          <TextField
-            size="medium"
-            placeholder="Search"
-            variant="standard"
-            value={searchKeyword}
-            onChange={(e) => {
-              const value = e.target.value;
-              setSearchKeyword(value);
-              fetchMarketPosts(postFilters, value); 
-            }}
-            sx={styles.searchBoxField}
-            slotProps={{
-              input: {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <SearchIcon fontSize="medium" sx={{ cursor: "pointer" }}
-                    onClick={() => fetchMarketPosts(postFilters, searchKeyword)}/>
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-
-          <Filters onApply={handleApplyFilters} onClear={handleClearFilters} />
-
-          <Divider sx={styles.secDiv} />
-
-          <Typography variant="caption" sx={styles.secLabel}>
-            Possible keywords
-          </Typography>
-
-          <Stack direction="row" spacing={1} sx={styles.keywordRow}>
-            {keywordOptions.map((kw) => (
-              <Typography
-                key={kw}
-                variant="caption"
-                sx={styles.kw}
-                onClick={() => {
-                  setSearchKeyword(kw);
-                  fetchMarketPosts(postFilters, kw);
+          <Container sx={{ ...styles.container, pb: 8, mb: 10 }} maxWidth="lg">
+            <TextField
+                size="medium"
+                placeholder="Search"
+                variant="standard"
+                value={searchKeyword}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearchKeyword(value);
+                  fetchMarketPosts(postFilters, value, 0, false);
                 }}
-              >
-                “{kw}”
-              </Typography>
-            ))}
-          </Stack>
+                sx={styles.searchBoxField}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                        <InputAdornment position="end">
+                          <SearchIcon
+                              fontSize="medium"
+                              sx={{ cursor: "pointer" }}
+                              onClick={() =>
+                                  fetchMarketPosts(postFilters, searchKeyword, 0, false)
+                              }
+                          />
+                        </InputAdornment>
+                    ),
+                  },
+                }}
+            />
 
-          <Divider sx={styles.secDiv} />
+            <Filters onApply={handleApplyFilters} onClear={handleClearFilters} />
 
-          <Typography variant="caption" sx={styles.secLabel}>
-            Recent posts
-          </Typography>
+            <Divider sx={styles.secDiv} />
 
-          <Box sx={styles.postGrid}>
-            {loading && (
-              <Typography sx={styles.loadingPostsText}>
-                Loading market posts...
-              </Typography>
-            )}
+            <Typography variant="caption" sx={styles.secLabel}>
+              Possible keywords
+            </Typography>
 
-            {error && !loading && (
-              <Typography sx={styles.noPostsText}>{error}</Typography>
-            )}
-
-            {!loading &&
-              !error &&
-              posts.map((marketPost) => (
-                <PostCard key={marketPost.id} isAdmin={isAdmin} marketPost={marketPost} />
+            <Stack direction="row" spacing={1} sx={styles.keywordRow}>
+              {keywordOptions.map((kw) => (
+                  <Typography
+                      key={kw}
+                      variant="caption"
+                      sx={styles.kw}
+                      onClick={() => {
+                        setSearchKeyword(kw);
+                        fetchMarketPosts(postFilters, kw, 0, false);
+                      }}
+                  >
+                    &ldquo;{kw}&rdquo;
+                  </Typography>
               ))}
-          </Box>
-        </Container>
+            </Stack>
 
-        <MobileNav />
-      </Stack>
-    </Box>
+            <Divider sx={styles.secDiv} />
+
+            <Typography variant="caption" sx={styles.secLabel}>
+              Recent posts ({total} results)
+            </Typography>
+
+            <Box sx={styles.postGrid}>
+              {loading && posts.length === 0 && (
+                  <Typography sx={styles.loadingPostsText}>
+                    Loading market posts...
+                  </Typography>
+              )}
+
+              {error && !loading && (
+                  <Typography sx={styles.noPostsText}>{error}</Typography>
+              )}
+
+              {!error &&
+                  posts.map((marketPost) => (
+                      <PostCard
+                          key={marketPost.id}
+                          isAdmin={isAdmin}
+                          marketPost={marketPost}
+                      />
+                  ))}
+            </Box>
+
+            {hasMore && !loading && (
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+                  <CustomButton color="black" onClick={handleLoadMore}>
+                    Load More
+                  </CustomButton>
+                </Box>
+            )}
+
+            {loading && posts.length > 0 && (
+                <Typography sx={{ textAlign: "center", mt: 2 }}>
+                  Loading more...
+                </Typography>
+            )}
+          </Container>
+
+          <MobileNav />
+        </Stack>
+      </Box>
   );
 }
 
@@ -209,45 +236,42 @@ function PostCard({ marketPost, isAdmin }) {
   const navigate = useNavigate();
 
   const { id, title, posted_date, price, item_condition, thumbnail } =
-    marketPost;
+      marketPost;
 
   const imageUrl = thumbnail?.data
-    ? `data:image/jpeg;base64,${thumbnail.data}`
-    : "/images/placeholder.jpg";
+      ? `data:image/jpeg;base64,${thumbnail.data}`
+      : "/images/placeholder.jpg";
 
   return (
-    <Stack
-      direction={{ xs: "row", md: "column" }}
-      alignItems="flex-start"
-      spacing={{ xs: 2, md: 1.5 }}
-      sx={cardStyles.root}
-      onClick={() => isAdmin ? navigate(`/admin/reports/market/${id}`) : navigate(`/market/${id}`)}
-    >
-      <Box
-        component="img"
-        src={imageUrl}
-        alt={title}
-        sx={cardStyles.image}
-      />
+      <Stack
+          direction={{ xs: "row", md: "column" }}
+          alignItems="flex-start"
+          spacing={{ xs: 2, md: 1.5 }}
+          sx={cardStyles.root}
+          onClick={() =>
+              isAdmin
+                  ? navigate(`/admin/reports/market/${id}`)
+                  : navigate(`/market/${id}`)
+          }
+      >
+        <Box component="img" src={imageUrl} alt={title} sx={cardStyles.image} />
 
-      <Stack sx={cardStyles.textCol}>
-        <Typography sx={cardStyles.title}>{title}</Typography>
+        <Stack sx={cardStyles.textCol}>
+          <Typography sx={cardStyles.title}>{title}</Typography>
 
-        <Typography sx={cardStyles.date}>
-          {posted_date ? dayjs(posted_date).format("MMM D YYYY") : "Unknown"}
-        </Typography>
-
-        <Typography sx={cardStyles.price}>
-          {price != null ? `$${price}` : "Free"}
-        </Typography>
-
-        {item_condition && (
-          <Typography sx={cardStyles.condition}>
-            {item_condition}
+          <Typography sx={cardStyles.date}>
+            {posted_date ? dayjs(posted_date).format("MMM D YYYY") : "Unknown"}
           </Typography>
-        )}
+
+          <Typography sx={cardStyles.price}>
+            {price != null ? `$${price}` : "Free"}
+          </Typography>
+
+          {item_condition && (
+              <Typography sx={cardStyles.condition}>{item_condition}</Typography>
+          )}
+        </Stack>
       </Stack>
-    </Stack>
   );
 }
 
@@ -257,7 +281,6 @@ const styles = {
     bgcolor: theme.palette.background.default,
     justifyContent: "space-between",
   }),
-
   container: {
     flexGrow: 1,
     py: { xs: 2, md: 4 },
@@ -265,30 +288,15 @@ const styles = {
     display: "flex",
     flexDirection: "column",
   },
-
-  searchBoxField: {
-    mb: 1,
-  },
-
-  secDiv: {
-    mb: 1,
-  },
-
-  secLabel: {
-    color: "text.primary",
-    mb: 1.5,
-  },
-
-  keywordRow: {
-    mb: 1.5,
-  },
-
+  searchBoxField: { mb: 1 },
+  secDiv: { mb: 1 },
+  secLabel: { color: "text.primary", mb: 1.5 },
+  keywordRow: { mb: 1.5 },
   kw: {
     color: "text.secondary",
     textDecoration: "underline",
     cursor: "pointer",
   },
-
   postGrid: {
     display: "grid",
     gridTemplateColumns: {
@@ -299,23 +307,12 @@ const styles = {
     rowGap: { xs: 3, md: 4 },
     columnGap: { xs: 0, md: 6 },
   },
-
-  loadingPostsText: {
-    gridColumn: "1 / -1",
-  },
-
-  noPostsText: {
-    gridColumn: "1 / -1",
-    color: "error.main",
-  },
+  loadingPostsText: { gridColumn: "1 / -1" },
+  noPostsText: { gridColumn: "1 / -1", color: "error.main" },
 };
 
 const cardStyles = {
-  root: {
-    minWidth: 0,
-    cursor: "pointer",
-  },
-
+  root: { minWidth: 0, cursor: "pointer" },
   image: {
     width: { xs: 90, md: 120 },
     height: { xs: 120, md: 150 },
@@ -323,27 +320,14 @@ const cardStyles = {
     objectFit: "cover",
     boxShadow: "0px 2px 4px rgba(0,0,0,0.14)",
   },
-
-  textCol: {
-    minWidth: 0,
-  },
-
-  title: {
-    fontSize: { xs: "0.9rem", md: "0.8rem" },
-  },
-
-  date: {
-    color: "text.secondary",
-    fontSize: "0.9rem",
-    mt: 0.5,
-  },
-
+  textCol: { minWidth: 0 },
+  title: { fontSize: { xs: "0.9rem", md: "0.8rem" } },
+  date: { color: "text.secondary", fontSize: "0.9rem", mt: 0.5 },
   price: {
     fontWeight: 500,
     fontSize: { xs: "0.9rem", md: "0.8rem" },
     mt: 0.8,
   },
-
   condition: {
     fontSize: "0.8rem",
     mt: 0.3,

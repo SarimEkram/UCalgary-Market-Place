@@ -377,3 +377,76 @@ INSERT INTO admin_actions (action_id, admin_id, action, action_timestamp) VALUES
 
 INSERT INTO banned_users (action_id, user_email) VALUES
 (601, 'kai.lee@ucalgary.ca');
+
+
+-- ADDITIONAL MARKET POSTS
+INSERT INTO posts (post_id, post_type, postal_code, price, posted_date, name, description, user_id) VALUES
+                                                                                                        (113, 'market', 'T2N1N4', 35.00, '2025-11-25 00:00:00', 'Organic Chemistry Textbook', 'Barely used CHEM 351 textbook, no highlights or markings.', 1),
+                                                                                                        (114, 'market', 'T2N1N4', 15.00, '2025-11-26 00:00:00', 'USB-C Hub Adapter', '7-in-1 USB-C hub, HDMI, USB 3.0, SD card reader. Works great with MacBooks.', 1),
+                                                                                                        (115, 'market', 'T3P2A6', 200.00, '2025-11-27 00:00:00', 'iPad Air 4th Gen Case', 'Protective case with keyboard attachment, barely used.', 2),
+                                                                                                        (116, 'market', 'T3P2A6', 50.00, '2025-11-28 00:00:00', 'Calculus Tutor Available', 'Upper-year math student offering tutoring for MATH 249/265/267. $50/hr.', 2),
+                                                                                                        (117, 'market', 'T3P2A6', 25.00, '2025-11-29 00:00:00', 'Wireless Mouse and Keyboard Set', 'Logitech wireless combo, used for one semester.', 2),
+                                                                                                        (118, 'market', 'T2L2M3', 75.00, '2025-11-30 00:00:00', 'CPSC 331 Data Structures Textbook', 'Required textbook for CPSC 331, good condition with some notes.', 3),
+                                                                                                        (119, 'market', 'T2L2M3', 180.00, '2025-12-01 00:00:00', 'Noise Cancelling Headphones', 'Sony WH-1000XM4, excellent condition, great for studying in the library.', 3),
+                                                                                                        (120, 'market', 'T2L2M3', 40.00, '2025-12-02 00:00:00', 'Lab Coat Size Medium', 'White lab coat, used for two semesters of chemistry labs. Cleaned and pressed.', 3),
+                                                                                                        (121, 'market', 'T2P1K4', 90.00, '2025-12-03 00:00:00', 'Statistics Textbook Bundle', 'STAT 213 and STAT 321 textbooks sold together. Both in fair condition.', 4),
+                                                                                                        (122, 'market', 'T2P1K4', 300.00, '2025-12-04 00:00:00', 'Monitor 27 inch', 'Dell 27 inch 1440p monitor, great for coding and studying. Comes with cables.', 4),
+                                                                                                        (123, 'market', 'T2N1N4', 20.00, '2025-12-05 00:00:00', 'Scientific Calculator', 'Casio fx-991EX, perfect for physics and engineering courses.', 1),
+                                                                                                        (124, 'market', 'T2N1N4', 450.00, '2025-12-06 00:00:00', 'Mechanical Keyboard', 'Custom mechanical keyboard with Cherry MX Brown switches. Great for coding.', 1),
+                                                                                                        (125, 'market', 'T3P2A6', 55.00, '2025-12-07 00:00:00', 'Python Programming Textbook', 'Automate the Boring Stuff with Python, plus two other Python books bundled.', 2),
+                                                                                                        (126, 'market', 'T3P2A6', 35.00, '2025-12-08 00:00:00', 'Desk Lamp with USB Charging', 'LED desk lamp with adjustable brightness and built-in USB port.', 2),
+                                                                                                        (127, 'market', 'T2L2M3', 160.00, '2025-12-09 00:00:00', 'Drawing Tablet', 'Wacom Intuos tablet, used for one digital art course. Pen included.', 3),
+                                                                                                        (128, 'market', 'T2L2M3', 10.00, '2025-12-10 00:00:00', 'Engineering Paper Pack', '5 pads of green engineering graph paper, unused.', 3),
+                                                                                                        (129, 'market', 'T2P1K4', 85.00, '2025-12-11 00:00:00', 'Whiteboard with Stand', 'Portable whiteboard with tripod stand, markers included. Great for group study.', 4),
+                                                                                                        (130, 'market', 'T2P1K4', 220.00, '2025-12-12 00:00:00', 'Textbook Bundle Engineering', 'ENGG 201, ENGG 202, ENGG 225 textbooks. All required for first-year engineering.', 4),
+                                                                                                        (131, 'market', 'T2N1N4', 500.00, '2025-12-13 00:00:00', 'Electric Scooter', 'Xiaomi electric scooter, great for commuting to campus. 25km range.', 1),
+                                                                                                        (132, 'market', 'T3P2A6', 15.00, '2025-12-14 00:00:00', 'Backpack Laptop 15 inch', 'North Face backpack with padded laptop compartment. Some wear on straps.', 2);
+
+-- ADDITIONAL EVENTS
+INSERT INTO posts (post_id, post_type, postal_code, price, posted_date, name, description, user_id) VALUES
+                                                                                                        (213, 'event', 'T2N1N4', 0, '2025-12-01 00:00:00', 'Resume Workshop', 'Free resume review and workshop hosted by the Career Centre. Bring your laptop.', 1),
+                                                                                                        (214, 'event', 'T2N1N4', 8.00, '2025-12-02 00:00:00', 'International Food Festival', 'Try food from 15 different countries, hosted by the International Students Association.', 1),
+                                                                                                        (215, 'event', 'T3P2A6', 0, '2025-12-03 00:00:00', 'Women in STEM Panel', 'Panel discussion with industry professionals. Open to all genders.', 2),
+                                                                                                        (216, 'event', 'T3P2A6', 5.00, '2025-12-04 00:00:00', 'Movie Night Outdoor', 'Outdoor movie screening on the campus green. Blankets and snacks provided.', 2),
+                                                                                                        (217, 'event', 'T2L2M3', 0, '2025-12-05 00:00:00', 'Open Source Hackathon', 'Contribute to open source projects. Beginners welcome. Prizes for top contributors.', 3),
+                                                                                                        (218, 'event', 'T2L2M3', 20.00, '2025-12-06 00:00:00', 'Ski Trip Signup', 'Bus trip to Lake Louise. Price covers transportation only. Bring your own gear.', 3),
+                                                                                                        (219, 'event', 'T2P1K4', 0, '2025-12-07 00:00:00', 'Mental Health Awareness Week', 'Week-long series of workshops and activities focused on student mental wellness.', 4),
+                                                                                                        (220, 'event', 'T2P1K4', 3.00, '2025-12-08 00:00:00', 'Board Game Tournament', 'Settlers of Catan and Ticket to Ride tournament. Prizes for winners.', 4),
+                                                                                                        (221, 'event', 'T2N1N4', 0, '2025-12-09 00:00:00', 'Git and GitHub Workshop', 'Hands-on workshop for beginners. Learn version control basics.', 1),
+                                                                                                        (222, 'event', 'T3P2A6', 15.00, '2025-12-10 00:00:00', 'End of Semester Gala', 'Semi-formal dinner and dance. Live DJ and photo booth.', 2);
+
+-- ADDITIONAL EVENT DETAILS
+INSERT INTO event_posts (event_id, organization_name, event_start, event_end) VALUES
+                                                                                  (213, 'Career Centre', '2025-12-05 14:00:00', '2025-12-05 16:00:00'),
+                                                                                  (214, 'International Students Association', '2025-12-08 11:00:00', '2025-12-08 15:00:00'),
+                                                                                  (215, 'Women in STEM Society', '2025-12-10 18:00:00', '2025-12-10 20:00:00'),
+                                                                                  (216, 'Student Union', '2025-12-12 20:00:00', '2025-12-12 23:00:00'),
+                                                                                  (217, 'CSUS', '2025-12-13 09:00:00', '2025-12-14 21:00:00'),
+                                                                                  (218, 'Outdoor Club', '2025-12-15 06:00:00', '2025-12-15 20:00:00'),
+                                                                                  (219, 'Student Wellness', '2025-12-08 09:00:00', '2025-12-12 17:00:00'),
+                                                                                  (220, 'Board Game Club', '2025-12-14 14:00:00', '2025-12-14 18:00:00'),
+                                                                                  (221, 'CSUS', '2025-12-16 15:00:00', '2025-12-16 17:00:00'),
+                                                                                  (222, 'Student Union', '2025-12-19 19:00:00', '2025-12-20 01:00:00');
+
+-- ADDITIONAL MARKET DETAILS
+INSERT INTO market_posts (market_id, item_condition) VALUES
+                                                         (113, 'New'),
+                                                         (114, 'Good'),
+                                                         (115, 'New'),
+                                                         (116, 'New'),
+                                                         (117, 'Good'),
+                                                         (118, 'Good'),
+                                                         (119, 'Good'),
+                                                         (120, 'Fair'),
+                                                         (121, 'Fair'),
+                                                         (122, 'Good'),
+                                                         (123, 'Good'),
+                                                         (124, 'New'),
+                                                         (125, 'Good'),
+                                                         (126, 'New'),
+                                                         (127, 'Good'),
+                                                         (128, 'New'),
+                                                         (129, 'Fair'),
+                                                         (130, 'Fair'),
+                                                         (131, 'Good'),
+                                                         (132, 'Fair');

@@ -1,4 +1,3 @@
-// Events.jsx
 import {
   Box,
   Container,
@@ -15,28 +14,31 @@ import Filters from "../components/Filters";
 import Header from "../components/Header";
 import MobileNav from "../components/MobileNav";
 import DesktopNav from "../components/DesktopNav";
+import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = "";
-const EVENTS_ENDPOINT = `/api/posts/eventres`;
+const PAGE_SIZE = 20;
 
 export default function Events() {
   const [eventFilters, setEventFilters] = useState(null);
   const [events, setEvents] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
   const [errorText, setErrorText] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [isAdmin, setIsAdmin] = useState(()=>{
-      return JSON.parse(localStorage.getItem("user")).isAdmin;
-    });
+  const [isAdmin, setIsAdmin] = useState(() => {
+    return JSON.parse(localStorage.getItem("user")).isAdmin;
+  });
 
-  const createQueryParams = (filters, searchKey) => {
+  const createQueryParams = (filters, searchKey, currentOffset) => {
     const params = new URLSearchParams();
 
+    params.append("limit", PAGE_SIZE);
+    params.append("offset", currentOffset);
+
     const trimmed = searchKey && searchKey.trim();
-    if (trimmed) {
-      params.append("searchTerms", trimmed);
-    }
+    if (trimmed) params.append("searchTerms", trimmed);
 
     if (!filters) return params.toString();
 
@@ -45,35 +47,45 @@ export default function Events() {
     if (typeof minCost === "number") params.append("minPrice", minCost);
     if (typeof maxCost === "number") params.append("maxPrice", maxCost);
 
-    if (dateRange?.start)
+    if (dateRange?.start) {
       params.append("startDate", dayjs(dateRange.start).format("YYYY-MM-DD"));
-
-    if (dateRange?.end)
+    }
+    if (dateRange?.end) {
       params.append("endDate", dayjs(dateRange.end).format("YYYY-MM-DD"));
+    }
 
     return params.toString();
   };
 
   const fetchEvents = async (
-    filters = eventFilters,
-    searchKey = searchKeyword
+      filters = eventFilters,
+      searchKey = searchKeyword,
+      currentOffset = 0,
+      append = false
   ) => {
     try {
       setLoading(true);
       setErrorText(null);
 
-      const queryString = createQueryParams(filters, searchKey);
-      const url = queryString ? `${EVENTS_ENDPOINT}?${queryString}` : EVENTS_ENDPOINT;
+      const queryString = createQueryParams(filters, searchKey, currentOffset);
+      const url = `/api/posts/eventres?${queryString}`;
 
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch events");
 
       const data = await res.json();
-      setEvents(data);
+
+      if (append) {
+        setEvents((prev) => [...prev, ...data.results]);
+      } else {
+        setEvents(data.results);
+      }
+      setTotal(data.total);
+      setOffset(currentOffset);
     } catch (err) {
       console.error("Failed to fetch events:", err);
       setEvents([]);
-      setErrorText("Couldn’t load events. Please try again.");
+      setErrorText("Couldn't load events. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -85,136 +97,155 @@ export default function Events() {
 
   const handleApplyFilters = (filters) => {
     setEventFilters(filters);
-    fetchEvents(filters, searchKeyword);
+    fetchEvents(filters, searchKeyword, 0, false);
   };
 
   const handleClearFilters = () => {
     setEventFilters(null);
     setSearchKeyword("");
-    fetchEvents(null, "");
+    fetchEvents(null, "", 0, false);
   };
 
+  const handleLoadMore = () => {
+    const newOffset = offset + PAGE_SIZE;
+    fetchEvents(eventFilters, searchKeyword, newOffset, true);
+  };
+
+  const hasMore = events.length < total;
+
   return (
-    <Box sx={{ display: "flex", width: "100%" }}>
-      {/* Desktop left nav */}
-      <Box sx={{ display: { xs: "none", md: "block" } }}>
-        <DesktopNav />
-      </Box>
-
-      <Stack
-        id="events-page"
-        direction="column"
-        sx={(theme) => ({
-          minHeight: "100vh",
-          bgcolor: theme.palette.background.default,
-          justifyContent: "space-between",
-          flex:1
-        })}
-      >
-        <Header />
-
-        <Container sx={{...styles.container, pb:8, mb:10}} maxWidth="lg">
-          {/* Search bar */}
-          <TextField
-            size="medium"
-            placeholder="Search events"
-            variant="standard"
-            value={searchKeyword}
-            onChange={(e) => {
-              const value = e.target.value;
-              setSearchKeyword(value);
-              fetchEvents(eventFilters, value); 
-            }}
-
-            sx={styles.searchBoxField}
-            slotProps={{
-              input: {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <SearchIcon fontSize="medium" sx={{ cursor: "pointer" }}
-                    onClick={() => fetchEvents(eventFilters, searchKeyword)} />
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-
-          {/* Filters */}
-          <Filters onApply={handleApplyFilters} onClear={handleClearFilters} showCond={false} />
-
-          <Divider sx={styles.secDiv} />
-
-          {/* Section label */}
-          <Typography variant="caption" sx={styles.secLabel}>
-            Upcoming events
-          </Typography>
-
-          {/* Events list/grid */}
-          <Box sx={styles.grid}>
-            {loading && (
-              <Typography sx={styles.fullRowText}>Loading events...</Typography>
-            )}
-
-            {errorText && !loading && (
-              <Typography sx={styles.errorText}>{errorText}</Typography>
-            )}
-
-            {!loading &&
-              !errorText &&
-              events.map((event) => <EventCard key={event.id} event={event} isAdmin={isAdmin} />)}
-          </Box>
-        </Container>
-
-        {/* Mobile bottom nav */}
-        <Box sx={{ display: { xs: "block", md: "none" } }}>
-          <MobileNav />
+      <Box sx={{ display: "flex", width: "100%" }}>
+        <Box sx={{ display: { xs: "none", md: "block" } }}>
+          <DesktopNav />
         </Box>
-      </Stack>
-    </Box>
+
+        <Stack
+            id="events-page"
+            direction="column"
+            sx={(theme) => ({
+              minHeight: "100vh",
+              bgcolor: theme.palette.background.default,
+              justifyContent: "space-between",
+              flex: 1,
+            })}
+        >
+          <Header />
+
+          <Container sx={{ ...styles.container, pb: 8, mb: 10 }} maxWidth="lg">
+            <TextField
+                size="medium"
+                placeholder="Search events"
+                variant="standard"
+                value={searchKeyword}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearchKeyword(value);
+                  fetchEvents(eventFilters, value, 0, false);
+                }}
+                sx={styles.searchBoxField}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                        <InputAdornment position="end">
+                          <SearchIcon
+                              fontSize="medium"
+                              sx={{ cursor: "pointer" }}
+                              onClick={() =>
+                                  fetchEvents(eventFilters, searchKeyword, 0, false)
+                              }
+                          />
+                        </InputAdornment>
+                    ),
+                  },
+                }}
+            />
+
+            <Filters
+                onApply={handleApplyFilters}
+                onClear={handleClearFilters}
+                showCond={false}
+            />
+
+            <Divider sx={styles.secDiv} />
+
+            <Typography variant="caption" sx={styles.secLabel}>
+              Upcoming events ({total} results)
+            </Typography>
+
+            <Box sx={styles.grid}>
+              {loading && events.length === 0 && (
+                  <Typography sx={styles.fullRowText}>
+                    Loading events...
+                  </Typography>
+              )}
+
+              {errorText && !loading && (
+                  <Typography sx={styles.errorText}>{errorText}</Typography>
+              )}
+
+              {!errorText &&
+                  events.map((event) => (
+                      <EventCard key={event.id} event={event} isAdmin={isAdmin} />
+                  ))}
+            </Box>
+
+            {hasMore && !loading && (
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+                  <CustomButton color="black" onClick={handleLoadMore}>
+                    Load More
+                  </CustomButton>
+                </Box>
+            )}
+
+            {loading && events.length > 0 && (
+                <Typography sx={{ textAlign: "center", mt: 2 }}>
+                  Loading more...
+                </Typography>
+            )}
+          </Container>
+
+          <Box sx={{ display: { xs: "block", md: "none" } }}>
+            <MobileNav />
+          </Box>
+        </Stack>
+      </Box>
   );
 }
 
 function EventCard({ event, isAdmin }) {
   const navigate = useNavigate();
 
-  const {
-    id,
-    title,
-    organization_name,
-    event_start,
-    event_end,
-    price,
-    postal_code,
-    thumbnail,
-  } = event;
+  const { id, title, organization_name, price, thumbnail } = event;
 
   const imageUrl = thumbnail?.data
-    ? `data:image/jpeg;base64,${thumbnail.data}`
-    : "/images/placeholder.jpg";
-
-  const start = event_start ? dayjs(event_start) : null;
+      ? `data:image/jpeg;base64,${thumbnail.data}`
+      : "/images/placeholder.jpg";
 
   return (
-    <Stack
-      direction={{ xs: "row", md: "column" }}
-      spacing={{ xs: 2, md: 1.5 }}
-      sx={cardStyles.root}
-      onClick={() => (isAdmin) ? navigate(`/admin/reports/events/${id}`) : navigate(`/events/${id}`)}
-    >
-      <Box component="img" src={imageUrl} alt={title} sx={cardStyles.image} />
+      <Stack
+          direction={{ xs: "row", md: "column" }}
+          spacing={{ xs: 2, md: 1.5 }}
+          sx={cardStyles.root}
+          onClick={() =>
+              isAdmin
+                  ? navigate(`/admin/reports/events/${id}`)
+                  : navigate(`/events/${id}`)
+          }
+      >
+        <Box component="img" src={imageUrl} alt={title} sx={cardStyles.image} />
 
-      <Stack sx={cardStyles.textCol}>
-        <Typography sx={cardStyles.title}>{title}</Typography>
+        <Stack sx={cardStyles.textCol}>
+          <Typography sx={cardStyles.title}>{title}</Typography>
 
-        {organization_name && (
-          <Typography sx={cardStyles.subText}>{organization_name}</Typography>
-        )}
+          {organization_name && (
+              <Typography sx={cardStyles.subText}>{organization_name}</Typography>
+          )}
 
-        <Typography sx={cardStyles.price}>
-          {price != null ? `$${price}` : "Free"}
-        </Typography>
+          <Typography sx={cardStyles.price}>
+            {price != null ? `$${price}` : "Free"}
+          </Typography>
+        </Stack>
       </Stack>
-    </Stack>
   );
 }
 
@@ -226,11 +257,9 @@ const styles = {
     display: "flex",
     flexDirection: "column",
   },
-
   searchBoxField: { mb: 1 },
   secDiv: { mb: 1 },
   secLabel: { color: "text.primary", mb: 1.5 },
-
   grid: {
     display: "grid",
     gridTemplateColumns: {
@@ -240,7 +269,6 @@ const styles = {
     rowGap: { xs: 3, md: 4 },
     columnGap: { xs: 0, md: 6 },
   },
-
   fullRowText: { gridColumn: "1 / -1" },
   errorText: { gridColumn: "1 / -1", color: "error.main" },
 };
