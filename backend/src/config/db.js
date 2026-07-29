@@ -1,8 +1,6 @@
-import mysql from "mysql";
+import mysql from "mysql2";
 
-// Create a pool compatible with callback usage: db.query(sql, params, cb)
-// Controllers in this project call `db.query(...)`, so we export the pool as the default export.
-const db = mysql.createPool({
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -11,4 +9,5 @@ const db = mysql.createPool({
   connectionLimit: 10,
 });
 
-export default db;
+export default pool;
+export const promisePool = pool.promise();
