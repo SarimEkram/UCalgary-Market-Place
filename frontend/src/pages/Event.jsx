@@ -17,6 +17,16 @@ import DesktopNav from "../components/DesktopNav";
 import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
 import Autocomplete from "@mui/material/Autocomplete";
+import { useRef, useCallback } from "react";
+
+
+function useDebounce(fn, delay) {
+  const timer = useRef(null);
+  return useCallback((...args) => {
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => fn(...args), delay);
+  }, [fn, delay]);
+}
 
 const PAGE_SIZE = 20;
 
@@ -133,6 +143,14 @@ export default function Events() {
     }
   };
 
+  const debouncedSearch = useDebounce((value) => {
+    fetchEvents(eventFilters, value, 0, false);
+  }, 300);
+
+  const debouncedSuggestions = useDebounce((value) => {
+    fetchSuggestions(value);
+  }, 200);
+
   const hasMore = events.length < total;
 
   return (
@@ -161,8 +179,8 @@ export default function Events() {
                 onInputChange={(e, value, reason) => {
                   setSearchKeyword(value);
                   if (reason === "input") {
-                    fetchSuggestions(value);
-                    fetchEvents(eventFilters, value, 0, false);
+                    debouncedSuggestions(value);
+                    debouncedSearch(value);
                   }
                 }}
                 onChange={(e, value) => {

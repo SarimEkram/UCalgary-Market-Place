@@ -17,9 +17,18 @@ import DesktopNav from "../components/DesktopNav";
 import CustomButton from "../components/CustomButton";
 import { useNavigate } from "react-router-dom";
 import Autocomplete from "@mui/material/Autocomplete";
+import { useRef, useCallback } from "react";
 
 
 const PAGE_SIZE = 20;
+
+function useDebounce(fn, delay) {
+  const timer = useRef(null);
+  return useCallback((...args) => {
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => fn(...args), delay);
+  }, [fn, delay]);
+}
 
 export default function Market() {
   const [postFilters, setPostFilters] = useState(null);
@@ -137,6 +146,14 @@ export default function Market() {
     }
   };
 
+  const debouncedSearch = useDebounce((value) => {
+    fetchMarketPosts(postFilters, value, 0, false);
+  }, 300);
+
+  const debouncedSuggestions = useDebounce((value) => {
+    fetchSuggestions(value);
+  }, 200);
+
   const hasMore = posts.length < total;
 
   const keywordOptions = ["textbook", "tutor", "desk", "equipment"];
@@ -161,8 +178,8 @@ export default function Market() {
                 onInputChange={(e, value, reason) => {
                   setSearchKeyword(value);
                   if (reason === "input") {
-                    fetchSuggestions(value);
-                    fetchMarketPosts(postFilters, value, 0, false);
+                    debouncedSuggestions(value);
+                    debouncedSearch(value);
                   }
                 }}
                 onChange={(e, value) => {

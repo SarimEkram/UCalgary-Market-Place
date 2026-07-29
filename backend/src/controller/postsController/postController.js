@@ -279,14 +279,13 @@ export function getEventResults(req, res) {
                 .filter(Boolean)
                 .map((word) => word.replace(/[^a-zA-Z0-9]/g, ""))
                 .filter((word) => word.length >= 3)
-                .map((word) => `+${word}*`)
+                .map((word) => `+${word}`)
                 .join(" ");
 
-            if (!booleanQuery) {
-                return res.json([]);
+            if (booleanQuery) {
+                where.push("MATCH(p.name, p.description) AGAINST(? IN BOOLEAN MODE)");
+                params.push(booleanQuery);
             }
-            where.push("MATCH(p.name, p.description) AGAINST(? IN BOOLEAN MODE)");
-            params.push(booleanQuery);
         }
     }
 
@@ -707,12 +706,17 @@ export function getSuggestions(req, res) {
 
     const trimmed = q.trim();
 
-    // Add * to each word for prefix matching: "text" -> "text*", "org chem" -> "org* chem*"
     const booleanQuery = trimmed
         .split(/\s+/)
         .filter(Boolean)
+        .map((word) => word.replace(/[^a-zA-Z0-9]/g, ""))
+        .filter((word) => word.length >= 3)
         .map((word) => `+${word}*`)
         .join(" ");
+
+    if (!booleanQuery) {
+        return res.json([]);
+    }
 
     const postType = type === "event" ? "event" : "market";
 
