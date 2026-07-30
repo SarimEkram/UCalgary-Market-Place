@@ -77,12 +77,13 @@ CREATE TABLE contacted_seller (
 -- REPORTS BASE
 -- report_type: 'user' or 'post'
 CREATE TABLE reports (
-                 report_id   INT AUTO_INCREMENT PRIMARY KEY,
-                 reporter_id INT NOT NULL,
-                 report_type ENUM('user','post') NOT NULL,
-                 reason      TEXT NOT NULL,
-                 status      ENUM('pending','dismissed') NOT NULL DEFAULT 'pending',
-                 FOREIGN KEY (reporter_id) REFERENCES users(user_id) ON DELETE CASCADE
+                         report_id   INT AUTO_INCREMENT PRIMARY KEY,
+                         reporter_id INT NOT NULL,
+                         report_type ENUM('user','post') NOT NULL,
+                         reason      TEXT NOT NULL,
+                         status      ENUM('pending','dismissed') NOT NULL DEFAULT 'pending',
+                         created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                         FOREIGN KEY (reporter_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 -- REPORT ABOUT A POST

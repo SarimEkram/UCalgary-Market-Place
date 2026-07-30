@@ -29,7 +29,7 @@ import findReportedEventRoutes from "./routes/adminRoutes/findReportedEventRoute
 import findReportedMarketPostRoutes from "./routes/adminRoutes/findReportedMarketPostRoute.js";
 import getRecentActionsRoutes from "./routes/adminRoutes/getRecentActionsRoute.js";
 import dismissReportRoutes from "./routes/adminRoutes/dismissReportRoute.js";
-
+import dashboardRoutes from "./routes/adminRoutes/dashboardRoute.js";
 
 const app = express();
 app.use(helmet());
@@ -68,6 +68,7 @@ app.use("/api/admin/reported-market-posts", requireAdmin, findReportedMarketPost
 app.use("/api/admin/recent-actions", requireAdmin, getRecentActionsRoutes);
 app.use("/api/logout", logoutRoutes);
 app.use("/api/admin/reports", requireAdmin, dismissReportRoutes);
+app.use("/api/admin/dashboard", requireAdmin, dashboardRoutes);
 
 
 export default app;
