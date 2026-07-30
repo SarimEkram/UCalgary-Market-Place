@@ -38,13 +38,16 @@ export const getRecentAdminActions = (req, res) => {
 
         // Then, get recent admin actions
         const actionsSql = `
-            SELECT 
+            SELECT
                 action,
+                action_type,
+                target_type,
+                target_id,
                 action_timestamp AS date
             FROM admin_actions
             WHERE admin_id = ?
             ORDER BY action_timestamp DESC
-            LIMIT 50
+                LIMIT 50
         `;
 
         db.query(actionsSql, [adminIdNum], (actionsErr, actionsRows) => {

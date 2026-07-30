@@ -37,8 +37,8 @@ export const adminDeletePost = async (req, res) => {
             : `Deleted a market post "${post.post_name}" for ${post.user_email}`;
 
         await conn.query(
-            "INSERT INTO admin_actions (admin_id, action) VALUES (?, ?)",
-            [adminIdNum, actionText]
+            "INSERT INTO admin_actions (admin_id, action, action_type, target_type, target_id) VALUES (?, ?, 'delete_post', 'post', ?)",
+            [adminIdNum, actionText, post.user_email]
         );
 
         await conn.commit();

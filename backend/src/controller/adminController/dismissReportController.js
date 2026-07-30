@@ -22,10 +22,10 @@ export const dismissReportsByPost = (req, res) => {
             return res.status(500).json({ success: false, error: "Failed to dismiss reports" });
         }
 
-        const logSql = "INSERT INTO admin_actions (admin_id, action) VALUES (?, ?)";
+        const logSql = "INSERT INTO admin_actions (admin_id, action, action_type, target_type, target_id) VALUES (?, ?, 'dismiss_report', 'post', ?)";
         const actionText = `Dismissed all reports for post #${postIdNum}`;
 
-        db.query(logSql, [adminId, actionText], (logErr) => {
+        db.query(logSql, [adminId, actionText, String(postIdNum)], (logErr) => {
             if (logErr) {
                 console.error("Failed to log dismiss action:", logErr);
             }
@@ -61,10 +61,10 @@ export const dismissReportsByUser = (req, res) => {
             return res.status(500).json({ success: false, error: "Failed to dismiss reports" });
         }
 
-        const logSql = "INSERT INTO admin_actions (admin_id, action) VALUES (?, ?)";
+        const logSql = "INSERT INTO admin_actions (admin_id, action, action_type, target_type, target_id) VALUES (?, ?, 'dismiss_report', 'user', ?)";
         const actionText = `Dismissed all reports for user #${userIdNum}`;
 
-        db.query(logSql, [adminId, actionText], (logErr) => {
+        db.query(logSql, [adminId, actionText, String(userIdNum)], (logErr) => {
             if (logErr) {
                 console.error("Failed to log dismiss action:", logErr);
             }

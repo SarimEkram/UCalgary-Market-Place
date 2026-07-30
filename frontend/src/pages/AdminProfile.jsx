@@ -40,12 +40,12 @@ export default function AdminProfile() {
         setUserData({ fname: data.admin.fname, lname: data.admin.lname, email: data.admin.email });
 
         let actionData = data.actions ? [...data.actions] : [];
-        actionData = actionData.map((item) => {
-          if (item.date) {
-            item["dateTime"] = dayjs(item.date).format("YYYY/MM/DD, h:mma");
-          }
-          return item;
-        });
+          actionData = actionData.map((item) => {
+              if (item.date) {
+                  item["dateTime"] = dayjs(item.date).format("YYYY/MM/DD, h:mma");
+              }
+              return item;
+          });
 
         if (isMounted) {
           setItems(actionData);
@@ -76,25 +76,54 @@ export default function AdminProfile() {
     </Box>
   );
 
-  const ActionItem = ({ dateTime, action }) => (
-    <Box>
-      <Stack direction="row" spacing={2}>
-        <Typography variant="body1">{dateTime}:</Typography>
-        <Typography variant="body1">{action}</Typography>
-      </Stack>
-      <Box>
-        <Divider
-          sx={(theme) => ({
-            borderBottom: 3,
-            borderColor: theme.palette.text.primary,
-            boxSizing: "border-box",
-            marginTop: 3,
-            marginBottom: 3,
-          })}
-        ></Divider>
-      </Box>
-    </Box>
-  );
+    const ActionItem = ({ dateTime, action, action_type, target_id }) => (
+        <Box>
+            <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start" }}>
+                <Typography variant="body1" sx={{ whiteSpace: "nowrap" }}>{dateTime}:</Typography>
+                <Box>
+                    <Typography variant="body1">{action}</Typography>
+                    <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+                        {action_type && (
+                            <Typography
+                                sx={{
+                                    fontSize: 11,
+                                    px: 1,
+                                    py: 0.2,
+                                    borderRadius: 1,
+                                    bgcolor:
+                                        action_type === "ban" ? "#ffebee" :
+                                            action_type === "delete_post" ? "#fff3e0" :
+                                                "#e8f5e9",
+                                    color:
+                                        action_type === "ban" ? "#c62828" :
+                                            action_type === "delete_post" ? "#e65100" :
+                                                "#2e7d32",
+                                }}
+                            >
+                                {action_type === "ban" ? "Ban" :
+                                    action_type === "delete_post" ? "Delete Post" :
+                                        "Dismiss Report"}
+                            </Typography>
+                        )}
+                        {target_id && (
+                            <Typography sx={{ fontSize: 11, color: "text.secondary" }}>
+                                Target: {target_id}
+                            </Typography>
+                        )}
+                    </Stack>
+                </Box>
+            </Stack>
+            <Divider
+                sx={(theme) => ({
+                    borderBottom: 3,
+                    borderColor: theme.palette.text.primary,
+                    boxSizing: "border-box",
+                    marginTop: 3,
+                    marginBottom: 3,
+                })}
+            />
+        </Box>
+    );
 
   return (
     //1. Root container must look like this
@@ -160,14 +189,15 @@ export default function AdminProfile() {
             <Typography variant="h4" sx={{ paddingBottom: 3 }}>
               Recent Actions:
             </Typography>
-            {items.map((item, index) => (
-              <ActionItem
-                key={"action" + index}
-                index={index}
-                dateTime={item.dateTime}
-                action={item.action}
-              ></ActionItem>
-            ))}
+              {items.map((item, index) => (
+                  <ActionItem
+                      key={"action" + index}
+                      dateTime={item.dateTime}
+                      action={item.action}
+                      action_type={item.action_type}
+                      target_id={item.target_id}
+                  />
+              ))}
           </Box>
         </Container>
       </Box>

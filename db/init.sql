@@ -104,11 +104,14 @@ CREATE TABLE user_report (
 
 -- ADMIN ACTION LOG
 CREATE TABLE admin_actions (
-                   action_id INT AUTO_INCREMENT PRIMARY KEY,
-                   admin_id  INT NOT NULL,
-                   action    VARCHAR(255) NOT NULL,
-                   action_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                   FOREIGN KEY (admin_id) REFERENCES admins(admin_id) ON DELETE CASCADE
+               action_id        INT AUTO_INCREMENT PRIMARY KEY,
+               admin_id         INT NOT NULL,
+               action           VARCHAR(255) NOT NULL,
+               action_type      ENUM('ban','delete_post','dismiss_report') NOT NULL DEFAULT 'ban',
+               target_type      ENUM('user','post','report') DEFAULT NULL,
+               target_id        VARCHAR(255) DEFAULT NULL,
+               action_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+               FOREIGN KEY (admin_id) REFERENCES admins(admin_id) ON DELETE CASCADE
 );
 
 -- BANNED USERS (linked to an admin action)
@@ -359,10 +362,10 @@ INSERT INTO contacted_seller (user_id, post_id) VALUES
 (3, 102);
 
 -- ADMIN ACTIONS (create actions first, then bans that reference them)
-INSERT INTO admin_actions (action_id, admin_id, action, action_timestamp) VALUES
-(601, 1, 'Deleted a market post "Flying Car" for kai.lee@ucalgary.ca', '2025-11-08 13:00:00'),
-(602, 2, 'Deleted an event post "The Annual Upside-Down Umbrella Parade" for kai.lee@ucalgary.ca', '2025-11-08 14:20:00'),
-(603, 1, 'Banned user: kai.lee@ucalgary.ca', '2025-11-08 14:10:00');
+INSERT INTO admin_actions (action_id, admin_id, action, action_type, target_type, target_id, action_timestamp) VALUES
+    (601, 1, 'Deleted a market post "Flying Car" for kai.lee@ucalgary.ca', 'delete_post', 'post', 'kai.lee@ucalgary.ca', '2025-11-08 13:00:00'),
+    (602, 2, 'Deleted an event post "The Annual Upside-Down Umbrella Parade" for kai.lee@ucalgary.ca', 'delete_post', 'post', 'kai.lee@ucalgary.ca', '2025-11-08 14:20:00'),
+    (603, 1, 'Banned user: kai.lee@ucalgary.ca', 'ban', 'user', 'kai.lee@ucalgary.ca', '2025-11-08 14:10:00');
 
 INSERT INTO banned_users (action_id, user_email) VALUES
 (601, 'kai.lee@ucalgary.ca');

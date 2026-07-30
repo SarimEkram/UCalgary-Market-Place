@@ -26,8 +26,8 @@ export const adminBanUser = async (req, res) => {
 
         const actionText = `Banned user: ${email}`;
         const [actionResult] = await conn.query(
-            "INSERT INTO admin_actions (admin_id, action) VALUES (?, ?)",
-            [adminIdNum, actionText]
+            "INSERT INTO admin_actions (admin_id, action, action_type, target_type, target_id) VALUES (?, ?, 'ban', 'user', ?)",
+            [adminIdNum, actionText, email]
         );
         const actionId = actionResult.insertId;
 
