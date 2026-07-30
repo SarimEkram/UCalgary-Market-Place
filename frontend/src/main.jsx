@@ -35,6 +35,7 @@ import ReportedMarketItemPage from "./pages/ReportedMarketItemPage";
 import ReportedEventItemPage from "./pages/ReportEventItemPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
+import BannedUsers from "./pages/BannedUsers";
 
 const black = "#221F1F";
 const inputBorderColor = "#757575";
@@ -146,6 +147,7 @@ createRoot(document.getElementById("root")).render(
                         <Route path="reported-users" element={<AdminRoute><ViewReportedUsers /></AdminRoute>} />
                         <Route path="profile/:id" element={<AdminRoute><AdminProfile /></AdminRoute>} />
                         <Route path="settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+                        <Route path="banned" element={<AdminRoute><BannedUsers /></AdminRoute>} />
                         <Route path="profile/user/:id" element={<AdminRoute><UserProfile /></AdminRoute>} />
                         <Route path="reports">
                             <Route path="events">

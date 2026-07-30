@@ -21,7 +21,7 @@ export default function DesktopNav() {
     const userData = JSON.parse(localStorage.getItem("user"));
     let options = [];
     if (userData.isAdmin) {
-      options = ["Home", "Admin", "Market", "Events", "Settings"];
+      options = ["Home", "Admin", "Market", "Events", "Banned", "Settings"];
     } else {
       options = ["Home", "User", "Market", "Events"];
     }
@@ -32,9 +32,9 @@ export default function DesktopNav() {
 
   // navigate urls, and change the current selected page, when a user clicks on an item in the nav bar
   function getURL(newValue) {
-    const url = newValue === "settings" ? "/admin/settings" : "/" + newValue;
-    
-    return url;
+    if (newValue === "settings") return "/admin/settings";
+    if (newValue === "banned") return "/admin/banned";
+    return "/" + newValue;
   }
 
   //get the current path
@@ -42,15 +42,17 @@ export default function DesktopNav() {
 
   //the currently selected page in the navigation bar
   //which is initialized to the root path on the current page
-  const [value, setValue] = useState(()=>{
-    const pathComposition =  location.pathname.split("/");
+  const [value, setValue] = useState(() => {
+    const pathComposition = location.pathname.split("/");
     let ans = pathComposition[1];
-    if (pathComposition[1] == "admin"){
-       if (pathComposition[2] && pathComposition[2] == "settings"){
+    if (pathComposition[1] == "admin") {
+      if (pathComposition[2] && pathComposition[2] == "settings") {
         ans = "settings";
-       }
-    } 
-   
+      }
+      if (pathComposition[2] && pathComposition[2] == "banned") {
+        ans = "banned";
+      }
+    }
     return ans;
   });
 
