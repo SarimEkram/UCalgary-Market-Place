@@ -11,31 +11,35 @@ export function SocketProvider({ children }) {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (!user) return;
-
-        // Get token from cookie by making a request, or pass it manually
-        // For simplicity, we store the token in localStorage on login
         const token = localStorage.getItem("socketToken");
-        if (!token) return;
+        if (!token) {
+            const interval = setInterval(() => {
+                const t = localStorage.getItem("socketToken");
+                if (t) {
+                    clearInterval(interval);
+                    connect(t);
+                }
+            }, 2000);
+            return () => clearInterval(interval);
+        } else {
+            connect(token);
+        }
 
-        const s = io("http://localhost:8080", {
-            auth: { token },
-        });
+        function connect(t) {
+            const s = io({
+                auth: { token: t },
+            });
 
-        s.on("connect", () => {
-            console.log("Socket connected:", s.id);
-        });
+            s.on("connect", () => {
+                console.log("Socket connected:", s.id);
+            });
 
-        s.on("disconnect", () => {
-            console.log("Socket disconnected");
-        });
+            s.on("disconnect", () => {
+                console.log("Socket disconnected");
+            });
 
-        setSocket(s);
-
-        return () => {
-            s.disconnect();
-        };
+            setSocket(s);
+        }
     }, []);
 
     return (

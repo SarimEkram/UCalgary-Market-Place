@@ -14,8 +14,12 @@ export default defineConfig({
         allowedHosts: true,
         proxy: {
             "/api": {
-                target: "http://backend:8080",  //  talk to backend container
+                target: "http://backend:8080",
                 changeOrigin: true,
+            },
+            "/socket.io": {
+                target: "http://backend:8080",
+                ws: true,
             },
         },
     },
