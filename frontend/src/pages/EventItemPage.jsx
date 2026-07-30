@@ -601,6 +601,29 @@ export default function EventItemPage() {
               <Box sx={{ pb: 1.5 }}>
                 <Box sx={{ ...styles.rowGap, mb: 1 }}>
                   {contactButtonElement}
+                  {userId && eventDetails?.organizerId && userId !== eventDetails.organizerId && (
+                      <CustomButton
+                          sx={styles.contactButton}
+                          onClick={async () => {
+                            try {
+                              const res = await fetch("/api/messages/conversations", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                credentials: "include",
+                                body: JSON.stringify({ postId }),
+                              });
+                              if (res.ok) {
+                                const data = await res.json();
+                                navigate(`/user/messages/${data.conversation_id}`);
+                              }
+                            } catch (err) {
+                              console.error("Create conversation error:", err);
+                            }
+                          }}
+                      >
+                        Message Organizer
+                      </CustomButton>
+                  )}
 
 
                   <Tooltip

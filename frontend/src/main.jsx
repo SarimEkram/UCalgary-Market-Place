@@ -36,6 +36,9 @@ import ReportedEventItemPage from "./pages/ReportEventItemPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import BannedUsers from "./pages/BannedUsers";
+import Inbox from "./pages/Inbox";
+import ChatThread from "./pages/ChatThread";
+import { SocketProvider } from "./context/SocketContext";
 
 const black = "#221F1F";
 const inputBorderColor = "#757575";
@@ -112,55 +115,61 @@ createRoot(document.getElementById("root")).render(
     <StrictMode>
         <ThemeProvider theme={theme}>
             <BrowserRouter>
-                <Routes>
-                    {/* Public */}
-                    <Route path="/" element={<Login />} />
-                    <Route path="signup" element={<SignUp />} />
+                <SocketProvider>
+                    <Routes>
+                        {/* Public */}
+                        <Route path="/" element={<Login />} />
+                        <Route path="signup" element={<SignUp />} />
 
-                    {/* Protected */}
-                    <Route path="home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-                    <Route path="market" element={<ProtectedRoute><Market /></ProtectedRoute>} />
-                    <Route path="/market/:id" element={<ProtectedRoute><MarketItemPage /></ProtectedRoute>} />
-                    <Route path="events" element={<ProtectedRoute><Event /></ProtectedRoute>} />
-                    <Route path="events/:id" element={<ProtectedRoute><EventItemPage /></ProtectedRoute>} />
+                        {/* Protected */}
+                        <Route path="home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+                        <Route path="market" element={<ProtectedRoute><Market /></ProtectedRoute>} />
+                        <Route path="/market/:id" element={<ProtectedRoute><MarketItemPage /></ProtectedRoute>} />
+                        <Route path="events" element={<ProtectedRoute><Event /></ProtectedRoute>} />
+                        <Route path="events/:id" element={<ProtectedRoute><EventItemPage /></ProtectedRoute>} />
 
-                    <Route path="user">
-                        <Route index element={<ProtectedRoute><MySettings /></ProtectedRoute>} />
-                        <Route path="market">
-                            <Route index element={<ProtectedRoute><MyPosts /></ProtectedRoute>} />
-                            <Route path="new" element={<ProtectedRoute><CreatePost /></ProtectedRoute>} />
-                            <Route path=":id" element={<ProtectedRoute><EditPost /></ProtectedRoute>} />
-                        </Route>
-                        <Route path="events">
-                            <Route index element={<ProtectedRoute><MyEvents /></ProtectedRoute>} />
-                            <Route path="new" element={<ProtectedRoute><CreateEvent /></ProtectedRoute>} />
-                            <Route path=":id" element={<ProtectedRoute><EditEvent /></ProtectedRoute>} />
-                        </Route>
-                        <Route path="saved" element={<ProtectedRoute><MySaved /></ProtectedRoute>} />
-                        <Route path="contacted" element={<ProtectedRoute><MyContacted /></ProtectedRoute>} />
-                    </Route>
-
-                    {/* Admin */}
-                    <Route path="admin">
-                        <Route index element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-                        <Route path="find-user" element={<AdminRoute><FindUser /></AdminRoute>} />
-                        <Route path="reported-users" element={<AdminRoute><ViewReportedUsers /></AdminRoute>} />
-                        <Route path="profile/:id" element={<AdminRoute><AdminProfile /></AdminRoute>} />
-                        <Route path="settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
-                        <Route path="banned" element={<AdminRoute><BannedUsers /></AdminRoute>} />
-                        <Route path="profile/user/:id" element={<AdminRoute><UserProfile /></AdminRoute>} />
-                        <Route path="reports">
-                            <Route path="events">
-                                <Route index element={<AdminRoute><ViewReportedEvents /></AdminRoute>} />
-                                <Route path=":id" element={<AdminRoute><ReportedEventItemPage /></AdminRoute>} />
+                        <Route path="user">
+                            <Route index element={<ProtectedRoute><MySettings /></ProtectedRoute>} />
+                            <Route path="messages">
+                                <Route index element={<ProtectedRoute><Inbox /></ProtectedRoute>} />
+                                <Route path=":id" element={<ProtectedRoute><ChatThread /></ProtectedRoute>} />
                             </Route>
                             <Route path="market">
-                                <Route index element={<AdminRoute><ViewReportedPosts /></AdminRoute>} />
-                                <Route path=":id" element={<AdminRoute><ReportedMarketItemPage /></AdminRoute>} />
+                                <Route index element={<ProtectedRoute><MyPosts /></ProtectedRoute>} />
+                                <Route path="new" element={<ProtectedRoute><CreatePost /></ProtectedRoute>} />
+                                <Route path=":id" element={<ProtectedRoute><EditPost /></ProtectedRoute>} />
+                            </Route>
+                            <Route path="events">
+                                <Route index element={<ProtectedRoute><MyEvents /></ProtectedRoute>} />
+                                <Route path="new" element={<ProtectedRoute><CreateEvent /></ProtectedRoute>} />
+                                <Route path=":id" element={<ProtectedRoute><EditEvent /></ProtectedRoute>} />
+                            </Route>
+                            <Route path="saved" element={<ProtectedRoute><MySaved /></ProtectedRoute>} />
+                            <Route path="contacted" element={<ProtectedRoute><MyContacted /></ProtectedRoute>} />
+                        </Route>
+
+                        {/* Admin */}
+                        <Route path="admin">
+                            <Route index element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                            <Route path="find-user" element={<AdminRoute><FindUser /></AdminRoute>} />
+                            <Route path="reported-users" element={<AdminRoute><ViewReportedUsers /></AdminRoute>} />
+                            <Route path="profile/:id" element={<AdminRoute><AdminProfile /></AdminRoute>} />
+                            <Route path="settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+                            <Route path="banned" element={<AdminRoute><BannedUsers /></AdminRoute>} />
+                            <Route path="profile/user/:id" element={<AdminRoute><UserProfile /></AdminRoute>} />
+                            <Route path="reports">
+                                <Route path="events">
+                                    <Route index element={<AdminRoute><ViewReportedEvents /></AdminRoute>} />
+                                    <Route path=":id" element={<AdminRoute><ReportedEventItemPage /></AdminRoute>} />
+                                </Route>
+                                <Route path="market">
+                                    <Route index element={<AdminRoute><ViewReportedPosts /></AdminRoute>} />
+                                    <Route path=":id" element={<AdminRoute><ReportedMarketItemPage /></AdminRoute>} />
+                                </Route>
                             </Route>
                         </Route>
-                    </Route>
-                </Routes>
+                    </Routes>
+                </SocketProvider>
             </BrowserRouter>
         </ThemeProvider>
     </StrictMode>

@@ -23,7 +23,7 @@ export default function DesktopNav() {
     if (userData.isAdmin) {
       options = ["Home", "Admin", "Market", "Events", "Banned", "Settings"];
     } else {
-      options = ["Home", "User", "Market", "Events"];
+      options = ["Home", "Messages", "User", "Market", "Events"];
     }
     return options;
   });
@@ -34,6 +34,7 @@ export default function DesktopNav() {
   function getURL(newValue) {
     if (newValue === "settings") return "/admin/settings";
     if (newValue === "banned") return "/admin/banned";
+    if (newValue === "messages") return "/user/messages";
     return "/" + newValue;
   }
 
@@ -51,6 +52,11 @@ export default function DesktopNav() {
       }
       if (pathComposition[2] && pathComposition[2] == "banned") {
         ans = "banned";
+      }
+    }
+    if (pathComposition[1] == "user") {
+      if (pathComposition[2] && pathComposition[2] == "messages") {
+        ans = "messages";
       }
     }
     return ans;

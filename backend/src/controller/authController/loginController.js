@@ -38,6 +38,7 @@ export const login = (req, res) => {
                 success: true,
                 role: roleLabel,
                 isAdmin: roleLabel === "admin",
+                socketToken: token,
                 user: {
                     id: userId,
                     email: row.email,

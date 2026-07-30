@@ -19,7 +19,7 @@ import myPostsRoutes from "./routes/userSettingsRoute/myPostsRoute.js";
 import myEventsRoute from "./routes/userSettingsRoute/myEventsRoute.js";
 import reportRoutes from "./routes/reportRoutes/reportRoutes.js";
 import logoutRoutes from "./routes/authRoutes/logoutRoutes.js";
-
+import messageRoutes from "./routes/messageRoutes.js";
 // Admin routes:
 import findUserRoutes from "./routes/adminRoutes/findUserRoute.js";
 import deleteUserRoutes from "./routes/adminRoutes/deleteUserRoute.js";
@@ -58,6 +58,7 @@ app.use("/api/contactSeller", requireAuth, contactUserPostRoute);
 app.use("/api/my-posts", requireAuth, myPostsRoutes);
 app.use("/api/my-events", requireAuth, myEventsRoute);
 app.use("/api/report", requireAuth, reportRoutes);
+app.use("/api/messages", requireAuth, messageRoutes);
 
 // Admin routes
 app.use("/api/admin/users", requireAdmin, findUserRoutes);

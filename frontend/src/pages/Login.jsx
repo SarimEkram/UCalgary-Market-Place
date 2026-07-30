@@ -44,6 +44,9 @@ export default function Login() {
         // Save the username to localStorage
         data.user["isAdmin"] = data.isAdmin; 
         localStorage.setItem("user", JSON.stringify(data.user));
+        if (data.socketToken) {
+          localStorage.setItem("socketToken", data.socketToken);
+        }
          //navigate to home page. 
         navigate("/home");
       } else {

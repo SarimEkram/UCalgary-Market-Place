@@ -145,6 +145,45 @@ DO
     DELETE FROM verification_codes
     WHERE expiration_date < NOW();
 
+
+-- CONVERSATIONS
+CREATE TABLE conversations (
+           conversation_id INT AUTO_INCREMENT PRIMARY KEY,
+           post_id         INT NOT NULL,
+           buyer_id        INT NOT NULL,
+           seller_id       INT NOT NULL,
+           status          ENUM('active','archived') NOT NULL DEFAULT 'active',
+           archived_by     INT DEFAULT NULL,
+           created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+           last_message_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+           UNIQUE KEY unique_conversation (post_id, buyer_id),
+           FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
+           FOREIGN KEY (buyer_id) REFERENCES users(user_id) ON DELETE CASCADE,
+           FOREIGN KEY (seller_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- MESSAGES
+CREATE TABLE messages (
+          message_id      INT AUTO_INCREMENT PRIMARY KEY,
+          conversation_id INT NOT NULL,
+          sender_id       INT NOT NULL,
+          body            TEXT NOT NULL,
+          created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (conversation_id) REFERENCES conversations(conversation_id) ON DELETE CASCADE,
+          FOREIGN KEY (sender_id) REFERENCES users(user_id) ON DELETE CASCADE,
+          INDEX idx_conv_created (conversation_id, created_at DESC)
+);
+
+-- CONVERSATION READ STATUS
+CREATE TABLE conversation_read_status (
+          conversation_id INT NOT NULL,
+          user_id         INT NOT NULL,
+          last_read_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (conversation_id, user_id),
+          FOREIGN KEY (conversation_id) REFERENCES conversations(conversation_id) ON DELETE CASCADE,
+          FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
 /** SEED DATA **/
 
 -- USERS

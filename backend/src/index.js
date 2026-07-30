@@ -1,7 +1,13 @@
+import http from "http";
 import app from "./app.js";
+import { setupSocket, setIo } from "./socket.js";
 
-const port = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8080;
 
-app.listen(port, () => {
-    console.log(`Backend server listening on port ${port}`);
+const server = http.createServer(app);
+const ioInstance = setupSocket(server);
+setIo(ioInstance);
+
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
