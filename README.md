@@ -13,7 +13,7 @@ git clone git@csgit.ucalgary.ca:enioluwafe.balogun/seng513-202401-group-15.git
 3. Move into to the folder: seng513-202401-group-15
 4. Make a file called '.env' inside the current directory (seng513-202401-group-15). 
 5. Copy the contents of the .env.sample file into your .env, and change the password as needed.
-5b.But you must leave the `EMAIL_USER and EMAIL_PASS` as is so you have access to our gmail account. In order to share our project, we were unable to keep these secrets a secret. 
+5b. `.env.sample` only has placeholder values. Ask a teammate for the real `EMAIL_USER` and `EMAIL_PASS` (shared over a private channel, not git) if you need email-dependent features — registration verification codes and password reset — to actually send mail. Everything else works fine with the placeholders.
 6. Run the following command. Note that the -d option prevents you from being bombarded with logs when creating the containers:
 ```bash
 docker compose up -d
