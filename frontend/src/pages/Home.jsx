@@ -105,9 +105,9 @@ export default function Home() {
 function DynamicSection({ title, typeFilter }) {
   const [items, setItems] = useState([]);
   const navigate = useNavigate(); 
-  const [isAdmin, setIsAdmin] = useState(()=>{
+  const [isAdmin] = useState(()=>{
       return JSON.parse(localStorage.getItem("user")).isAdmin;
-  });                  
+  });
 
   useEffect(() => {
     let mounted = true;

@@ -295,7 +295,9 @@ export default function MarketItemPage() {
       let data = null;
       try {
         data = JSON.parse(text);
-      } catch { }
+      } catch {
+        // response wasn't JSON; data stays null
+      }
 
       const key = CONTACT_COOLDOWN_KEY(userId, postId);
       const now = Date.now();
@@ -479,7 +481,7 @@ export default function MarketItemPage() {
                 <Button
                 color="text.primary"
                   onClick={() => navigate(-1)}
-                  sx={(theme) => ({
+                  sx={{
                     display: "flex",
                     columnGap: 2,
                     padding: 0,
@@ -491,7 +493,7 @@ export default function MarketItemPage() {
                       textTransform: "none", // Overrides text transformation
                     },
                    ...styles.rowGap,
-                  })}
+                  }}
                 >
                   <ArrowBackIosNewIcon  sx={{ color: "#0000008a", fontSize: 18 }} />
                   <Typography variant="body2">Back</Typography>

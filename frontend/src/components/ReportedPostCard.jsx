@@ -25,11 +25,7 @@ export default function PostCard({
 }) {
   const navigate = useNavigate();
   dayjs.extend(relativeTime);
-  const [date, setDate] = useState(dayjs(reportDate).fromNow());
-
-  const [userID, setUserID] = useState(() => {
-    return JSON.parse(localStorage.getItem("user")).id;
-  });
+  const [date] = useState(dayjs(reportDate).fromNow());
 
   const confirmedDelete = async () => {
       const response = await fetch(`/api/admin/posts/${id}`, {
@@ -86,7 +82,7 @@ export default function PostCard({
     <Card
       variant="elevation"
       elevation={1}
-      sx={(theme) => ({
+      sx={{
         position: "relative",
         p: 4,
         py: 2,
@@ -98,7 +94,7 @@ export default function PostCard({
         gap: 2,
         textWrap: "wrap",
         minHeight: "min-content",
-      })}
+      }}
     >
       <ConfirmationPopup
         warningMessage={

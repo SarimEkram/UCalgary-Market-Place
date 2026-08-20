@@ -25,7 +25,7 @@ import ImageSlider from "../components/ImageSlider";
 // backend tasks, can be found using ctrl+f "TODO".
 export default function CreatePost() {
 
-  const [userData, setUserData] = useState(
+  const [userData] = useState(
     JSON.parse(localStorage.getItem("user"))
   );
 

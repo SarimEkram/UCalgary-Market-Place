@@ -198,7 +198,6 @@ export default function ChatThread() {
                                     cursor: "pointer",
                                 }}
                                 onClick={() => {
-                                    const postType = conversation.post_id;
                                     navigate(`/market/${conversation.post_id}`);
                                 }}
                             >

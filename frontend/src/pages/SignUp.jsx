@@ -53,7 +53,7 @@ export default function SignUp() {
         //set status of 
         setSubmitStatus({success: false, msg: data.error})
       }
-    } catch (error){
+    } catch {
       setSubmitStatus({success: false, msg: "An error occurred. Please try again later."});
     }  
       
@@ -76,7 +76,7 @@ export default function SignUp() {
         //set status of 
         setSubmitStatus({success: false, msg: data.error})
       }
-    } catch (error){
+    } catch {
       setSubmitStatus({success: false, msg: "An error occurred. Please try again later."});
       
     }  

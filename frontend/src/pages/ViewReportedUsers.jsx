@@ -312,8 +312,6 @@ function ReportedUserCard({ user, onView, onMessage, onDelete, onDismiss }) {
 }
 
 function CustomButton({ children, color, onClick }) {
-    const bg = color === "red" ? "#D22C22" : "#000000";
-
     return (
         <Button
             variant="contained"

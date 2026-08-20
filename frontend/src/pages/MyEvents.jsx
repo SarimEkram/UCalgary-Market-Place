@@ -11,9 +11,6 @@ import MobileNav from "../components/MobileNav";
 
 export default function MyEvents() {
   const [items, setItems] = useState([]);
-  const [userID, setUserID] = useState(() => {
-    return JSON.parse(localStorage.getItem("user")).id;
-  });
 
   const navigate = useNavigate();
   useEffect(() => {

@@ -40,7 +40,7 @@ export default function Events() {
   const [suggestions, setSuggestions] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
 
-  const [isAdmin, setIsAdmin] = useState(() => {
+  const [isAdmin] = useState(() => {
     return JSON.parse(localStorage.getItem("user")).isAdmin;
   });
 

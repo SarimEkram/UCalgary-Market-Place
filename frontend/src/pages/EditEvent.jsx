@@ -26,11 +26,6 @@ import dayjs from "dayjs";
 
 // incomplete backend tasks, can be found using ctrl+f "TODO".
 export default function EditEvent() {
-  //get user data from local storage
-  const [userData, setUserData] = useState(
-    JSON.parse(localStorage.getItem("user"))
-  );
-
   const navigate = useNavigate();
 
   //get post id from url
@@ -69,7 +64,6 @@ export default function EditEvent() {
   } = useForm();
 
   useEffect(() => {
-    let isMounted = true;
     async function fetchData() {
       try{
       const response = await fetch(
@@ -117,9 +111,6 @@ export default function EditEvent() {
       }
     }
     fetchData();
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   //handle a user changing the date
@@ -268,8 +259,7 @@ export default function EditEvent() {
     if (ok) {
         navigate("/user/events");
       } else {
-        console.error("Delete event failed:", data.error);
-        
+        console.error("Delete event failed");
     }
   }
   

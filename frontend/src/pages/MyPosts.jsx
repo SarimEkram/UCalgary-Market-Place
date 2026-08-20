@@ -11,13 +11,9 @@ import MobileNav from "../components/MobileNav";
 
 export default function MyPosts() {
   const [items, setItems] = useState([]);
-  const [userID, setUserID] = useState(()=>{
-      return JSON.parse(localStorage.getItem("user")).id;
-    });
 
   const navigate = useNavigate();
   useEffect(() => {
-    let isMounted = true;
     async function fetchData() {
       try{
           const response = await fetch("/api/my-posts/list", {
@@ -46,9 +42,6 @@ export default function MyPosts() {
     catch(error){console.error(error)}
     }
     fetchData();
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   const onCreate = () => {

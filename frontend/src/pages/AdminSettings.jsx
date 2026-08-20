@@ -18,7 +18,7 @@ import { useNavigate } from "react-router";
 
 export default function MySettings() {
   //get user data from local storage
-  const [userData, setUserData] = useState(
+  const [userData] = useState(
     JSON.parse(localStorage.getItem("user"))
   );
 
@@ -79,7 +79,7 @@ export default function MySettings() {
       //set status of
       setSubmitStatus({ success: false, msg: data.error });
     }}
-    catch(error){
+    catch{
        setSubmitStatus({ success: false, msg: "Failed to update database." });
     }
   };
@@ -133,7 +133,7 @@ export default function MySettings() {
   };
 
   //a styled divider for easy re-use
-  const CustomDivider = ({ props, style, variant, thin, marginThin }) => (
+  const CustomDivider = ({ props, variant, thin, marginThin }) => (
     <Box>
       <Divider
         variant={variant ? variant : "fullWidth"}

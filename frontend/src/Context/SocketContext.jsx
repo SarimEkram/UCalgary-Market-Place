@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 
 const SocketContext = createContext(null);
 
+// eslint-disable-next-line react-refresh/only-export-components -- context + accessor hook are deliberately co-located
 export function useSocket() {
     return useContext(SocketContext);
 }

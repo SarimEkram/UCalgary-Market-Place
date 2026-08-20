@@ -519,7 +519,7 @@ export default function EventItemPage() {
                 <Button
                 color="text.primary"
                   onClick={() => navigate(-1)}
-                  sx={(theme) => ({
+                  sx={{
                     display: "flex",
                     columnGap: 2,
                     padding: 0,
@@ -531,7 +531,7 @@ export default function EventItemPage() {
                       textTransform: "none", // Overrides text transformation
                     },
                    ...styles.rowGap,
-                  })}
+                  }}
                 >
                   <ArrowBackIosNewIcon  sx={{ color: "#0000008a", fontSize: 18 }} />
                   <Typography variant="body2">Back</Typography>

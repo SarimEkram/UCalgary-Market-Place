@@ -15,6 +15,7 @@ export default function PostCard({
   primaryText,
   secondaryText,
   tertiaryText,
+  // eslint-disable-next-line no-unused-vars -- rendered as a JSX tag below; no-unused-vars can't see JSX usage without eslint-plugin-react
   TopLeftAction,
   disableNavigation = false, //for cards that shouldn't navigate to the post details page when clicked
 }) {

@@ -56,7 +56,7 @@ const FirstPage = ({ callBack, handleClose,  warningMessage, executeFunction }) 
         status.msg = data.error;
         setSubmitStatus(status);
       }
-    } catch (error) {
+    } catch {
       const status = { ...submitStatus };
       status.success = false;
       status.msg = "Failed to delete the post.";

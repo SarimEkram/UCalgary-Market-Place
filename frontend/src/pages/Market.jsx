@@ -39,7 +39,7 @@ export default function Market() {
   const [error, setError] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [isAdmin, setIsAdmin] = useState(() => {
+  const [isAdmin] = useState(() => {
     return JSON.parse(localStorage.getItem("user")).isAdmin;
   });
 

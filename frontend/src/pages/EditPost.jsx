@@ -24,11 +24,6 @@ import ConfirmationPopup from "../components/ConfirmationPopup";
 
 // incomplete backend tasks, can be found using ctrl+f "TODO".
 export default function EditPost() {
-  //get user data from local storage
-  const [userData, setUserData] = useState(
-    JSON.parse(localStorage.getItem("user"))
-  );
-
   //get post id from url
   const { id } = useParams();
 
@@ -62,7 +57,6 @@ export default function EditPost() {
 
   //prefill form inputs
   useEffect(() => {
-    let isMounted = true;
     async function fetchData() {
     try {
       const response = await fetch(
@@ -100,10 +94,6 @@ export default function EditPost() {
       catch(error){console.error(error)}
     }
     fetchData();
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
 

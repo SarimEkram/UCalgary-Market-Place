@@ -31,7 +31,7 @@ export default function CreateEvent() {
   } = useForm();
 
   // get user info
-  const [userData, setUserData] = useState(
+  const [userData] = useState(
     JSON.parse(localStorage.getItem("user"))
   );
   // navigate for change page on submit

@@ -34,9 +34,6 @@ export default function ReportedMarketItemPage() {
   const [listingDetails, setListing] = useState(null);
   const [photos, setPhotos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [userID, setUserID] = useState(() => {
-    return JSON.parse(localStorage.getItem("user")).id;
-  });
 
   //Delete post with popup  functions and state variables
     const confirmedDelete = async () => {
@@ -197,7 +194,7 @@ export default function ReportedMarketItemPage() {
                 <Button
                 color="text.primary"
                   onClick={() => navigate(-1)}
-                  sx={(theme) => ({
+                  sx={{
                     display: "flex",
                     columnGap: 2,
                     padding: 0,
@@ -209,7 +206,7 @@ export default function ReportedMarketItemPage() {
                       textTransform: "none", // Overrides text transformation
                     },
                    ...styles.rowGap,
-                  })}
+                  }}
                 >
                   <ArrowBackIosNewIcon  sx={{ color: "#0000008a", fontSize: 18 }} />
                   <Typography variant="body2">Back</Typography>

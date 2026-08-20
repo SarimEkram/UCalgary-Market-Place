@@ -9,12 +9,8 @@ import MobileNav from "../components/MobileNav";
 
 export default function MyContacted() {
   const [items, setItems] = useState([]);
-  const [userID, setUserID] = useState(() => {
-    return JSON.parse(localStorage.getItem("user")).id;
-  });
 
   useEffect(() => {
-    let isMounted = true;
     async function fetchData() {
       try{
           const response = await fetch("/api/contacted/list", {
@@ -48,9 +44,6 @@ export default function MyContacted() {
     catch(error){console.error(error)}
     }
     fetchData();
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   function GetIcon() {

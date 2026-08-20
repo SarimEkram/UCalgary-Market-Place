@@ -9,13 +9,8 @@ import MobileNav from "../components/MobileNav";
 
 export default function MySaved() {
   const [items, setItems] = useState([]);
-  const [userID, setUserID] = useState(()=>{
-    return JSON.parse(localStorage.getItem("user")).id;
-  });
- 
 
   useEffect(() => {
-    let isMounted = true;
     async function fetchData() {
       try{
           const response = await fetch("/api/getSavedPosts", {
@@ -47,9 +42,6 @@ export default function MySaved() {
     }catch(error){console.error(error)}
     }
     fetchData();
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   function GetIcon() {

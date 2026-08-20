@@ -17,7 +17,7 @@ import { Link, useLocation } from "react-router";
 
 export default function DesktopNav() {
   // set the options based on the role of the user
-  const [options, setOptions] = useState(() => {
+  const [options] = useState(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
     let options = [];
     if (userData.isAdmin) {
@@ -43,7 +43,7 @@ export default function DesktopNav() {
 
   //the currently selected page in the navigation bar
   //which is initialized to the root path on the current page
-  const [value, setValue] = useState(() => {
+  const [value] = useState(() => {
     const pathComposition = location.pathname.split("/");
     let ans = pathComposition[1];
     if (pathComposition[1] == "admin") {

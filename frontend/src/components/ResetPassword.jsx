@@ -93,7 +93,7 @@ const FirstPage = ({ setPage, handleClose, setEmail }) => {
         status.msg = data.error;
         setSubmitStatus(status);
       }
-    } catch (error) {
+    } catch {
       const status = { ...submitStatus };
       status.success = false;
       status.msg = "Failed to submit this form.";
@@ -195,7 +195,7 @@ const SecondPage = ({ setPage, handleClose, setCode, email }) => {
         status.msg = data.error;
         setSubmitStatus(status);
       }
-    } catch (error) {
+    } catch {
       const status = { ...submitStatus };
       status.success = false;
       status.msg = "Failed to submit this form.";
@@ -311,7 +311,7 @@ const ThirdPage = ({ setPage, handleClose, email, code }) => {
         status.msg = data.error;
         setSubmitStatus(status);
       }
-    } catch (error) {
+    } catch {
       const status = { ...submitStatus };
       status.success = false;
       status.msg = "Failed to submit this form.";

@@ -1,4 +1,4 @@
-export default function ConditionCheckmark(props) {
+export default function ConditionCheckmark() {
   return (
     <svg
       width="13"
