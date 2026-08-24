@@ -27,11 +27,10 @@ export const login = (req, res) => {
                 role: roleLabel,
             });
 
-            const isProd = process.env.NODE_ENV === "production";
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: isProd,
-                sameSite: isProd ? "none" : "lax", // cross-site cookies (e.g. Vercel <-> Render) need SameSite=None
+                secure: false,       // set true in production with HTTPS
+                sameSite: "lax",
                 maxAge: 24 * 60 * 60 * 1000, // 24 hours
             });
 

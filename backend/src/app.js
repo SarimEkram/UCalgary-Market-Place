@@ -33,7 +33,6 @@ import dashboardRoutes from "./routes/adminRoutes/dashboardRoute.js";
 import unbanRoutes from "./routes/adminRoutes/unbanRoute.js";
 
 const app = express();
-app.set("trust proxy", 1); // behind Render's reverse proxy - needed so req.ip reflects the real client, not Render's proxy
 app.use(helmet());
 app.use(express.json({ limit: "1mb" }));
 
@@ -41,7 +40,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: "http://localhost:3000",
     credentials: true,
 }));
 
