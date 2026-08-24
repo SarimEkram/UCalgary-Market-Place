@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://ucalgary-market-place-1.onrender.com/api/:path*" },
+    { "source": "/socket.io/:path*", "destination": "https://ucalgary-market-place-1.onrender.com/socket.io/:path*" }
+  ]
+}
