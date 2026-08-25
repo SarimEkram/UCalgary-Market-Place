@@ -1,0 +1,46 @@
+# Render Blueprint — single free web service that builds the React frontend
+# and serves it from the Express backend (same-origin).
+#
+# After importing this repo as a Blueprint on https://render.com, fill in the
+# env vars marked `sync: false` in the Render dashboard (see DEPLOY.md).
+services:
+  - type: web
+    name: seng513-marketplace
+    runtime: node
+    plan: free
+    # Build the SPA, then install backend deps.
+    buildCommand: cd frontend && npm ci && npm run build && cd ../backend && npm ci
+    startCommand: cd backend && npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: COOKIE_SECURE
+        value: "true"
+      # Same-origin deploy: point this at the service's own public URL,
+      # e.g. https://seng513-marketplace.onrender.com
+      - key: CLIENT_ORIGIN
+        sync: false
+      # --- MySQL (Aiven / Railway / PlanetScale free tier) ---
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_SSL
+        value: "true"
+      # --- Redis (Upstash free tier, rediss://... URL) ---
+      - key: REDIS_URL
+        sync: false
+      # --- Auth / email ---
+      - key: JWT_SECRET
+        generateValue: true
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false

@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 import { authLimiter, emailLimiter } from "./middleware/rateLimiter.js";
 
 import { requireAuth, requireAdmin } from "./middleware/auth.js";
@@ -33,14 +36,16 @@ import dashboardRoutes from "./routes/adminRoutes/dashboardRoute.js";
 import unbanRoutes from "./routes/adminRoutes/unbanRoute.js";
 
 const app = express();
-app.use(helmet());
+app.use(helmet({
+    // Allow the API to also serve the built SPA (blob images, MUI inline styles, etc).
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: { policy: "same-site" },
+}));
 app.use(express.json({ limit: "1mb" }));
-
-app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
     credentials: true,
 }));
 
@@ -73,5 +78,26 @@ app.use("/api/admin/reports", requireAdmin, dismissReportRoutes);
 app.use("/api/admin/dashboard", requireAdmin, dashboardRoutes);
 app.use("/api/admin/banned", requireAdmin, unbanRoutes);
 
+// ---------------------------------------------------------------------------
+// Serve the built frontend (single-service / same-origin deploy).
+// In local dev the Vite dev server proxies /api, so `frontend/dist` won't exist
+// and this block is simply skipped.
+// ---------------------------------------------------------------------------
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const distDir =
+    process.env.FRONTEND_DIST || path.resolve(__dirname, "../../frontend/dist");
+
+if (fs.existsSync(distDir)) {
+    app.use(express.static(distDir));
+
+    // SPA fallback: any GET that isn't an API/socket call returns index.html so
+    // client-side routes (React Router) work on refresh/direct navigation.
+    // Written as middleware (not app.get("*")) to avoid Express 5 path-pattern issues.
+    app.use((req, res, next) => {
+        if (req.method !== "GET") return next();
+        if (req.path.startsWith("/api") || req.path.startsWith("/socket.io")) return next();
+        res.sendFile(path.join(distDir, "index.html"));
+    });
+}
 
 export default app;

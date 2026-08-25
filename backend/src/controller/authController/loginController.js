@@ -1,6 +1,7 @@
 import db from "../../config/db.js";
 import bcrypt from "bcryptjs";
 import { signToken } from "../../utils/token.js";
+import { authCookieOptions } from "../../config/cookieOptions.js";
 
 export const login = (req, res) => {
     const { email, password } = req.body;
@@ -27,12 +28,7 @@ export const login = (req, res) => {
                 role: roleLabel,
             });
 
-            res.cookie("token", token, {
-                httpOnly: true,
-                secure: false,       // set true in production with HTTPS
-                sameSite: "lax",
-                maxAge: 24 * 60 * 60 * 1000, // 24 hours
-            });
+            res.cookie("token", token, authCookieOptions);
 
             return res.json({
                 success: true,
