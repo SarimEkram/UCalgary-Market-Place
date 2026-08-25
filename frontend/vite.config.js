@@ -5,6 +5,11 @@ const port = process.env.PORT || 3000;
 
 export default defineConfig({
     plugins: [react()],
+    test: {
+        environment: 'jsdom',
+        setupFiles: './src/test/setup.js',
+        globals: true,
+    },
     server: {
         port,
         host: '0.0.0.0',
