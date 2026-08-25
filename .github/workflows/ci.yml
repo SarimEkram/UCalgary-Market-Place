@@ -30,10 +30,11 @@ jobs:
 
       - run: npm ci
       - run: npm run lint
+      - run: npm run test
       - run: npm run build
 
   backend:
-    name: Backend (install + smoke test)
+    name: Backend (install + unit tests + smoke test)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -61,6 +62,10 @@ jobs:
           cache-dependency-path: backend/package-lock.json
 
       - run: npm ci
+
+      # Unit tests for pure/DB-free modules (JWT signing, auth middleware).
+      - name: Unit tests
+        run: npm test
 
       # No lint config exists on the backend yet. Importing app.js exercises
       # every route/controller module it pulls in, which catches syntax
